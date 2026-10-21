@@ -1,0 +1,6 @@
+product_id,name,price,description,image_url,category_id,search_keyword
+1,iPhone 15 Pro Max,30000000,Dien thoai cao cap cua Apple,https://placehold.co/300x300/png?text=iPhone+15,1,iPhone
+2,Samsung Galaxy S24 Ultra,28000000,Man hinh va camera cao cap,https://placehold.co/300x300/png?text=Samsung+S24,1,Samsung
+3,MacBook Pro M3,45000000,Laptop manh me cho cong viec chuyen nghiep,https://placehold.co/300x300/png?text=Macbook+Pro,2,MacBook
+4,Tai nghe AirPods Pro 2,6000000,Tai nghe chong on chu dong,https://placehold.co/300x300/png?text=AirPods+Pro,3,AirPods
+5,Ban phim co Keychron Q1,4000000,Ban phim co vo nhom cho goc lam viec,https://placehold.co/300x300/png?text=Keychron+Q1,3,Keychron

@@ -1,5 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const fs = require('fs');
 
 const dbPath = path.resolve(__dirname, 'database.sqlite');
 const db = new sqlite3.Database(dbPath, (err) => {
@@ -9,6 +10,50 @@ const db = new sqlite3.Database(dbPath, (err) => {
         console.log('Connected to database');
     }
 });
+
+function loadLoadTestAccounts() {
+    const csvPath = path.resolve(__dirname, 'test-data', 'test_accounts.csv');
+    const expectedHeaders = ['email', 'password', 'full_name', 'role', 'scenario'];
+
+    if (!fs.existsSync(csvPath)) {
+        throw new Error(`Load-test account file not found: ${csvPath}`);
+    }
+
+    const [header, ...rows] = fs.readFileSync(csvPath, 'utf8').trim().split(/\r?\n/);
+    if (header !== expectedHeaders.join(',')) {
+        throw new Error(`Unexpected CSV header in ${csvPath}`);
+    }
+
+    return rows.filter(Boolean).map((row, index) => {
+        const [email, password, fullName, role, scenario] = row.split(',');
+        if (!email || !password || !fullName || !role || !scenario) {
+            throw new Error(`Invalid load-test account on CSV row ${index + 2}`);
+        }
+        return { email, password, fullName, role, scenario };
+    });
+}
+
+function loadSeedProducts() {
+    const csvPath = path.resolve(__dirname, 'test-data', 'test_products.csv');
+    const expectedHeaders = ['product_id', 'name', 'price', 'description', 'image_url', 'category_id', 'search_keyword'];
+
+    if (!fs.existsSync(csvPath)) {
+        throw new Error(`Product seed file not found: ${csvPath}`);
+    }
+
+    const [header, ...rows] = fs.readFileSync(csvPath, 'utf8').trim().split(/\r?\n/);
+    if (header !== expectedHeaders.join(',')) {
+        throw new Error(`Unexpected CSV header in ${csvPath}`);
+    }
+
+    return rows.filter(Boolean).map((row, index) => {
+        const [id, name, price, description, imageUrl, categoryId, searchKeyword] = row.split(',');
+        if (!id || !name || !price || !description || !imageUrl || !categoryId || !searchKeyword) {
+            throw new Error(`Invalid product seed on CSV row ${index + 2}`);
+        }
+        return { id: Number(id), name, price: Number(price), description, imageUrl, categoryId: Number(categoryId), searchKeyword };
+    });
+}
 
 function initDatabase() {
     db.serialize(() => {
@@ -91,16 +136,20 @@ function initDatabase() {
         const insertUser = db.prepare('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)');
         insertUser.run('Admin User', 'admin@eshop.com', 'Admin123!', 'admin');
         insertUser.run('Test User', 'test@eshop.com', 'Test1234!', 'user');
+        const loadTestAccounts = loadLoadTestAccounts();
+        loadTestAccounts.forEach(({ fullName, email, password, role }) => {
+            insertUser.run(fullName, email, password, role);
+        });
         insertUser.finalize();
+        console.log(`Seeded ${loadTestAccounts.length} load-test accounts.`);
 
-        // Seed Products
-        const insertProduct = db.prepare('INSERT INTO products (name, price, description, imageUrl, category_id) VALUES (?, ?, ?, ?, ?)');
-        insertProduct.run('iPhone 15 Pro Max', 30000000, 'Điện thoại cao cấp của Apple', 'https://placehold.co/300x300/png?text=iPhone+15', 1);
-        insertProduct.run('Samsung Galaxy S24 Ultra', 28000000, 'Màn hình hiển thị xuất sắc, camera siêu zoom', 'https://placehold.co/300x300/png?text=Samsung+S24', 1);
-        insertProduct.run('MacBook Pro M3', 45000000, 'Laptop chuyên nghiệp mạnh mẽ', 'https://placehold.co/300x300/png?text=Macbook+Pro', 2);
-        insertProduct.run('Tai nghe AirPods Pro 2', 6000000, 'Chống ồn chủ động xuất sắc', 'https://placehold.co/300x300/png?text=AirPods+Pro', 3);
-        insertProduct.run('Bàn phím cơ Keychron Q1', 4000000, 'Gõ cực sướng, thiết kế kim loại', 'https://placehold.co/300x300/png?text=Keychron+Q1', 3);
+        const seedProducts = loadSeedProducts();
+        const insertProduct = db.prepare('INSERT INTO products (id, name, price, description, imageUrl, category_id) VALUES (?, ?, ?, ?, ?, ?)');
+        seedProducts.forEach(({ id, name, price, description, imageUrl, categoryId }) => {
+            insertProduct.run(id, name, price, description, imageUrl, categoryId);
+        });
         insertProduct.finalize();
+        console.log(`Seeded ${seedProducts.length} workload products.`);
 
         // Seed Coupons
         const insertCoupon = db.prepare('INSERT INTO coupons (code, type, discount_value, min_order_amount, expired_at, is_active, max_uses_per_user) VALUES (?, ?, ?, ?, ?, ?, ?)');

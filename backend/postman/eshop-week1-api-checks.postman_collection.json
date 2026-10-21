@@ -1,0 +1,40 @@
+{
+  "info": {
+    "name": "EShop - Week 1 API checks",
+    "description": "Assignee B: validates login, search, product detail, cart and checkout against a locally seeded SUT.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "email", "value": "minh.phan@loadtest.local" },
+    { "key": "password", "value": "LoadTest@2026" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Login and capture bearer token",
+      "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}" }, "url": "{{baseUrl}}/api/login" },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Login returns 200 and a token', function () { pm.response.to.have.status(200); pm.expect(pm.response.json().token).to.be.a('string').and.not.empty; });", "pm.collectionVariables.set('token', pm.response.json().token);"] } }]
+    },
+    {
+      "name": "2. Search products",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/products?search=iPhone" },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Search returns matching product data', function () { pm.response.to.have.status(200); pm.expect(pm.response.json()).to.be.an('array').that.is.not.empty; });"] } }]
+    },
+    {
+      "name": "3. Get product detail",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/products/1" },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Product detail returns product 1', function () { pm.response.to.have.status(200); pm.expect(pm.response.json().id).to.eql(1); });"] } }]
+    },
+    {
+      "name": "4. Add product to cart",
+      "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }], "body": { "mode": "raw", "raw": "{\n  \"id\": 1,\n  \"name\": \"iPhone 15 Pro Max\",\n  \"price\": 30000000,\n  \"quantity\": 1\n}" }, "url": "{{baseUrl}}/api/cart" },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Cart accepts an authenticated request', function () { pm.response.to.have.status(200); pm.expect(pm.response.json().message).to.eql('Added to cart'); });"] } }]
+    },
+    {
+      "name": "5. Checkout",
+      "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }], "body": { "mode": "raw", "raw": "{\n  \"total_amount\": 30000000,\n  \"shipping_address\": \"42 Nguyen Hue, Quan 1, Ho Chi Minh City\"\n}" }, "url": "{{baseUrl}}/api/checkout" },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Checkout creates an order', function () { pm.response.to.have.status(200); pm.expect(pm.response.json().orderId).to.be.a('number'); });"] } }]
+    }
+  ]
+}
