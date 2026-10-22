@@ -4,7 +4,7 @@ import { SharedArray } from 'k6/data';
 import { Counter } from 'k6/metrics';
 import exec from 'k6/execution';
 
-const BASE_URL = (__ENV.BASE_URL || 'http://localhost:3000').replace(/\/$/, '');
+const BASE_URL = __ENV.BASE_URL || 'http://100.91.155.71:3000'.replace(/\/$/, '');
 // This fixture uses four unquoted columns; reject malformed input before sending load.
 const accounts = new SharedArray('stress accounts', () => {
   const lines = open('./data/test_accounts.csv').replace(/^\uFEFF/, '').trim().split(/\r?\n/);
