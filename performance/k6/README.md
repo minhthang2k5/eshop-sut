@@ -51,6 +51,30 @@ Mỗi runner tạo `output/<loại>-<timestamp>-<suffix>/` chứa `metrics.json`
 
 Baseline mix Search/Detail/Cart/Checkout = **55/25/14/6**; stress/spike = **40/20/22/18**. Login là lưu lượng bổ sung. Stress/spike chỉ thống kê Login riêng, không đặt SLO riêng; không ngắt sớm khi threshold fail để đo recovery. Grace period có thể kéo dài thời gian thực chạy.
 
+## D8a — SQLite index + WAL
+
+`tuned-backend/` sao chép mã nguồn, dependencies và CSV seed của `backend/`. Hai server đều dùng `require("./database")`: bản gốc mở `backend/database.sqlite`; bản tune mở `tuned-backend/database_tuned.sqlite`. Đường dẫn tính theo `__dirname`, không phụ thuộc thư mục chạy lệnh; không cần `DB_MODE` hay `database-tune.js`.
+
+Từ `eshop-sut`, dừng backend gốc rồi chạy bản tune (cùng cổng 3000):
+
+```bash
+cd tuned-backend
+npm ci
+node server.js
+```
+
+`tuned-backend/database.js` reset/seed như bản gốc, sau đó trực tiếp bật `PRAGMA journal_mode=WAL` và tạo `idx_products_name ON products(name)`. Index được tạo lại sau mỗi restart. Ở terminal khác, từ `eshop-sut` seed tài khoản k6 vào đúng bản tune rồi chạy:
+
+```bash
+node performance/k6/data/seed.js tuned-backend/database_tuned.sqlite
+bash performance/k6/run-baseline.sh
+bash performance/k6/run-spike.sh
+```
+
+Khi đối chiếu, chạy lần lượt hai backend với dữ liệu khởi đầu tương đương. Chưa có số đo sau tune.
+
+`LIKE '%keyword%'` vẫn full-scan dù có index. WAL cho phép đọc song song với ghi nhưng vẫn chỉ có một writer; SUT dùng chung một connection nên cần đo mức cải thiện thực tế. Xem [giải thích WAL](tune-db/WAL.md).
+
 ## Kết quả Tuần 2
 
 Dùng kết quả đã đo ngày 21–22/10, không chạy lại tải. Stress report dùng profile cũ **500–2800 VUs, giữ 60s/bậc**, khác script hiện tại. Profile thực đo của stress/spike khác kế hoạch Tuần 2 và được giữ nguyên khi tổng kết.
