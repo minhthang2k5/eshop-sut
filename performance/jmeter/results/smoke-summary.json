@@ -1,0 +1,153 @@
+{
+  "smoke1": {
+    "users": 1,
+    "rampup": 1,
+    "duration": 60,
+    "percentileMethod": "nearest rank on elapsed milliseconds, all samples including failures",
+    "all": {
+      "count": 19,
+      "errors": 0,
+      "errorPct": 0,
+      "p50": 3,
+      "p95": 110,
+      "p99": 110,
+      "throughputPerSecond": 0.337,
+      "observedSpanSeconds": 56.381
+    },
+    "actions": {
+      "count": 18,
+      "errors": 0,
+      "errorPct": 0,
+      "p50": 3,
+      "p95": 21,
+      "p99": 21,
+      "throughputPerSecond": 0.333,
+      "observedSpanSeconds": 53.98
+    },
+    "byLabel": {
+      "login": {
+        "count": 1,
+        "errors": 0,
+        "errorPct": 0,
+        "p50": 110,
+        "p95": 110,
+        "p99": 110,
+        "throughputPerSecond": 9.091,
+        "observedSpanSeconds": 0.11
+      },
+      "search": {
+        "count": 10,
+        "errors": 0,
+        "errorPct": 0,
+        "p50": 3,
+        "p95": 6,
+        "p99": 6,
+        "throughputPerSecond": 0.208,
+        "observedSpanSeconds": 48.057,
+        "actionSharePct": 55.556
+      },
+      "detail": {
+        "count": 4,
+        "errors": 0,
+        "errorPct": 0,
+        "p50": 2,
+        "p95": 4,
+        "p99": 4,
+        "throughputPerSecond": 0.105,
+        "observedSpanSeconds": 38.222,
+        "actionSharePct": 22.222
+      },
+      "checkout": {
+        "count": 4,
+        "errors": 0,
+        "errorPct": 0,
+        "p50": 16,
+        "p95": 21,
+        "p99": 21,
+        "throughputPerSecond": 0.09,
+        "observedSpanSeconds": 44.495,
+        "actionSharePct": 22.222
+      }
+    },
+    "slo": {
+      "p95Below500ms": true,
+      "errorsBelow1pct": true
+    }
+  },
+  "smoke5": {
+    "users": 5,
+    "rampup": 1,
+    "duration": 60,
+    "percentileMethod": "nearest rank on elapsed milliseconds, all samples including failures",
+    "all": {
+      "count": 104,
+      "errors": 0,
+      "errorPct": 0,
+      "p50": 3,
+      "p95": 21,
+      "p99": 87,
+      "throughputPerSecond": 1.775,
+      "observedSpanSeconds": 58.591
+    },
+    "actions": {
+      "count": 99,
+      "errors": 0,
+      "errorPct": 0,
+      "p50": 3,
+      "p95": 17,
+      "p99": 21,
+      "throughputPerSecond": 1.729,
+      "observedSpanSeconds": 57.25
+    },
+    "byLabel": {
+      "login": {
+        "count": 5,
+        "errors": 0,
+        "errorPct": 0,
+        "p50": 87,
+        "p95": 87,
+        "p99": 87,
+        "throughputPerSecond": 57.471,
+        "observedSpanSeconds": 0.087
+      },
+      "search": {
+        "count": 55,
+        "errors": 0,
+        "errorPct": 0,
+        "p50": 2,
+        "p95": 4,
+        "p99": 4,
+        "throughputPerSecond": 0.974,
+        "observedSpanSeconds": 56.493,
+        "actionSharePct": 55.556
+      },
+      "detail": {
+        "count": 24,
+        "errors": 0,
+        "errorPct": 0,
+        "p50": 2,
+        "p95": 4,
+        "p99": 6,
+        "throughputPerSecond": 0.46,
+        "observedSpanSeconds": 52.213,
+        "actionSharePct": 24.242
+      },
+      "checkout": {
+        "count": 20,
+        "errors": 0,
+        "errorPct": 0,
+        "p50": 15,
+        "p95": 18,
+        "p99": 21,
+        "throughputPerSecond": 0.43,
+        "observedSpanSeconds": 46.546,
+        "actionSharePct": 20.202
+      }
+    },
+    "slo": {
+      "p95Below500ms": true,
+      "errorsBelow1pct": true
+    }
+  },
+  "guiVerification": "Pending user verification; JMX opened in JMeter 5.6.3 but listener/rerun workflow not verified"
+}

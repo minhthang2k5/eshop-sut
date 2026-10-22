@@ -1,0 +1,4 @@
+# Local reruns and diagnostic output; the delivered baseline/report remain visible.
+local-runs/
+jmeter.log
+*.log
