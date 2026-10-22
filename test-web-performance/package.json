@@ -1,0 +1,12 @@
+{
+  "name": "test-web-performance",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "install:all": "npm --prefix server install && npm --prefix frontend install",
+    "dev:server": "npm --prefix server run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "start": "npm --prefix server run start",
+    "build": "npm --prefix frontend run build"
+  }
+}

@@ -567,6 +567,14 @@ app.put("/api/admin/orders/:id/status", authenticateToken, (req, res) => {
   );
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+});
+
+server.on('error', (error) => {
+  if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} đang được một process khác sử dụng. Hãy dừng process đó rồi chạy lại server.`);
+    return;
+  }
+  console.error('Không thể khởi động SUT server:', error);
 });

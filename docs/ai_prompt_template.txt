@@ -1,0 +1,86 @@
+Bạn là Performance Test Engineer. Hãy sinh MỘT file k6 JavaScript hoàn chỉnh, chạy trực tiếp bằng:
+
+  k6 run ai_generated_script.js
+
+Không giải thích dài dòng. Chỉ trả về mã JavaScript hoàn chỉnh trong một code block.
+
+## Bối cảnh
+
+SUT là EShop chạy local:
+
+- Frontend: http://localhost:5173
+- Backend API base URL: http://localhost:3000
+- HAR đính kèm là traffic thật đã được che password/JWT bằng <REDACTED>.
+
+Hãy lấy HAR làm bằng chứng về URL/method/response, nhưng ưu tiên API specification dưới đây nếu HAR và spec khác nhau.
+
+## API specification đã xác minh
+
+### 1. Login
+
+- Method/URL: POST http://localhost:3000/api/login
+- JSON body:
+
+  {"email":"test@eshop.com","password":"Test1234!"}
+
+- Response JSON có field `token`.
+- Phải extract token bằng `res.json('token')`.
+
+### 2. Search products
+
+- Method/URL: GET http://localhost:3000/api/products?search=<keyword>
+- Không cần authentication.
+- Keyword được chọn ngẫu nhiên từ: iPhone, Samsung, MacBook, AirPods, Keychron.
+
+### 3. Product detail
+
+- Method/URL: GET http://localhost:3000/api/products/<id>
+- Không cần authentication.
+- ID được chọn ngẫu nhiên trong dải 1 đến 5.
+
+### 4. Checkout
+
+- Method/URL: POST http://localhost:3000/api/checkout
+- Bắt buộc header: Authorization: Bearer <token>
+- JSON body tối thiểu:
+
+  {"total_amount":30000000,"shipping_address":"123 Le Loi, TP.HCM"}
+
+- Response JSON có field `orderId`.
+
+## Yêu cầu workload
+
+- Một virtual user login để lấy token trước khi thực hiện action cần auth.
+- Chọn ngẫu nhiên một action trong mỗi iteration theo tỷ lệ:
+  - Search: 55%
+  - Detail: 25%
+  - Checkout: 20%
+- Đừng gọi checkout nếu login không lấy được token.
+- Dùng think-time ngẫu nhiên, hợp lý:
+  - search: 1–3 giây
+  - detail: 2–5 giây
+  - checkout: 3–6 giây
+
+## Yêu cầu chất lượng script
+
+- Import đúng từ `k6/http` và `k6`.
+- Đặt `BASE_URL` thành `http://localhost:3000`.
+- Dùng `JSON.stringify()` cho JSON POST body và header `Content-Type: application/json`.
+- Dùng `check()` để kiểm tra:
+  - Login status 200 và token tồn tại.
+  - Mỗi request có status 200.
+  - Checkout response có `orderId`.
+- Khai báo thresholds:
+
+  http_req_duration: ['p(95)<500']
+  checks: ['rate>=0.99']
+
+- Cấu hình smoke test mặc định: 1 VU, 1 iteration hoặc thời lượng rất ngắn để có thể chạy ngay.
+- Không dùng Node.js APIs như `require`, `fs`, npm package ngoài, hoặc placeholder chưa được định nghĩa.
+- Không in hay hard-code JWT token. Token chỉ được lấy runtime từ response login.
+
+## HAR đã redacted
+
+Dán nội dung HAR đã che dữ liệu nhạy cảm bên dưới dòng này trước khi gửi prompt cho AI:
+
+<PASTE_REDACTED_HAR_HERE>

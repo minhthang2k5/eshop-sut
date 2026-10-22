@@ -1,0 +1,6 @@
+node_modules/
+dist/
+server/data/audits/
+server/data/uploads/
+server/data/chatgpt-auth/
+.env
