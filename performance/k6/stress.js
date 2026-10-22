@@ -4,7 +4,7 @@ import { SharedArray } from 'k6/data';
 import { Counter } from 'k6/metrics';
 import exec from 'k6/execution';
 
-const BASE_URL = __ENV.BASE_URL || 'http://100.91.155.71:3000'.replace(/\/$/, '');
+const BASE_URL = __ENV.BASE_URL || 'http://localhost:3000'.replace(/\/$/, '');
 // This fixture uses four unquoted columns; reject malformed input before sending load.
 const accounts = new SharedArray('stress accounts', () => {
   const lines = open('./data/test_accounts.csv').replace(/^\uFEFF/, '').trim().split(/\r?\n/);
@@ -28,9 +28,9 @@ const skippedRequests = new Counter('business_requests_skipped');
 const endpoints = ['search', 'detail', 'cart', 'checkout'];
 // One source of truth for both executor stages and request-start phase tags.
 const profile = [];
-for (const vus of [500, 1000, 2000, 4000]) {
-  profile.push({ duration: '1m', seconds: 60, target: vus, phase: `ramp_${vus}` });
-  profile.push({ duration: '2m', seconds: 120, target: vus, phase: `hold_${vus}` });
+for (const vus of [500, 750, 1000, 1250, 1500, 1750, 2000, 2200, 2400, 2600, 2800]) {
+  profile.push({ duration: '0.5m', seconds: 30, target: vus, phase: `ramp_${vus}` });
+  profile.push({ duration: '1m', seconds: 60, target: vus, phase: `hold_${vus}` });
 }
 profile.push({ duration: '0s', seconds: 0, target: 50, phase: 'unload' });
 profile.push({ duration: '1m', seconds: 60, target: 50, phase: 'recovery_1' });

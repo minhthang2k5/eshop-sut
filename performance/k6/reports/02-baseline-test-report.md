@@ -11,11 +11,11 @@
 | Run ID | `baseline-20261022-110446-eGLTX1` |
 | Build / checksum source | Không được lưu kèm run; không suy ngược từ source hiện tại |
 | Phiên bản k6 / Node.js / OS | Linux theo người thực hiện; phiên bản cụ thể không được lưu trong bộ kết quả |
-| Script | [baseline.js](baseline.js) |
+| Script | [baseline.js](../baseline.js) |
 | URL SUT | Chạy local, server và k6 cùng máy; URL mặc định của script là `http://localhost:3000`, không có bản ghi biến môi trường để xác nhận override |
-| Raw metrics | [metrics.json](output/baseline-20261022-110446-eGLTX1/metrics.json) |
-| Summary | [summary.json](output/baseline-20261022-110446-eGLTX1/summary.json) |
-| Execution log | [k6.log](output/baseline-20261022-110446-eGLTX1/k6.log) |
+| Raw metrics | [metrics.json](../output/baseline-20261022-110446-eGLTX1/metrics.json) |
+| Summary | [summary.json](../output/baseline-20261022-110446-eGLTX1/summary.json) |
+| Execution log | [k6.log](../output/baseline-20261022-110446-eGLTX1/k6.log) |
 | Nguồn số liệu tài nguyên | Quan sát Linux Resources do người thực hiện cung cấp; không có log tài nguyên theo thời gian đính kèm |
 
 Đo mốc hiệu năng ở tải bình thường 50 VUs, dùng đối chiếu các lần cập nhật code trong cùng điều kiện. Phạm vi: Search, Detail, Cart, Checkout theo API/payload của `smoke.js`; Login chạy lazy trong flow Cart/Checkout và có thống kê riêng. Login được tính vào latency/error rate tổng, bao gồm tổng steady nếu request bắt đầu trong steady. Không đánh giá giới hạn tải hoặc browser rendering.
@@ -83,10 +83,10 @@ CPU/RAM/DB I/O là số liệu quan sát bên ngoài k6; chưa có NFR tài nguy
 Lệnh tái chạy từ thư mục gốc repository sau khi chuẩn bị tài khoản/dữ liệu:
 
 ```bash
-bash sut/eshop-sut/test/run-baseline.sh
+bash eshop-sut/performance/k6/run-baseline.sh
 ```
 
-Runner lưu raw metrics, summary và log trong thư mục riêng dưới `test/output/`. Báo cáo này chỉ phân tích run đã có, không chạy lại hoặc thay đổi dữ liệu. Smoke dùng tài khoản hard-code nên không thay thế việc kiểm tra 50 tài khoản CSV.
+Runner lưu raw metrics, summary và log trong thư mục riêng dưới `performance/k6/output/`. Báo cáo này chỉ phân tích run đã có, không chạy lại hoặc thay đổi dữ liệu. Smoke dùng tài khoản hard-code nên không thay thế việc kiểm tra 50 tài khoản CSV.
 
 **Quy tắc xử lý:** số liệu baseline lấy từ tag `phase:steady`; p50 là `med`, thời gian phản hồi tính bằng ms. RPS steady = count / **300 s**, không lấy trường `rate` trong summary (được chuẩn hóa theo thời lượng cả run). Tổng steady gồm Login; mix nghiệp vụ lấy mẫu số là 5919 request Search/Detail/Cart/Checkout, loại sáu Login. TPS theo từng API bằng RPS API, không phải TPS của hành trình mua hàng hoàn chỉnh.
 

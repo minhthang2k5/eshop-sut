@@ -168,6 +168,8 @@ flowchart LR
 
 ### Tuần 2 — Core Testing (12–18 tháng 10)
 
+> **Tổng kết D2–D4:** xem [Week2_Summary.md](Week2_Summary.md) để mở artifacts, bảng đối chiếu và kết quả thực đo ngày 21–22/10. Dùng profile stress/spike hiện có theo lựa chọn của người dùng; khác biệt với kế hoạch và phần native dashboard chưa lưu được ghi rõ trong tổng kết.
+
 | Task | Thành viên | Deliverable | Ghi chú kỹ thuật |
 |------|-----------|-------------|-----------------|
 | **D2** — k6 baseline 50VU 5min | **A** | `baseline_report.html` (web-dashboard) | `k6 run --vus 50 --duration 5m --out web-dashboard script.js`; ghi p50/p95/p99, error rate; SLO: p95<500ms, error<1% |

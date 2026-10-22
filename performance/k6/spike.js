@@ -4,7 +4,7 @@ import { SharedArray } from 'k6/data';
 import { Counter } from 'k6/metrics';
 import exec from 'k6/execution';
 
-const BASE_URL = __ENV.BASE_URL || 'http://100.91.155.71:3000'.replace(/\/$/, '');
+const BASE_URL = __ENV.BASE_URL || 'http://localhost:3000';
 // This fixture uses four unquoted columns; reject malformed input before sending load.
 const accounts = new SharedArray('spike accounts', () => {
   const lines = open('./data/test_accounts.csv').replace(/^\uFEFF/, '').trim().split(/\r?\n/);
@@ -29,8 +29,8 @@ const endpoints = ['search', 'detail', 'cart', 'checkout'];
 // One source of truth for both executor stages and request-start phase tags.
 const profile = [
   { duration: '30s', seconds: 30, target: 50, phase: 'hold_50' },
-  { duration: '0s', seconds: 0, target: 500, phase: 'burst' },
-  { duration: '1m', seconds: 60, target: 500, phase: 'hold_500' },
+  { duration: '0s', seconds: 0, target: 1500, phase: 'burst' },
+  { duration: '1m', seconds: 60, target: 1500, phase: 'hold_1500' },
   { duration: '0s', seconds: 0, target: 50, phase: 'unload' },
   { duration: '1m', seconds: 60, target: 50, phase: 'recovery_1' },
 ];

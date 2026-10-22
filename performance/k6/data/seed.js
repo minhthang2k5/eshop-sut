@@ -2,16 +2,16 @@
 'use strict';
 
 // Run AFTER starting the backend: its startup recreates all database tables.
-// Usage: node sut/eshop-sut/test/data/seed.js [database-path]
+// Usage: node data/seed.js [database-path] (from performance/k6)
 // The optional path is useful for seeding a separate test database.
 const fs = require('node:fs');
 const path = require('node:path');
 const { createRequire } = require('node:module');
-const backendRequire = createRequire(path.resolve(__dirname, '../../backend/package.json'));
+const backendRequire = createRequire(path.resolve(__dirname, '../../../backend/package.json'));
 const sqlite3 = backendRequire('sqlite3');
 
 const csvPath = path.join(__dirname, 'test_accounts.csv');
-const dbPath = path.resolve(process.argv[2] || path.join(__dirname, '../../backend/database.sqlite'));
+const dbPath = path.resolve(process.argv[2] || path.join(__dirname, '../../../backend/database.sqlite'));
 
 // Handle quoted fields, escaped quotes, BOM, CRLF and a missing final newline.
 function parseCsv(text) {

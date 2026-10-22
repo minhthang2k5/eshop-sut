@@ -326,8 +326,8 @@ Kết quả hợp lệ phải có 50 login và mỗi thread chỉ có một logi
 | D3 — Regular Expression Extractor và Bearer token | Các node login/extractor/Header Manager trong `.jmx`; checkout thành công trong JTL/report |
 | D3 — Workload 55/25/20 | Ba Throughput Controller trong `.jmx`; `actionSharePct` trong `summary.json` |
 | D3 — Chạy CLI và sinh report | `local-runs/<baseline>/baseline.jtl`, `jmeter.log`, `jmeter-report/`; artifact mẫu đã đo nằm ở `results/` |
-| Bảng đối chiếu D2 vs D3 | `comparison_d2_vs_d3.md` — cột JMeter đã có, cột k6 chờ A bàn giao D2 |
+| Bảng đối chiếu D2 vs D3 | [comparison_d2_vs_d3.md](comparison_d2_vs_d3.md) — đã điền số liệu k6 và JMeter, kèm giới hạn so sánh |
 
-Week 2 được nghiệm thu bằng các lệnh CLI và artifact kết quả. Phần còn chờ duy nhất của B là điền phía D2 trong bảng đối chiếu sau khi A cung cấp report k6; phần D3 CLI đã có đầy đủ artifact.
+D3 CLI đã có artifact kết quả; bảng đối chiếu D2/D3 đã được bổ sung từ baseline k6 ngày 22/10. Xem [tổng kết Tuần 2](../../docs/Week2_Summary.md).
 
 Tham khảo: [Task Assignment Detail](../../docs/Task_Assignment_Detail.md), [Tool Survey Proposal](../../docs/Tool_Survey_Proposal.md), [JMeter Best Practices](https://jmeter.apache.org/usermanual/best-practices.html), [JMeter HTML dashboard](https://jmeter.apache.org/usermanual/generating-dashboard.html).

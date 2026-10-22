@@ -13,7 +13,7 @@ export const options = {
   },
 };
 
-const BASE_URL = __ENV.BASE_URL || 'http://100.91.155.71:3000';
+const BASE_URL = __ENV.BASE_URL || 'http://localhost:3000';
 
 // Thông tin tài khoản mặc định theo yêu cầu
 const CREDENTIALS = {
