@@ -596,9 +596,84 @@ AI được dùng ở hai vai trò: tạo script đầu vào và phân tích sou
 
 | Thành viên | Công việc và minh chứng |
 | --- | --- |
-| Lê Nguyễn Quốc Thái — 23120352 | [Lê Nguyễn Quốc Thái tự điền đóng góp, đường dẫn artifact và commit liên quan] |
-| Võ Hữu Thắng — 23120355 | [Võ Hữu Thắng tự điền đóng góp, đường dẫn artifact và commit liên quan] |
-| Trịnh Hồ Minh Thắng — 23120354 | HAR và prompt; hai script thật; React/Express audit; Acorn source analysis; parser k6; duyệt điểm; ChatGPT session; Luna JSON output; test hồi quy; ảnh và dữ liệu trong evidence |
+| Lê Nguyễn Quốc Thái — 23120352 | Chuẩn bị k6 và SUT; smoke/correlation; baseline, spike và stress; tuning SQLite trên bản sao; so sánh trước/sau và tổng hợp số liệu. Phân công Jira: SCRUM-15–17, SCRUM-26–28, SCRUM-36–38. Chi tiết thực nghiệm và nhận xét do Quốc Thái bổ sung ở chương 4. |
+| Võ Hữu Thắng — 23120355 | Chuẩn bị SUT/dữ liệu/reset; JMeter workload, token, CLI/report và đối chiếu k6; xác minh tái lập, performance report và slide. Phân công Jira: SCRUM-18–21, SCRUM-29–32, SCRUM-39–41. Chi tiết thực nghiệm và nhận xét do Hữu Thắng bổ sung ở chương 5. |
+| Trịnh Hồ Minh Thắng — 23120354 | HAR, prompt và rubric; hai script thật; React/Express audit; Acorn source analysis và parser k6; duyệt điểm; phiên ChatGPT; Luna nhận xét/JSON output; kiểm thử hồi quy; báo cáo và ảnh/evidence. Phân công Jira: SCRUM-22–25, SCRUM-33–35, SCRUM-42–45. Nội dung thực hiện ở chương 6. |
+
+#### 8.2.1 Tổ chức công việc theo ba tuần
+
+Nhóm quản lý công việc trên [Jira — QA Testing team](https://testing-best-team.atlassian.net/jira/software/projects/SCRUM/boards/1/backlog), chia thành ba sprint theo giai đoạn chuẩn bị, kiểm thử chính và hoàn thiện. Mỗi task có người phụ trách, mô tả và tiêu chí hoàn thành; task được liên kết với Epic theo nhóm chức năng. Các bảng dưới đây đối chiếu phân công với mã task, không thay thế phần trình bày phương pháp và kết quả thực nghiệm.
+
+**Tuần 1 — Chuẩn bị, 05–11/10/2026**
+
+| Thành viên | Công việc được phân công và mã Jira | Đầu ra cần đối chiếu |
+| --- | --- | --- |
+| Lê Nguyễn Quốc Thái | [SCRUM-15](https://testing-best-team.atlassian.net/browse/SCRUM-15): cài k6/dựng SUT; [SCRUM-16](https://testing-best-team.atlassian.net/browse/SCRUM-16): viết smoke script; [SCRUM-17](https://testing-best-team.atlassian.net/browse/SCRUM-17): xác nhận correlation token. | Môi trường chạy, smoke script và evidence login/token. |
+| Võ Hữu Thắng | [SCRUM-18](https://testing-best-team.atlassian.net/browse/SCRUM-18): dựng SUT/kiểm tra endpoint; [SCRUM-19](https://testing-best-team.atlassian.net/browse/SCRUM-19): dữ liệu tài khoản/keyword; [SCRUM-20](https://testing-best-team.atlassian.net/browse/SCRUM-20): reset dữ liệu; [SCRUM-21](https://testing-best-team.atlassian.net/browse/SCRUM-21): hoàn thiện proposal. | SUT, dữ liệu kiểm thử, cách reset và tài liệu chuẩn bị. |
+| Trịnh Hồ Minh Thắng | [SCRUM-22](https://testing-best-team.atlassian.net/browse/SCRUM-22): capture HAR; [SCRUM-23](https://testing-best-team.atlassian.net/browse/SCRUM-23): soạn prompt; [SCRUM-24](https://testing-best-team.atlassian.net/browse/SCRUM-24): xây dựng rubric; [SCRUM-25](https://testing-best-team.atlassian.net/browse/SCRUM-25): hoàn thiện proposal phần AI. | HAR đã che dữ liệu nhạy cảm, API contract, prompt chuẩn và rubric 10 tiêu chí. |
+
+Tên task ban đầu “smoke.js 5 luồng” và “Postman test 5 endpoint” được giữ nguyên trên Jira để truy vết. Phạm vi API thực tế trình bày trong báo cáo này là bốn nhóm nghiệp vụ Login, Search, Detail và Checkout ở mục 1.2; không dùng tên task để khẳng định có thêm một luồng đã được kiểm chứng.
+
+**Tuần 2 — Core Testing, 12–18/10/2026**
+
+| Thành viên | Công việc được phân công và mã Jira | Đầu ra cần đối chiếu |
+| --- | --- | --- |
+| Lê Nguyễn Quốc Thái | [SCRUM-26](https://testing-best-team.atlassian.net/browse/SCRUM-26): k6 baseline; [SCRUM-27](https://testing-best-team.atlassian.net/browse/SCRUM-27): spike và phục hồi; [SCRUM-28](https://testing-best-team.atlassian.net/browse/SCRUM-28): stress và vùng suy giảm. | Script/profile, summary/log và bảng metric theo đúng run. |
+| Võ Hữu Thắng | [SCRUM-29](https://testing-best-team.atlassian.net/browse/SCRUM-29): JMeter workload/data driven; [SCRUM-30](https://testing-best-team.atlassian.net/browse/SCRUM-30): correlation token; [SCRUM-31](https://testing-best-team.atlassian.net/browse/SCRUM-31): CLI/HTML report; [SCRUM-32](https://testing-best-team.atlassian.net/browse/SCRUM-32): đối chiếu k6–JMeter. | Test plan, dữ liệu thô, report và điều kiện so sánh. |
+| Trịnh Hồ Minh Thắng | [SCRUM-33](https://testing-best-team.atlassian.net/browse/SCRUM-33): script Gemini; [SCRUM-34](https://testing-best-team.atlassian.net/browse/SCRUM-34): script Claude từ cùng HAR/prompt; [SCRUM-35](https://testing-best-team.atlassian.net/browse/SCRUM-35): web audit React/Express, rubric và k6 smoke. | Hai source gốc, luồng upload/chạy audit, bảng điểm, log và scorecard Markdown. |
+
+**Tuần 3 — Finalization, 19–25/10/2026**
+
+| Thành viên | Công việc được phân công và mã Jira | Đầu ra cần đối chiếu |
+| --- | --- | --- |
+| Lê Nguyễn Quốc Thái | [SCRUM-36](https://testing-best-team.atlassian.net/browse/SCRUM-36): bản sao SUT/tuning SQLite; [SCRUM-37](https://testing-best-team.atlassian.net/browse/SCRUM-37): đo trước/sau; [SCRUM-38](https://testing-best-team.atlassian.net/browse/SCRUM-38): tổng hợp số liệu k6 cuối. | Cấu hình tuning, run so sánh và bộ số liệu có thể tái lập. |
+| Võ Hữu Thắng | [SCRUM-39](https://testing-best-team.atlassian.net/browse/SCRUM-39): xác minh tái lập; [SCRUM-40](https://testing-best-team.atlassian.net/browse/SCRUM-40): performance report; [SCRUM-41](https://testing-best-team.atlassian.net/browse/SCRUM-41): slide đối chiếu hai công cụ. | Log xác minh, nhận xét có căn cứ và tài liệu trình bày. |
+| Trịnh Hồ Minh Thắng | [SCRUM-42](https://testing-best-team.atlassian.net/browse/SCRUM-42): hoàn thiện Acorn evaluator/parser k6; [SCRUM-43](https://testing-best-team.atlassian.net/browse/SCRUM-43): Luna nhận xét/threshold/correlation; [SCRUM-44](https://testing-best-team.atlassian.net/browse/SCRUM-44): kiểm thử hồi quy; [SCRUM-45](https://testing-best-team.atlassian.net/browse/SCRUM-45): báo cáo Markdown và evidence. | Bộ chấm cải thiện, phiên ChatGPT/AI output, log test, ảnh web và thư mục submission. |
+
+| Tuần kế hoạch | Task Quốc Thái | Task Hữu Thắng | Task Minh Thắng | Tổng task | Tổng estimate |
+| --- | --- | --- | --- | --- | --- |
+| 1: 05–11/10 | 3 | 4 | 4 | 11 | 22 điểm |
+| 2: 12–18/10 | 3 | 4 | 3 | 10 | 20 điểm |
+| 3: 19–25/10 | 3 | 3 | 4 | 10 | 20 điểm |
+| **Tổng** | **9** | **11** | **11** | **31** | **62 điểm** |
+
+Estimate 2 điểm/task là quy ước lập kế hoạch của nhóm, không quy đổi thành số giờ và không dùng để xếp hạng chất lượng đóng góp giữa các thành viên. Khi đối chiếu ngày 23/10/2026, cả 31 task được Jira ghi nhận Done. Trạng thái quản lý này không tự chứng minh chất lượng kỹ thuật; kết quả của từng công cụ vẫn phải đọc cùng source, log và report.
+
+Các khoảng tuần là **mốc kế hoạch** dùng để tổ chức công việc. Task tuần 2–3 được bổ sung vào Jira ngày 23/10/2026; không diễn giải bảng hoặc ảnh thành bằng chứng rằng từng task đã được tạo hay hoàn tất đúng trong tuần kế hoạch. Phần kết quả thực nghiệm giữ nguyên audit ID và thời điểm thực chạy ở chương 6.
+
+#### 8.2.2 Phân chia phần C theo các hạng mục đã triển khai
+
+Phần của Trịnh Hồ Minh Thắng được tổ chức thành chuỗi công việc có đầu vào và đầu ra nối tiếp. Bảng này tổng hợp các hạng mục đã có trong source/evidence, không dựng lại ngày triển khai từ trạng thái sprint.
+
+| Tuần | Phần việc cụ thể của Trịnh Hồ Minh Thắng | Minh chứng trong repository và báo cáo |
+| --- | --- | --- |
+| **Tuần 1: chuẩn bị đầu vào và chuẩn đánh giá** | Capture phiên EShop; rà contract Login/Search/Detail/Checkout; chuẩn bị HAR trước khi chia sẻ; soạn prompt thống nhất để sinh hai script; định nghĩa 10 tiêu chí rubric và phạm vi ứng dụng AI. | [Manifest HAR](evidence/har-api-manifest.json), [prompt sinh script](evidence/ai_prompt_template.txt), [rubric](../docs/rubric_audit.md); mục 6.3 và 6.6. |
+| **Tuần 2: xây quy trình audit chạy được** | Thu và giữ nguyên hai source Gemini/Claude; triển khai React nhận HAR/hai script và Express điều phối; chạy smoke từng script ở 1 VU × 1 iteration; hiển thị điểm/evidence/log; cho phép duyệt điểm và tải scorecard Markdown. | [Hai source gốc](evidence/scripts/), [README web](../test-web-performance/README.md), [audit JSON](evidence/audit-results.json), [scorecard](evidence/rubric_scorecard.md) và ảnh 1–4; mục 6.4–6.7. |
+| **Tuần 3: hoàn thiện phân tích và đóng gói kết quả** | Cải thiện bộ chấm AST và parser summary; xử lý helper/hằng số, lỗi runtime và metric thiếu; hoàn thiện đăng nhập/đăng xuất ChatGPT và phản hồi UI; Luna nhận xét Markdown, đề xuất JSON threshold/correlation; kiểm thử hồi quy; bổ sung lý thuyết, bài tập 3, ảnh AI và evidence vào báo cáo. | [Log 15 test](evidence/evaluation-tests.txt), [output Luna](evidence/luna-d7-output.json), [prompt D7](evidence/d7_luna_prompt.md), ảnh 5–10 và [bộ ảnh phân công](Split_task/); mục 6.8–6.11 và chương 7. |
+
+Các cải tiến giao diện như tên Script 1/Script 2 tổng quát, menu tài khoản, bố trí Phân tích AI trước Gợi ý hiệu năng và render Markdown được tổng hợp trong giai đoạn hoàn thiện, vì phục vụ việc đọc evidence và thao tác duyệt. Luồng audit bằng rule/k6 vẫn độc lập với việc người dùng có yêu cầu AI hay không.
+
+Task SCRUM-43 thuộc Epic mang tên lịch sử “D7 - Grafana k6 AI”, nhưng phần đã thực hiện và mô tả task hiện tại là **Luna trên web**. Tương tự, Epic “Screencast & Report” là nhãn quản lý chung; minh chứng được trình bày cho SCRUM-45 là báo cáo Markdown và evidence trong submission. Không suy ra một công cụ hoặc artifact khác chỉ từ tên Epic.
+
+#### 8.2.3 Ảnh minh chứng phân công trên Jira
+
+Ba ảnh sau là ảnh Jira do người thực hiện cung cấp, được giữ nguyên trong `submission/Split_task/`. Nội dung hiển thị mã task, người được giao, trạng thái và estimate; ảnh phản ánh thời điểm chụp, không thay thế lịch sử thay đổi trong Jira. Ảnh Sprint 1–2 có nút Complete sprint là trạng thái lúc chụp; hai sprint này đã được đóng ở lần đối chiếu sau đó.
+
+![Hình 11 Phân công tuần 1 trên Jira](Split_task/sprint_1.png)
+
+*Hình 11. Sprint 1, kế hoạch 05–11/10: 11 task, tổng 22 điểm. Phần Trịnh Hồ Minh Thắng gồm SCRUM-22–25, tương ứng HAR, prompt, rubric và proposal phần AI.*
+
+![Hình 12 Phân công tuần 2 trên Jira](Split_task/sprint_2.png)
+
+*Hình 12. Sprint 2 - Core Testing, kế hoạch 12–18/10: 10 task, tổng 20 điểm. Phần Trịnh Hồ Minh Thắng gồm SCRUM-33–35: hai script thực tế và web audit React/Express kết hợp rubric/k6.*
+
+![Hình 13 Phân công tuần 3 trên Jira](Split_task/sprint_3.png)
+
+*Hình 13. Sprint 3 - Finalization, kế hoạch 19–25/10: 10 task, tổng 20 điểm. Phần Trịnh Hồ Minh Thắng gồm SCRUM-42–45: evaluator/parser, Luna, test hồi quy và báo cáo/evidence. Nhãn Done là trạng thái Jira trong ảnh, không phải số đo hiệu năng.*
+
+Các ảnh được kiểm tra tính toàn vẹn bằng [SHA256SUMS của bộ ảnh phân công](Split_task/SHA256SUMS.txt). Phần k6/JMeter ở chương 4–5 và các bài tập 1–2 vẫn dành cho hai thành viên phụ trách bổ sung nội dung thực nghiệm của mình.
+
+#### 8.2.4 Commit và minh chứng triển khai phần C
 
 | Commit minh chứng của Trịnh Hồ Minh Thắng | Nội dung |
 | --- | --- |
@@ -606,6 +681,7 @@ AI được dùng ở hai vai trò: tạo script đầu vào và phân tích sou
 | [75dee0f](https://github.com/minhthang2k5/eshop-sut/commit/75dee0f) | Tài khoản, nhãn script tổng quát và chỉnh giao diện |
 | [fcbaf22](https://github.com/minhthang2k5/eshop-sut/commit/fcbaf22) | Hai script thực tế Gemini và Claude |
 | [4b8a930](https://github.com/minhthang2k5/eshop-sut/commit/4b8a930) | Cải thiện bộ chấm và parser summary, test hồi quy |
+| [29b886f](https://github.com/minhthang2k5/eshop-sut/commit/29b886f) | Báo cáo seminar Markdown, 12 ảnh và bộ source/log/JSON/evidence |
 
 Các commit là bằng chứng thay đổi source, không tự thay thế bằng chứng chạy. Log, summary và ảnh được dẫn theo audit riêng trong chương 6.
 
@@ -660,5 +736,6 @@ Ngày đối chiếu nguồn: 23/10/2026. Nội dung triển khai, số liệu v
 | [10-ai-threshold-results-part-1.png](evidence/10-ai-threshold-results-part-1.png) | Ảnh bảng threshold do Luna đề xuất cho hai script, phần đầu |
 | [11-ai-threshold-correlation-results.png](evidence/11-ai-threshold-correlation-results.png) | Ảnh phần tiếp bảng threshold và đầu bảng correlation; có nội dung chồng lặp để đọc tiếp |
 | [12-ai-correlation-results.png](evidence/12-ai-correlation-results.png) | Ảnh correlation của hai script và giới hạn evidence; không hiển thị audit ID/thời điểm chạy |
+| [Split_task/](Split_task/) | Ba ảnh Jira phân công tuần 1–3, dùng tại mục 8.2.3; có README nguồn ảnh và SHA256SUMS riêng |
 
 Evidence không bao gồm file `.env` hoặc profile OAuth của ChatGPT. Các artifact và ảnh được dùng để người đọc truy lại từng bước thực hiện, thay vì chỉ dựa vào tổng điểm cuối.

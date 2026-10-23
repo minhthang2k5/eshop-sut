@@ -4,12 +4,14 @@ Mở [báo cáo chính](Bao_cao_seminar_Performance_Testing.md) bằng VS Code M
 
 ## Cách bổ sung của nhóm
 
-- Lê Nguyễn Quốc Thái (A, MSSV 23120352) điền chương 4, bài tập 1 và dòng đóng góp của mình.
-- Võ Hữu Thắng (B, MSSV 23120355) điền chương 5, bài tập 2 và dòng đóng góp của mình.
+- Lê Nguyễn Quốc Thái (A, MSSV 23120352) điền chương 4, bài tập 1 và bổ sung minh chứng thực nghiệm của mình vào bảng đóng góp khi cần.
+- Võ Hữu Thắng (B, MSSV 23120355) điền chương 5, bài tập 2 và bổ sung minh chứng thực nghiệm của mình vào bảng đóng góp khi cần.
 - Lê Nguyễn Quốc Thái và Võ Hữu Thắng cùng hoàn thiện bảng so sánh thực nghiệm, kết luận chung và thông tin nhóm ở đầu báo cáo.
 - Phần Trịnh Hồ Minh Thắng (C, MSSV 23120354) đã có nội dung chương 6, bài tập 3, ảnh và dữ liệu minh chứng. Giữ nguyên liên kết evidence khi chỉnh sửa hoặc di chuyển báo cáo.
 
 Chương 2 giải thích các khái niệm bằng ví dụ EShop: loại test, SUT/contract, script k6, VU/iteration, workload/think-time, metric/phân vị, check/threshold, HAR, data driven/correlation, phân tích source/runtime, tuning/hồi quy và evidence/AI. Chương 7 chỉ điền bài tập 3 về quy trình web audit; bài tập 1–2 để trống cho hai thành viên phụ trách.
+
+Mục 8.2 có phân công cả ba thành viên theo tuần 1–3 và mã Jira; phần Trịnh Hồ Minh Thắng được chia theo đầu vào/rubric → web audit → evaluator/AI/test/báo cáo. Ba ảnh phân công dùng nguyên bản trong `Split_task/`, kèm nguồn và checksum riêng. Trạng thái Jira được đối chiếu ngày 23/10/2026; các tuần là mốc kế hoạch, không phải lịch sử ngày tạo/hoàn thành task.
 
 ## Nội dung thư mục
 
@@ -17,6 +19,12 @@ Chương 2 giải thích các khái niệm bằng ví dụ EShop: loại test, S
 submission/
   Bao_cao_seminar_Performance_Testing.md
   README.md
+  Split_task/
+    sprint_1.png
+    sprint_2.png
+    sprint_3.png
+    README.md
+    SHA256SUMS.txt
   evidence/
     01-upload.png ... 08-regression-tests.png
     09-ai-review-result.png
