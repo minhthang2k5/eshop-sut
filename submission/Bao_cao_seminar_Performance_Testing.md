@@ -1001,27 +1001,96 @@ Mỗi bậc dưới đây được giữ 60 giây. Bảng trích một số bậ
 
 ### Bài tập 2 — Võ Hữu Thắng
 
+#### Mục tiêu, thời lượng và điều kiện
+
+Trong **20 phút**, người học dùng đúng test plan JMeter của EShop để xác minh flow Login → token → Checkout, đọc kết quả của một smoke nhỏ và đánh giá đúng baseline đã có. Bài này không yêu cầu sửa source SUT, không chạy tải 50 users/300 giây và không so sánh/xếp hạng với k6.
+
+Chuẩn bị: backend EShop đã reset/seed và chạy ở `http://localhost:3000`; Java **17**, JMeter 5.6.3 và Node.js; thư mục làm việc là `performance/jmeter`. Không dùng Java 25 với JMeter 5.6.3 của bài. Học viên không đưa password CSV hoặc JWT thực vào bài nộp.
+
 #### Tình huống
 
-Bạn nhận kết quả kiểm thử JMeter: Search 2840 samples, Detail 1283, Checkout 1017; 50 Login báo riêng. Các request nghiệp vụ có p95=16ms, lỗi 0%. Sau đó nhận kết quả k6 tăng tải đột biến trên Windows với backend đã tối ưu SQLite: p95 đỉnh=59.286ms, HTTP lỗi=3.434%, skipped=490 (thao tác bị bỏ qua do đăng nhập thất bại). Tiêu chí: p95 <500ms, lỗi <1%; k6 còn yêu cầu skipped=0.
+Bạn là người kiểm thử nhận bàn giao [test plan](../performance/jmeter/eshop_workload.jmx). Trước khi cho phép chạy baseline, bạn cần trả lời: dữ liệu có được phân theo user không, checkout có thật sự dùng token vừa login không, smoke có lỗi không, và artifact baseline có đạt SLO không.
 
-#### Thao tác và câu hỏi (5–7 phút)
+**Tiêu chí SLO của bài:** chỉ xét ba action Search, Detail, Checkout; đạt khi đồng thời **p95 < 500 ms** và **error rate < 1%**. Login là request khởi tạo, báo riêng.
 
-1. Mở [test plan](../performance/jmeter/eshop_workload.jmx) và xác định các node lấy JWT, gửi Bearer header và kiểm tra response. Dữ liệu CSV tác động tới request nào?
-2. Tính tỷ lệ thực tế Search/Detail/Checkout. Vì sao không tính 50 Login vào mẫu số workload?
-3. Bài JMeter có đạt mục tiêu chất lượng (SLO) không? Bài k6 tăng tải đột biến với backend tối ưu có đạt không dù p95 thấp hơn 500ms?
-4. Nếu checkout bị 401, kiểm tra lần lượt phần nào? Có nên bỏ assertion hoặc đưa token vào body để tiếp tục không?
-5. Người khác cần lưu gì để chứng minh cross-run? Kết quả trợ lý chạy trên máy B có đủ để ký xác nhận cả A/B/C không?
+#### Phần A — Đọc cấu trúc trước khi chạy (4 phút)
 
-Tùy thời gian có thể chạy smoke 1 user/60s bằng lệnh ở mục 5.2 trên SUT test riêng; dùng output mới, chờ backend seed hoàn tất, không ghi đè artifact baseline. Không yêu cầu phát lại spike 1500 VUs trong bài tập.
+Mở test plan bằng JMeter GUI để đọc; không bấm Start. Ghi vào phiếu trả lời:
 
-#### Gợi ý đánh giá
+1. Thread Group baseline có bao nhiêu user, ramp-up bao lâu, duration bao lâu? Duration đó có bao gồm ramp-up không?
+2. Ghi đường đi của token theo đúng thứ tự node: node tạo request login, node trích token và node gửi token ở checkout. JMeter dùng cú pháp biến nào?
+3. Hai CSV cung cấp loại dữ liệu nào? Ba action có tỷ lệ mục tiêu và think-time nào?
 
-- Once Only Controller/login → Regex Extractor `token` → checkout Header Manager; assertions kiểm tra status/body. Account giữ theo thread; keyword, product ID và giá checkout lấy từ CSV.
-- Mẫu số actions=5140: tỷ lệ 55.253/24.961/19.786%. Login là lưu lượng khởi tạo, không thuộc ba action được phân bổ.
-- Bài JMeter PASS; bài k6 tăng tải đột biến với backend tối ưu FAIL do error >1% và skipped khác 0. Không nhìn riêng p95 hoặc throughput để kết luận đạt.
-- Với 401: kiểm tra account/seed, response login, extractor, biến token và Bearer header; giữ assertions. SUT yêu cầu token trong Authorization header; không đưa token/password vào evidence.
-- Cross-run cần người thực sự thao tác, phiên bản/môi trường, lệnh, run ID và output; nhận xét kết quả có căn cứ. Các run trợ lý là evidence kỹ thuật, chưa thay sign-off của thành viên.
+Lưu ý: node `login` không hiển thị `${token}` vì token chỉ được tạo **sau khi** response login về. Bấm mũi tên cạnh `login` để thấy `Extract token`; Header Manager cần xem là node thụt vào dưới `checkout`.
+
+#### Phần B — Chạy smoke CLI 5 users (7 phút)
+
+Tạo output mới, không ghi đè `performance/jmeter/results/`. Tại `performance/jmeter`, chạy:
+
+```powershell
+$exerciseDir = 'local-runs/exercise-jmeter-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff')
+New-Item -ItemType Directory -Path $exerciseDir | Out-Null
+
+jmeter.bat -n -t eshop_workload.jmx -q report.properties `
+  -Jusers=5 -Jrampup=1 -Jduration=60 `
+  -l "$exerciseDir/smoke.jtl" `
+  -j "$exerciseDir/jmeter.log" `
+  -e -o "$exerciseDir/jmeter-report"
+
+if ($LASTEXITCODE -ne 0) { throw "JMeter/report lỗi; xem $exerciseDir/jmeter.log" }
+$samples = @(Import-Csv "$exerciseDir/smoke.jtl")
+if ($samples.Count -eq 0) { throw "Không có sample; kiểm tra jmeter.log và Java 17" }
+node summarize.cjs "$exerciseDir/smoke.jtl" | Tee-Object "$exerciseDir/summary.json"
+```
+
+Đây là smoke để kiểm tra đường đi dữ liệu/correlation, **không** phải phép đo hiệu năng hay chứng minh tỷ lệ 55/25/20 chính thức. Nếu thiếu một action do ngẫu nhiên trong 60 giây, đổi `-Jduration=60` thành `-Jduration=90` rồi chạy lại; không sửa tỷ lệ controller.
+
+#### Phần C — Kiểm tra JTL và chẩn đoán (5 phút)
+
+Chạy ba lệnh sau, chụp hoặc chép kết quả không chứa credential:
+
+```powershell
+$rows = Import-Csv "$exerciseDir/smoke.jtl"
+$rows | Group-Object label | Select-Object Name,Count
+$rows | Where-Object success -ne 'true' | Select-Object label,responseCode,failureMessage
+Start-Process "$exerciseDir/jmeter-report/index.html"
+```
+
+Trả lời:
+
+1. Có bao nhiêu `login`? Các label `search`, `detail`, `checkout` có xuất hiện không? Bảng request lỗi có dòng nào không?
+2. Nếu `checkout` trả 401, hãy nêu **đúng thứ tự** năm điểm cần kiểm tra: dữ liệu account/seed, response login, Regex Extractor, biến `${token}`, Header `Authorization: Bearer ${token}`. Không được tắt assertion hoặc chép JWT tĩnh vào test plan để biến run thành pass.
+3. Vì sao chỉ một smoke pass chưa đủ để kết luận p95, RPS hoặc tỷ lệ workload chính thức?
+
+#### Phần D — Đọc baseline đã lưu và kết luận (4 phút)
+
+Mở [baseline summary](../performance/jmeter/results/baseline-summary.json) và [HTML report](../performance/jmeter/results/jmeter-report/index.html). Điền bảng sau:
+
+| Chỉ số | Giá trị từ baseline | Diễn giải ngắn |
+| --- | ---: | --- |
+| Login | [Điền] | Vì sao báo riêng? |
+| Search / Detail / Checkout | [Điền] | Số sample từng action |
+| Tỷ lệ action thực tế | [Điền] | So với mục tiêu 55% / 25% / 20% |
+| p95 actions | [Điền] ms | So với 500 ms |
+| Error rate actions | [Điền] % | So với 1% |
+| Kết luận | PASS / FAIL | Nêu đủ hai điều kiện |
+
+Trong HTML dashboard, đọc `# Samples`, `Error %`, `Median`, `95th pct`, `99th pct` tại **Statistics**. Không dùng `Average` thay cho p95.
+
+#### Đáp án/rubric tóm tắt
+
+| Nội dung | Điểm cần có |
+| --- | --- |
+| Cấu trúc và dữ liệu | 50 users, ramp-up 10s, duration 300s gồm ramp-up; account giữ theo thread; CSV cung cấp account/catalog. |
+| Correlation | `login` → `Extract token` (biến `token`) → Header Manager dưới `checkout`: `Authorization: Bearer ${token}`. |
+| Workload | Search/Detail/Checkout: 55%/25%/20%; think-time: 1–3s/2–5s/3–6s. |
+| Smoke | Có 5 login; action xuất hiện và không có failure mới là smoke pass. Kết quả có thể khác số mẫu giữa các lần chạy. |
+| Chẩn đoán 401 | Kiểm tra seed/account → login response → extractor → `${token}` → Bearer header; không bỏ assertion/không hard-code token. |
+| Baseline/SLO | 50 Login; actions = 5.140; shares = 55,253% / 24,961% / 19,786%; p95 = 16 ms; error = 0%; **PASS** vì 16 < 500 và 0 < 1. |
+
+#### Sản phẩm nộp
+
+Nộp một file trả lời ngắn (Markdown hoặc PDF) gồm: câu trả lời Phần A, ảnh hoặc text ba lệnh ở Phần C, đường dẫn/tên thư mục output smoke, bảng Phần D đã điền và kết luận tối đa 100 từ. Không nộp JWT, password, `local-runs/` nguyên thư mục, hoặc thay đổi vào artifact baseline chính thức.
 
 ### Bài tập 3 — Đánh giá hai script k6 bằng web automation
 
