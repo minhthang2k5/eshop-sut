@@ -1,0 +1,7 @@
+Seeded 50 load-test accounts.
+Seeded 5 workload products.
+Database initialized and seeded (Phase 2).
+Server is running on http://localhost:3000
+Connected to database
+Database tuning: journal_mode=wal
+Database tuning: idx_products_name ON products(name)

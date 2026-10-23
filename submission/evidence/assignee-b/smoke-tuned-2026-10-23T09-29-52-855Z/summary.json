@@ -1,0 +1,244 @@
+{
+    "root_group": {
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {
+            "1. Login API": {
+                "name": "1. Login API",
+                "path": "::1. Login API",
+                "id": "cc1776721b32bea30dd20039606d39d7",
+                "groups": {},
+                "checks": {
+                        "login: status is 200": {
+                            "name": "login: status is 200",
+                            "path": "::1. Login API::login: status is 200",
+                            "id": "0725ee9d6b694381831633498f5f43e2",
+                            "passes": 1,
+                            "fails": 0
+                        },
+                        "login: token exists": {
+                            "path": "::1. Login API::login: token exists",
+                            "id": "6f3500f970d93a6e3c68b65bde16e713",
+                            "passes": 1,
+                            "fails": 0,
+                            "name": "login: token exists"
+                        }
+                    }
+            },
+            "2. Search Products API": {
+                "path": "::2. Search Products API",
+                "id": "cb7cc9d99c71cf3506778972504df7e5",
+                "groups": {},
+                "checks": {
+                        "search: status is 200": {
+                            "name": "search: status is 200",
+                            "path": "::2. Search Products API::search: status is 200",
+                            "id": "2e8e8104080b5e9f7054d3348e75ae91",
+                            "passes": 1,
+                            "fails": 0
+                        },
+                        "search: return array of products": {
+                            "name": "search: return array of products",
+                            "path": "::2. Search Products API::search: return array of products",
+                            "id": "c3a47344f33ef1d310162397bda3f46a",
+                            "passes": 1,
+                            "fails": 0
+                        }
+                    },
+                "name": "2. Search Products API"
+            },
+            "3. Product Detail API": {
+                "path": "::3. Product Detail API",
+                "id": "9d786a47c3c0d06a53bc4fc0d4d46c80",
+                "groups": {},
+                "checks": {
+                        "detail: status is 200": {
+                            "id": "7e2bad4a776f6a2c4d78c1eaf1aee6d6",
+                            "passes": 1,
+                            "fails": 0,
+                            "name": "detail: status is 200",
+                            "path": "::3. Product Detail API::detail: status is 200"
+                        },
+                        "detail: product has correct id": {
+                            "path": "::3. Product Detail API::detail: product has correct id",
+                            "id": "2fc1f5d09097bf3a350216891572efe0",
+                            "passes": 1,
+                            "fails": 0,
+                            "name": "detail: product has correct id"
+                        }
+                    },
+                "name": "3. Product Detail API"
+            },
+            "4. Add to Cart API": {
+                "name": "4. Add to Cart API",
+                "path": "::4. Add to Cart API",
+                "id": "544b7bf27ac68e10a7cf8b709cfbcc0e",
+                "groups": {},
+                "checks": {
+                        "cart: status is 200": {
+                            "name": "cart: status is 200",
+                            "path": "::4. Add to Cart API::cart: status is 200",
+                            "id": "fb37537692d22782ff1f17a4f7f06f85",
+                            "passes": 1,
+                            "fails": 0
+                        },
+                        "cart: message added to cart": {
+                            "fails": 0,
+                            "name": "cart: message added to cart",
+                            "path": "::4. Add to Cart API::cart: message added to cart",
+                            "id": "cc6df1c98b1bf7897d536d29e0869f27",
+                            "passes": 1
+                        }
+                    }
+            },
+            "5. Checkout API": {
+                "groups": {},
+                "checks": {
+                        "checkout: status is 200": {
+                            "fails": 0,
+                            "name": "checkout: status is 200",
+                            "path": "::5. Checkout API::checkout: status is 200",
+                            "id": "cb09fe5fa2be2b92ca0efa98837a9583",
+                            "passes": 1
+                        },
+                        "checkout: orderId exists": {
+                            "path": "::5. Checkout API::checkout: orderId exists",
+                            "id": "43a8f4c576e72adc0b3b6b2cc15b14f2",
+                            "passes": 1,
+                            "fails": 0,
+                            "name": "checkout: orderId exists"
+                        }
+                    },
+                "name": "5. Checkout API",
+                "path": "::5. Checkout API",
+                "id": "698661a4464a008f97bf17680d74385f"
+            }
+        },
+        "checks": {}
+    },
+    "metrics": {
+        "http_req_duration{expected_response:true}": {
+            "p(90)": 19.24042,
+            "p(95)": 21.681359999999998,
+            "avg": 10.25146,
+            "min": 2.7556,
+            "med": 9.2913,
+            "max": 24.1223
+        },
+        "checks": {
+            "passes": 10,
+            "fails": 0,
+            "thresholds": {
+                "rate==1.0": false
+            },
+            "value": 1
+        },
+        "http_req_duration": {
+            "avg": 10.25146,
+            "min": 2.7556,
+            "med": 9.2913,
+            "max": 24.1223,
+            "p(90)": 19.24042,
+            "p(95)": 21.681359999999998,
+            "thresholds": {
+                "p(95)<500": false
+            }
+        },
+        "http_reqs": {
+            "count": 5,
+            "rate": 0.9846839307361507
+        },
+        "http_req_waiting": {
+            "avg": 9.61636,
+            "min": 1.0471,
+            "med": 9.2913,
+            "max": 23.5749,
+            "p(90)": 18.91198,
+            "p(95)": 21.24344
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 5,
+            "value": 0
+        },
+        "data_sent": {
+            "rate": 210.91929796368348,
+            "count": 1071
+        },
+        "http_req_tls_handshaking": {
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "max": 0,
+            "p(90)": 0,
+            "p(95)": 0
+        },
+        "http_req_sending": {
+            "med": 0,
+            "max": 0.5474,
+            "p(90)": 0.32844000000000007,
+            "p(95)": 0.4379199999999999,
+            "avg": 0.10948,
+            "min": 0
+        },
+        "http_req_connecting": {
+            "avg": 0.21716000000000002,
+            "min": 0,
+            "med": 0,
+            "max": 1.0858,
+            "p(90)": 0.6514800000000002,
+            "p(95)": 0.8686399999999999
+        },
+        "iterations": {
+            "count": 1,
+            "rate": 0.19693678614723015
+        },
+        "http_req_blocked": {
+            "avg": 4.18748,
+            "min": 0,
+            "med": 0,
+            "max": 20.9374,
+            "p(90)": 12.562440000000002,
+            "p(95)": 16.749919999999996
+        },
+        "http_req_receiving": {
+            "min": 0,
+            "med": 0,
+            "max": 2.1234,
+            "p(90)": 1.4759200000000003,
+            "p(95)": 1.7996599999999998,
+            "avg": 0.5256200000000001
+        },
+        "group_duration": {
+            "min": 2.7556,
+            "med": 9.2913,
+            "max": 46.3651,
+            "p(90)": 32.7903,
+            "p(95)": 39.57769999999999,
+            "avg": 14.802120000000002
+        },
+        "vus_max": {
+            "min": 1,
+            "max": 1,
+            "value": 1
+        },
+        "vus": {
+            "value": 1,
+            "min": 1,
+            "max": 1
+        },
+        "data_received": {
+            "count": 2127,
+            "rate": 418.88454413515854
+        },
+        "iteration_duration": {
+            "min": 5077.7715,
+            "med": 5077.7715,
+            "max": 5077.7715,
+            "p(90)": 5077.7715,
+            "p(95)": 5077.7715,
+            "avg": 5077.7715
+        }
+    }
+}

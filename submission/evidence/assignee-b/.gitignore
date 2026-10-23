@@ -1,0 +1,2 @@
+# Keep reviewed confirmation logs even though the repository ignores k6.log globally.
+!k6.log

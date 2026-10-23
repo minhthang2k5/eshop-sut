@@ -1,0 +1,100 @@
+{
+  "id": "spike-original-2026-10-23T09-44-14-975Z",
+  "variant": "original",
+  "test": "spike",
+  "actor": "Codex executed in assignee B workspace; not a human cross-run sign-off",
+  "startUtc": "2026-10-23T09:44:15.023Z",
+  "timezone": "Asia/Bangkok",
+  "commit": "f445dbb861ff211c1f56883e9a238cf89455fe10",
+  "dirtyStatus": "?? PLAN_WEEK3_ASSIGNEE_B.md\n?? performance/k6/K6_Test_Inventory.md\n?? performance/k6/output/baseline-20261022-153159-7wjUk7/\n?? performance/k6/output/baseline-20261022-153210-AtENlr/\n?? performance/k6/output/spike-20261022-160136-6BcKDD/\n?? performance/k6/output/stress-20261022-154235-72mk2x/\n?? performance/verification/\n?? submission/evidence/assignee-b/",
+  "hashes": {
+    "backend\\server.js": "4cd939d54a98bf2b6ed9d089d8a336a75b8f8ea9366200b3ed2fc5b5a53bb0d3",
+    "backend\\database.js": "4a1123f96ebb07b2908d7f48c7fbbce4218f5019d559cd4203e27bf6ef924293",
+    "backend\\package.json": "bc948594c43acf426351d8314ebc61a42590589f5275f159c22f83d570a472d2",
+    "backend\\package-lock.json": "15663a68dea9ceb74b8c0ebb6078f7637977c5368b4f175a10112214f003f205",
+    "performance/k6/spike.js": "112195efa31271dfbbf26ed98d9e36fb20a704e3c6f94a7b7b3af34490158c2d",
+    "performance/k6/data/test_accounts.csv": "27426148d5a4436b40208a7c19186e2956214830fab87ee173f743d4b9318601",
+    "performance/k6/data/seed.js": "f1a57f22ea148e6963f6248630e0d5ada8263a78dcbf8446531098aa51807fef"
+  },
+  "sourceDbHashes": {
+    "backend/database.sqlite": "12e7b3845c1d03820fdda04f9ee9f379cda76065854dacd7a14a52090a2bfc95",
+    "tuned-backend/database_tuned.sqlite": "71a28e79577892fa00244f8d54985933fa6d2797b3ce64ed05f7a2c8ee507590"
+  },
+  "node": "v24.20.0",
+  "k6": "k6.exe v2.2.0 (commit/00a9a1b7f5, go1.26.5, windows/amd64)",
+  "os": {
+    "platform": "win32",
+    "release": "10.0.26200",
+    "arch": "x64",
+    "cpu": "AMD Ryzen 7 5700U with Radeon Graphics         ",
+    "logicalCpu": 16,
+    "totalMemory": 7893950464,
+    "freeMemory": 1205055488
+  },
+  "baseUrl": "http://localhost:3000",
+  "copiedSut": "D:\\university\\software-testing\\seminar\\eshop-sut-main\\performance\\verification\\local-runs\\spike-original-2026-10-23T09-44-14-975Z\\sut",
+  "rawMetrics": "D:\\university\\software-testing\\seminar\\eshop-sut-main\\performance\\verification\\local-runs\\spike-original-2026-10-23T09-44-14-975Z\\metrics.json",
+  "dependencies": "Resolved from existing backend/node_modules via NODE_PATH; original package-lock hashes recorded",
+  "before": {
+    "version": [
+      {
+        "version": "3.52.0"
+      }
+    ],
+    "journal": [
+      {
+        "journal_mode": "delete"
+      }
+    ],
+    "indexes": [],
+    "queryPlan": [
+      {
+        "id": 2,
+        "parent": 0,
+        "notused": 216,
+        "detail": "SCAN products"
+      }
+    ],
+    "counts": [
+      {
+        "users": 52,
+        "products": 5,
+        "orders": 0
+      }
+    ]
+  },
+  "exit": {
+    "code": 99,
+    "signal": null
+  },
+  "after": {
+    "version": [
+      {
+        "version": "3.52.0"
+      }
+    ],
+    "journal": [
+      {
+        "journal_mode": "delete"
+      }
+    ],
+    "indexes": [],
+    "queryPlan": [
+      {
+        "id": 2,
+        "parent": 0,
+        "notused": 216,
+        "detail": "SCAN products"
+      }
+    ],
+    "counts": [
+      {
+        "users": 52,
+        "products": 5,
+        "orders": 4779
+      }
+    ]
+  },
+  "endUtc": "2026-10-23T09:46:52.723Z",
+  "sourceDbUnchanged": true
+}

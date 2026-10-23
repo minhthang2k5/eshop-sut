@@ -1,0 +1,954 @@
+[
+  {
+    "id": "baseline-original-2026-10-23T09-30-08-179Z",
+    "requests": 7203,
+    "groups": [
+      {
+        "phase": "ramp_up",
+        "endpoint": "search",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 342
+      },
+      {
+        "phase": "ramp_up",
+        "endpoint": "detail",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 149
+      },
+      {
+        "phase": "ramp_up",
+        "endpoint": "login",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 38
+      },
+      {
+        "phase": "ramp_up",
+        "endpoint": "cart",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 75
+      },
+      {
+        "phase": "ramp_up",
+        "endpoint": "checkout",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 37
+      },
+      {
+        "phase": "steady",
+        "endpoint": "search",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 3286
+      },
+      {
+        "phase": "steady",
+        "endpoint": "cart",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 844
+      },
+      {
+        "phase": "steady",
+        "endpoint": "login",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 12
+      },
+      {
+        "phase": "steady",
+        "endpoint": "checkout",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 342
+      },
+      {
+        "phase": "steady",
+        "endpoint": "detail",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 1483
+      },
+      {
+        "phase": "ramp_down",
+        "endpoint": "search",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 310
+      },
+      {
+        "phase": "ramp_down",
+        "endpoint": "cart",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 92
+      },
+      {
+        "phase": "ramp_down",
+        "endpoint": "checkout",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 34
+      },
+      {
+        "phase": "ramp_down",
+        "endpoint": "detail",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 159
+      }
+    ]
+  },
+  {
+    "id": "baseline-tuned-2026-10-23T09-37-12-574Z",
+    "requests": 7199,
+    "groups": [
+      {
+        "phase": "ramp_up",
+        "endpoint": "detail",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 175
+      },
+      {
+        "phase": "ramp_up",
+        "endpoint": "search",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 302
+      },
+      {
+        "phase": "ramp_up",
+        "endpoint": "login",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 38
+      },
+      {
+        "phase": "ramp_up",
+        "endpoint": "cart",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 91
+      },
+      {
+        "phase": "ramp_up",
+        "endpoint": "checkout",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 32
+      },
+      {
+        "phase": "steady",
+        "endpoint": "login",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 12
+      },
+      {
+        "phase": "steady",
+        "endpoint": "cart",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 862
+      },
+      {
+        "phase": "steady",
+        "endpoint": "search",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 3283
+      },
+      {
+        "phase": "steady",
+        "endpoint": "detail",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 1431
+      },
+      {
+        "phase": "steady",
+        "endpoint": "checkout",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 384
+      },
+      {
+        "phase": "ramp_down",
+        "endpoint": "search",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 302
+      },
+      {
+        "phase": "ramp_down",
+        "endpoint": "cart",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 85
+      },
+      {
+        "phase": "ramp_down",
+        "endpoint": "detail",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 157
+      },
+      {
+        "phase": "ramp_down",
+        "endpoint": "checkout",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 45
+      }
+    ]
+  },
+  {
+    "id": "smoke-original-2026-10-23T09-29-40-669Z",
+    "requests": 5,
+    "groups": [
+      {
+        "phase": "smoke",
+        "endpoint": "POST /api/login",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 1
+      },
+      {
+        "phase": "smoke",
+        "endpoint": "GET /api/products?search",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 1
+      },
+      {
+        "phase": "smoke",
+        "endpoint": "GET /api/products/:id",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 1
+      },
+      {
+        "phase": "smoke",
+        "endpoint": "POST /api/cart",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 1
+      },
+      {
+        "phase": "smoke",
+        "endpoint": "POST /api/checkout",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "smoke-tuned-2026-10-23T09-29-52-855Z",
+    "requests": 5,
+    "groups": [
+      {
+        "phase": "smoke",
+        "endpoint": "POST /api/login",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 1
+      },
+      {
+        "phase": "smoke",
+        "endpoint": "GET /api/products?search",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 1
+      },
+      {
+        "phase": "smoke",
+        "endpoint": "GET /api/products/:id",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 1
+      },
+      {
+        "phase": "smoke",
+        "endpoint": "POST /api/cart",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 1
+      },
+      {
+        "phase": "smoke",
+        "endpoint": "POST /api/checkout",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "spike-original-2026-10-23T09-44-14-975Z",
+    "requests": 29497,
+    "groups": [
+      {
+        "phase": "hold_50",
+        "endpoint": "search",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 227
+      },
+      {
+        "phase": "hold_50",
+        "endpoint": "login",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 50
+      },
+      {
+        "phase": "hold_50",
+        "endpoint": "detail",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 123
+      },
+      {
+        "phase": "hold_50",
+        "endpoint": "cart",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 118
+      },
+      {
+        "phase": "hold_50",
+        "endpoint": "checkout",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 100
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "login",
+        "status": "0",
+        "errorCode": "1212",
+        "error": "dial: connection refused",
+        "count": 480
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "detail",
+        "status": "0",
+        "errorCode": "1212",
+        "error": "dial: connection refused",
+        "count": 245
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "search",
+        "status": "0",
+        "errorCode": "1212",
+        "error": "dial: connection refused",
+        "count": 479
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "login",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 1450
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "detail",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 5037
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "search",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 9968
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "cart",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 5543
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "checkout",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 4494
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "checkout",
+        "status": "0",
+        "errorCode": "1220",
+        "error": "read: connection reset by peer",
+        "count": 44
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "cart",
+        "status": "0",
+        "errorCode": "1220",
+        "error": "read: connection reset by peer",
+        "count": 51
+      },
+      {
+        "phase": "recovery_1",
+        "endpoint": "cart",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 256
+      },
+      {
+        "phase": "recovery_1",
+        "endpoint": "detail",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 231
+      },
+      {
+        "phase": "recovery_1",
+        "endpoint": "search",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 416
+      },
+      {
+        "phase": "recovery_1",
+        "endpoint": "checkout",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 185
+      }
+    ]
+  },
+  {
+    "id": "spike-original-2026-10-23T10-13-44-617Z",
+    "requests": 29708,
+    "groups": [
+      {
+        "phase": "hold_50",
+        "endpoint": "search",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 230
+      },
+      {
+        "phase": "hold_50",
+        "endpoint": "login",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 50
+      },
+      {
+        "phase": "hold_50",
+        "endpoint": "detail",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 99
+      },
+      {
+        "phase": "hold_50",
+        "endpoint": "cart",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 118
+      },
+      {
+        "phase": "hold_50",
+        "endpoint": "checkout",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 115
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "login",
+        "status": "0",
+        "errorCode": "1212",
+        "error": "dial: connection refused",
+        "count": 474
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "detail",
+        "status": "0",
+        "errorCode": "1212",
+        "error": "dial: connection refused",
+        "count": 266
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "search",
+        "status": "0",
+        "errorCode": "1212",
+        "error": "dial: connection refused",
+        "count": 491
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "cart",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 5569
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "search",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 10148
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "detail",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 5147
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "login",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 1450
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "checkout",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 4388
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "checkout",
+        "status": "0",
+        "errorCode": "1220",
+        "error": "read: connection reset by peer",
+        "count": 29
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "cart",
+        "status": "0",
+        "errorCode": "1220",
+        "error": "read: connection reset by peer",
+        "count": 34
+      },
+      {
+        "phase": "recovery_1",
+        "endpoint": "search",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 461
+      },
+      {
+        "phase": "recovery_1",
+        "endpoint": "checkout",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 177
+      },
+      {
+        "phase": "recovery_1",
+        "endpoint": "detail",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 229
+      },
+      {
+        "phase": "recovery_1",
+        "endpoint": "cart",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 233
+      }
+    ]
+  },
+  {
+    "id": "spike-tuned-2026-10-23T09-46-52-990Z",
+    "requests": 36373,
+    "groups": [
+      {
+        "phase": "hold_50",
+        "endpoint": "search",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 244
+      },
+      {
+        "phase": "hold_50",
+        "endpoint": "detail",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 112
+      },
+      {
+        "phase": "hold_50",
+        "endpoint": "login",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 49
+      },
+      {
+        "phase": "hold_50",
+        "endpoint": "cart",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 125
+      },
+      {
+        "phase": "hold_50",
+        "endpoint": "checkout",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 102
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "search",
+        "status": "0",
+        "errorCode": "1212",
+        "error": "dial: connection refused",
+        "count": 487
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "login",
+        "status": "0",
+        "errorCode": "1212",
+        "error": "dial: connection refused",
+        "count": 444
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "detail",
+        "status": "0",
+        "errorCode": "1212",
+        "error": "dial: connection refused",
+        "count": 231
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "search",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 12840
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "detail",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 6428
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "login",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 1451
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "cart",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 6868
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "checkout",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 5893
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "checkout",
+        "status": "0",
+        "errorCode": "1000",
+        "error": "EOF",
+        "count": 1
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "checkout",
+        "status": "0",
+        "errorCode": "1220",
+        "error": "read: connection reset by peer",
+        "count": 1
+      },
+      {
+        "phase": "recovery_1",
+        "endpoint": "checkout",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 201
+      },
+      {
+        "phase": "recovery_1",
+        "endpoint": "cart",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 237
+      },
+      {
+        "phase": "recovery_1",
+        "endpoint": "search",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 439
+      },
+      {
+        "phase": "recovery_1",
+        "endpoint": "detail",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 220
+      }
+    ]
+  },
+  {
+    "id": "spike-tuned-2026-10-23T10-16-21-556Z",
+    "requests": 36745,
+    "groups": [
+      {
+        "phase": "hold_50",
+        "endpoint": "search",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 232
+      },
+      {
+        "phase": "hold_50",
+        "endpoint": "login",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 50
+      },
+      {
+        "phase": "hold_50",
+        "endpoint": "detail",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 102
+      },
+      {
+        "phase": "hold_50",
+        "endpoint": "cart",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 152
+      },
+      {
+        "phase": "hold_50",
+        "endpoint": "checkout",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 108
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "search",
+        "status": "0",
+        "errorCode": "1212",
+        "error": "dial: connection refused",
+        "count": 474
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "login",
+        "status": "0",
+        "errorCode": "1212",
+        "error": "dial: connection refused",
+        "count": 490
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "detail",
+        "status": "0",
+        "errorCode": "1212",
+        "error": "dial: connection refused",
+        "count": 236
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "search",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 13058
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "login",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 1450
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "detail",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 6534
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "cart",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 7058
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "checkout",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 5703
+      },
+      {
+        "phase": "hold_1500",
+        "endpoint": "checkout",
+        "status": "0",
+        "errorCode": "1220",
+        "error": "read: connection reset by peer",
+        "count": 2
+      },
+      {
+        "phase": "recovery_1",
+        "endpoint": "checkout",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 194
+      },
+      {
+        "phase": "recovery_1",
+        "endpoint": "search",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 436
+      },
+      {
+        "phase": "recovery_1",
+        "endpoint": "cart",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 237
+      },
+      {
+        "phase": "recovery_1",
+        "endpoint": "detail",
+        "status": "200",
+        "errorCode": null,
+        "error": null,
+        "count": 229
+      }
+    ]
+  }
+]

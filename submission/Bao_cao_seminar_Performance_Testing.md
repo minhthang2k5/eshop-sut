@@ -632,19 +632,92 @@ Bộ minh chứng của chương được liệt kê tại mục 9.4, gồm summ
 
 ### 5.1 Môi trường và dữ liệu
 
-[Võ Hữu Thắng điền: phiên bản Java/JMeter, cấu hình máy, dữ liệu CSV và cách chuẩn bị trạng thái SUT.]
+D3 được đo ngày 21/10/2026 trên Windows 10.0.26200 x64, AMD Ryzen 7 5700U, 16 logical CPUs, RAM khoảng 7.35 GiB. Công cụ: Apache JMeter 5.6.3, Temurin Java 17.0.20.1+1, Node.js v24.20.0. SUT và load generator cùng máy; VS Code và JMeter GUI nhàn rỗi cũng mở lúc đo. GUI không nằm trong quy trình nghiệm thu; phát tải và sinh report bằng CLI. Nguồn môi trường: [run-environment.json](../performance/jmeter/results/run-environment.json).
+
+Backend gốc dùng SQLite; reset/restart và chờ seed hoàn tất trước baseline. Dữ liệu gồm 50 account riêng cho 50 threads từ `backend/test-data/test_accounts.csv`, năm sản phẩm ID 1–5 từ `test_products.csv`; các keyword iPhone/Samsung/MacBook/AirPods/Keychron được chọn theo catalog. Account giữ trong cả phiên, mỗi thread login một lần. Bản baseline không áp dụng tuning WAL/index của D8.
+
+Metadata D3 ghi source base commit `db5530bfca1dc7f4e2057fe4ed1a1c3717fbde2d`, thời gian và hash test plan tại lúc đo; không dùng commit hiện tại để thay thế thông tin lịch sử. Raw [baseline.jtl](../performance/jmeter/results/baseline.jtl) và [summary](../performance/jmeter/results/baseline-summary.json) là bằng chứng số liệu.
 
 ### 5.2 Hướng dẫn sử dụng và các kịch bản
 
-[Võ Hữu Thắng điền: cài đặt, chạy test plan cơ bản, chạy workload phức tạp. Mô tả record/playback, data driven, extractor, checkpoint và sinh HTML report.]
+Test plan [eshop_workload.jmx](../performance/jmeter/eshop_workload.jmx) được dựng bằng các sampler/controller và logic đọc CSV; không có bằng chứng đã tạo bằng HTTP recorder nên không nhận là bản record/playback từ trình duyệt. JMeter có thể hỗ trợ quy trình ghi và phát lại HTTP, nhưng thực nghiệm D3 này chạy lại plan được dựng sẵn. Hướng dẫn đầy đủ cho Windows/Linux: [README CLI](../performance/jmeter/README.md).
+
+| Thành phần | Cách triển khai trong D3 |
+| --- | --- |
+| Thread Group | 50 threads, ramp-up 10s, tổng duration 300s bao gồm ramp |
+| Data driven | JSR223 đọc account/product CSV; chọn keyword và product ID ngẫu nhiên cho từng action |
+| Login/correlation | Once Only Controller → `POST /api/login` → Regular Expression Extractor lấy `token` |
+| Xác thực checkout | HTTP Header Manager gửi `Authorization: Bearer ${token}` |
+| Workload | Ba Throughput Controller độc lập, Percent Executions/Per User: Search 55%, Detail 25%, Checkout 20% |
+| Think-time | Uniform random trước request: Search 1–3s, Detail 2–5s, Checkout 3–6s |
+| Checkpoints | HTTP 200; Login có token; Search có kết quả phù hợp keyword; Detail đúng ID; Checkout có orderId hợp lệ |
+| Output | JTL, HTML dashboard; `summarize.cjs` tính actions riêng và SLO |
+
+Chuẩn bị Java/JMeter trong PATH và backend theo README. Từ `performance/jmeter`, ví dụ smoke PowerShell:
+
+```powershell
+$outDir = 'local-runs/smoke-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff')
+New-Item -ItemType Directory -Path $outDir | Out-Null
+jmeter.bat -n -t eshop_workload.jmx -q report.properties -Jusers=1 -Jrampup=1 -Jduration=60 -l "$outDir/smoke.jtl" -j "$outDir/jmeter.log"
+node summarize.cjs "$outDir/smoke.jtl"
+```
+
+Smoke kiểm tra script/CSV/token và assertions; số mẫu ít không đủ đánh giá phân bố workload. Reset/restart backend, chờ seed hoàn tất, rồi chạy baseline bằng thư mục output mới:
+
+```powershell
+$outDir = 'local-runs/baseline-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff')
+New-Item -ItemType Directory -Path $outDir | Out-Null
+jmeter.bat -n -t eshop_workload.jmx -q report.properties -Jusers=50 -Jrampup=10 -Jduration=300 -l "$outDir/baseline.jtl" -j "$outDir/jmeter.log" -e -o "$outDir/jmeter-report"
+node summarize.cjs "$outDir/baseline.jtl" | Tee-Object "$outDir/summary.json"
+```
+
+`-n` chạy CLI, `-t` đọc plan, `-q` đọc cấu hình report, `-J` truyền tham số, `-l` ghi samples, `-j` ghi log, `-e -o` sinh dashboard. Mở `jmeter-report/index.html`; output report phải là thư mục chưa có dữ liệu. Listeners GUI trong plan được disabled. SLO chính thức tính trên actions Search/Detail/Checkout, loại Login; không sửa assertions để biến kết quả fail thành pass.
+
+Workload có login, correlation, nhiều nhánh và dữ liệu ngẫu nhiên là kịch bản phức hợp đã thực hiện. Chưa có bài stress/spike bằng JMeter; D8b phía dưới chạy k6 A và không được gắn nhãn kết quả JMeter.
 
 ### 5.3 Kết quả và đối chiếu với k6
 
 | Run ID | Công cụ | Điều kiện workload | Số request | p95 ms | Error rate | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| [Điền] | [Điền] | [Điền] | [Điền] | [Điền] | [Điền] | [Điền] |
+| D2 `baseline-20261022-110446-eGLTX1`, steady | k6 A | 50 VUs; 300s steady sau ramp 60s | 5925, gồm 6 Login | 8.122 | 0% HTTP | [Summary A](evidence/k6/summaries/baseline-20261022-110446-eGLTX1/summary.json) |
+| D3 baseline 21/10, actions | JMeter B | 50 threads; tổng 300s gồm ramp 10s | 5140, loại Login | 16 | 0% sample failure | [Summary D3](../performance/jmeter/results/baseline-summary.json) |
 
-[Võ Hữu Thắng điền: mức tương đương của dữ liệu, think-time, thời lượng và connection; giải thích khác biệt quan sát được; kết quả xác minh tái lập.]
+| API | D2 steady p95 ms | D3 p95 ms | Lỗi D2 / D3 |
+| --- | ---: | ---: | --- |
+| Search | 3.071 | 5 | 0% / 0% |
+| Detail | 3.031 | 5 | 0% / 0% |
+| Cart | 2.770 | N/A | 0% / N/A |
+| Checkout | 16.006 | 21 | 0% / 0% |
+| Login toàn run, báo riêng | 4.820 (50 mẫu) | 157 (50 mẫu) | 0% / 0% |
+
+D3 actions có p50/p95/p99=2/16/21ms, đạt SLO; toàn test có 5190 samples gồm 50 Login. Search/Detail/Checkout có counts 2840/1283/1017, tỷ lệ 55.253/24.961/19.786%, gần mục tiêu 55/25/20. Throughput actions 17.321 requests/s lấy 5140/296.748s observed span; D2 là 19.750 từ 5925/300s cố định. [HTML D3](../performance/jmeter/results/jmeter-report/index.html) có tổng gồm Login; khi đọc SLO phải giữ đúng phạm vi mẫu.
+
+**Giới hạn so sánh:** D2 có Cart và mix 55/25/14/6, dữ liệu cố định iPhone/ID 1, lazy login, đo steady và chạy Linux. D3 không Cart, checkout 20%, dữ liệu ID 1–5 ngẫu nhiên, login ngay đầu thread, đo cả ramp và chạy Windows. Think-time của API chung cùng khoảng nhưng vị trí timer và cơ chế chọn action khác. JMeter failure bao gồm assertions; k6 tách HTTP error và checks. Percentile JMeter dùng nearest rank trên elapsed ms; k6 dùng `http_req_duration`. Chưa có thí nghiệm kiểm soát connection pooling hoặc đủ metadata reference để quy nguyên nhân. Hai công cụ đều đạt SLO riêng; không dùng tổng khác phạm vi để xếp hạng công cụ.
+
+### 5.4 D8b — Xác minh trên máy B
+
+D8b dùng script **k6 của A**, không phải JMeter. Ngày 23/10, Codex thực hiện trong workspace B trên Windows/PowerShell, k6 2.2.0, Node 24.20.0 và SQLite 3.52.0. Mỗi run dùng SUT bản sao mới và account seed đúng DB; file SQLite nguồn được hash kiểm tra không đổi. Bản gốc journal DELETE; tuned WAL + index; cả hai truy vấn `LIKE '%iPhone%'` vẫn `SCAN products`.
+
+Hai smoke đều đủ 5 requests/10 checks. Baseline gốc/tuned đạt 25/25 thresholds: steady p50/p95/p99 lần lượt 1.806/12.381/16.353 và 1.656/5.524/9.010ms, HTTP lỗi 0%. Spike giữ 50 VUs 30s →1500 VUs 60s →50 VUs recovery 60s được chạy hai lượt mỗi cấu hình:
+
+| Cấu hình / lượt | p95 đỉnh ms | HTTP lỗi đỉnh | Skipped | Thresholds đạt / kết quả |
+| --- | ---: | ---: | ---: | --- |
+| Gốc / 1 | 1948.729 | 4.674% | 480 | 51/63 — FAIL |
+| Gốc / 2 | 1360.578 | 4.622% | 474 | 51/63 — FAIL |
+| Tuned / 1 | 93.402 | 3.360% | 444 | 56/63 — FAIL |
+| Tuned / 2 | 59.286 | 3.434% | 490 | 56/63 — FAIL |
+
+Recovery cả bốn spike đạt SLO trong 60s, HTTP lỗi 0%. Raw metrics ghi lỗi chủ yếu connection refused/reset, không có HTTP 4xx/5xx. A tuned spike PASS (p95 6.849ms, lỗi 0%); B tuned cải thiện latency nhưng vẫn fail error/checks/skipped sau hai lượt. **Đã chạy lại được, baseline và xu hướng latency tái lập một phần; kết quả PASS spike tuned của A chưa tái lập trên B.**
+
+Khác môi trường là giả thuyết cần điều tra, chưa đủ telemetry để kết luận chỉ do máy/Windows hoặc SQLite. SUT và k6 cùng host, reference thiếu snapshot build/DB và phiên bản đầy đủ; chưa tách tác động WAL/index hoặc đối soát từng order sau lỗi transport. Cần đo socket/backlog, event-loop, tài nguyên từng process và DB I/O, rồi chạy kiểm chứng bổ sung. Recovery ngắn không chứng minh ổn định dài hạn.
+
+Run IDs, metadata, logs, source hashes và cách tính: [confirmation report](../performance/verification/verification_report.md), [evidence B](evidence/assignee-b/README.md). Tóm tắt một trang: [performance_report.md](performance_report.md); nội dung trình bày Markdown: [slides_comparison.md](slides_comparison.md).
+
+### 5.5 Cross-run — phạm vi và trạng thái
+
+Cross-run chứng minh thành viên có thể tự chạy script của người khác và đọc kết quả, theo yêu cầu cả nhóm sử dụng được k6 lẫn JMeter. D8b đánh giá khả năng tái lập số liệu; cross-run đánh giá chuyển giao thao tác. Có thể dùng chung evidence nếu ghi đúng người thực hiện. SLO fail không tự làm cross-run fail nếu workload chạy đúng và người chạy giải thích được lỗi.
+
+Các confirmation run hiện có do trợ lý thực thi trên workspace B, chưa được ghi là B/A/C trực tiếp thao tác hoặc xác nhận. Còn cần B xác nhận lượt k6 thực tế và A/C chạy JMeter, kèm người chạy, môi trường, lệnh, run ID, log/summary và nhận xét. Không đánh dấu cross-run toàn nhóm hoàn thành. [Bảng sign-off và hướng dẫn](../performance/verification/cross_run_signoff.md) ghi rõ các mục Pending.
 
 ## 6 Web automation và ứng dụng AI của Trịnh Hồ Minh Thắng
 
@@ -926,7 +999,27 @@ Mỗi bậc dưới đây được giữ 60 giây. Bảng trích một số bậ
 
 ### Bài tập 2 — Võ Hữu Thắng
 
-[Võ Hữu Thắng bổ sung nội dung bài tập và gợi ý thực hiện.]
+#### Tình huống
+
+Bạn nhận kết quả D3: Search 2840 samples, Detail 1283, Checkout 1017; 50 Login báo riêng. Actions p95=16ms, lỗi 0%. Sau đó nhận spike tuned k6 chạy trên Windows: p95 đỉnh=59.286ms, HTTP lỗi=3.434%, skipped=490. Tiêu chí: p95 <500ms, lỗi <1%; k6 còn yêu cầu skipped=0.
+
+#### Thao tác và câu hỏi (5–7 phút)
+
+1. Mở [test plan](../performance/jmeter/eshop_workload.jmx) và xác định các node lấy JWT, gửi Bearer header và kiểm tra response. Dữ liệu CSV tác động tới request nào?
+2. Tính tỷ lệ thực tế Search/Detail/Checkout. Vì sao không tính 50 Login vào mẫu số workload?
+3. D3 có đạt SLO không? Spike tuned có đạt không dù p95 thấp hơn 500ms?
+4. Nếu checkout bị 401, kiểm tra lần lượt phần nào? Có nên bỏ assertion hoặc đưa token vào body để tiếp tục không?
+5. Người khác cần lưu gì để chứng minh cross-run? Kết quả trợ lý chạy trên máy B có đủ để ký xác nhận cả A/B/C không?
+
+Tùy thời gian có thể chạy smoke 1 user/60s bằng lệnh ở mục 5.2 trên SUT test riêng; dùng output mới, chờ backend seed hoàn tất, không ghi đè artifact baseline. Không yêu cầu phát lại spike 1500 VUs trong bài tập.
+
+#### Gợi ý đánh giá
+
+- Once Only Controller/login → Regex Extractor `token` → checkout Header Manager; assertions kiểm tra status/body. Account giữ theo thread; keyword, product ID và giá checkout lấy từ CSV.
+- Mẫu số actions=5140: tỷ lệ 55.253/24.961/19.786%. Login là lưu lượng khởi tạo, không thuộc ba action được phân bổ.
+- D3 PASS; spike tuned FAIL do error >1% và skipped khác 0. Không nhìn riêng p95 hoặc throughput để kết luận đạt.
+- Với 401: kiểm tra account/seed, response login, extractor, biến token và Bearer header; giữ assertions. SUT yêu cầu token trong Authorization header; không đưa token/password vào evidence.
+- Cross-run cần người thực sự thao tác, phiên bản/môi trường, lệnh, run ID và output; nhận xét kết quả có căn cứ. Các run trợ lý là evidence kỹ thuật, chưa thay sign-off của thành viên.
 
 ### Bài tập 3 — Đánh giá hai script k6 bằng web automation
 
@@ -1084,7 +1177,7 @@ Các commit là bằng chứng thay đổi source, không tự thay thế bằng
 
 ### 8.3 Tổng hợp của nhóm
 
-Kết quả k6 ở chương 4 xác nhận baseline đạt SLO và spike cải thiện trong các run đối chiếu, đồng thời chỉ ra stress 2800 VUs sau tune vẫn vi phạm latency. Các kết luận giới hạn trong workload đã đo, với một lần đo mỗi cấu hình và tài nguyên quan sát thủ công. Phần tổng hợp liên công cụ chờ kết quả JMeter ở chương 5; chưa dùng các run khác workload để xếp hạng hiệu năng công cụ.
+Kết quả k6 ở chương 4 xác nhận baseline đạt SLO và spike cải thiện trong các run A đối chiếu, đồng thời chỉ ra stress 2800 VUs sau tune vẫn vi phạm latency. Chương 5 bổ sung D3 JMeter đạt SLO cho workload đã đo, với dữ liệu/mix/cửa sổ khác D2 nên chưa dùng để xếp hạng công cụ. D8b trên Windows B tái lập baseline và xu hướng latency, nhưng hai lượt spike tuned vẫn fail lỗi/checks/skipped, khác kết quả PASS của A. Kết luận giới hạn theo môi trường và số lượt thực đo; cross-run toàn nhóm còn chờ sign-off trực tiếp như mục 5.5.
 
 ## 9 Tài liệu tham khảo và chỉ mục evidence
 

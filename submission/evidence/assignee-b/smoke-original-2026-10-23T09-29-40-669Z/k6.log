@@ -1,0 +1,79 @@
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+
+     execution: local
+        script: D:\university\software-testing\seminar\eshop-sut-main\performance\k6\smoke.js
+        output: json (D:\university\software-testing\seminar\eshop-sut-main\performance\verification\local-runs\smoke-original-2026-10-23T09-29-40-669Z\metrics.json)
+
+     scenarios: (100.00%) 1 scenario, 1 max VUs, 10m30s max duration (incl. graceful stop):
+              * default: 1 iterations shared among 1 VUs (maxDuration: 10m0s, gracefulStop: 30s)
+
+
+running (00m01.0s), 1/1 VUs, 0 complete and 0 interrupted iterations
+default   [   0% ] 1 VUs  00m01.0s/10m0s  0/1 shared iters
+
+running (00m02.0s), 1/1 VUs, 0 complete and 0 interrupted iterations
+default   [   0% ] 1 VUs  00m02.0s/10m0s  0/1 shared iters
+
+running (00m03.0s), 1/1 VUs, 0 complete and 0 interrupted iterations
+default   [   0% ] 1 VUs  00m03.0s/10m0s  0/1 shared iters
+
+running (00m04.0s), 1/1 VUs, 0 complete and 0 interrupted iterations
+default   [   0% ] 1 VUs  00m04.0s/10m0s  0/1 shared iters
+
+running (00m05.0s), 1/1 VUs, 0 complete and 0 interrupted iterations
+default   [   0% ] 1 VUs  00m05.0s/10m0s  0/1 shared iters
+
+
+  █ THRESHOLDS 
+
+    checks
+    ✓ 'rate==1.0' rate=100.00%
+
+    http_req_duration
+    ✓ 'p(95)<500' p(95)=39.42ms
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 10      1.964065/s
+    checks_succeeded...: 100.00% 10 out of 10
+    checks_failed......: 0.00%   0 out of 10
+
+    ✓ login: status is 200
+    ✓ login: token exists
+    ✓ search: status is 200
+    ✓ search: return array of products
+    ✓ detail: status is 200
+    ✓ detail: product has correct id
+    ✓ cart: status is 200
+    ✓ cart: message added to cart
+    ✓ checkout: status is 200
+    ✓ checkout: orderId exists
+
+    HTTP
+    http_req_duration..............: avg=14.05ms min=2.65ms med=4.73ms max=45.82ms p(90)=33.03ms p(95)=39.42ms
+      { expected_response:true }...: avg=14.05ms min=2.65ms med=4.73ms max=45.82ms p(90)=33.03ms p(95)=39.42ms
+    http_req_failed................: 0.00%  0 out of 5
+    http_reqs......................: 5      0.982033/s
+
+    EXECUTION
+    iteration_duration.............: avg=5.09s   min=5.09s  med=5.09s  max=5.09s   p(90)=5.09s   p(95)=5.09s  
+    iterations.....................: 1      0.196407/s
+    vus............................: 1      min=1      max=1
+    vus_max........................: 1      min=1      max=1
+
+    NETWORK
+    data_received..................: 2.1 kB 418 B/s
+    data_sent......................: 1.1 kB 210 B/s
+
+
+
+
+running (00m05.1s), 0/1 VUs, 1 complete and 0 interrupted iterations
+default ✓ [ 100% ] 1 VUs  00m05.1s/10m0s  1/1 shared iters
