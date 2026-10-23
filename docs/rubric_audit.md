@@ -1,8 +1,10 @@
 # Rubric Audit — AI-generated k6 Scripts
 
-**Mục đích:** chấm script k6 do ChatGPT và Claude sinh từ cùng HAR đã redacted và cùng prompt.
+**Mục đích:** đánh giá hai script k6 từ HAR đã redacted và prompt theo cùng contract. Giao diện dùng Script 1 / Script 2, không gắn cứng nhà cung cấp; hai artifact thực tế hiện có là Gemini và Claude.
 
 **Quy ước:** mỗi tiêu chí đạt = **1 điểm**, không đạt = **0 điểm**. Tổng tối đa: **10 điểm/script**.
+
+**Cách triển khai:** web `test-web-performance/` chấm source bằng Acorn, chạy k6 smoke, lưu evidence và cho phép người chấm duyệt điểm. Cách viết tương đương qua hàm hỗ trợ/hằng số được phân tích; trường hợp chưa nhận diện cần đối chiếu source. Kết quả 1 iteration chỉ chứng minh nhánh đã chạy. AI nhận xét và đề xuất threshold/correlation không tự đổi điểm.
 
 ## Thông tin lần chấm
 
@@ -16,7 +18,7 @@
 
 ## Tiêu chí chấm
 
-| # | Tiêu chí | Đạt khi | Điểm ChatGPT | Điểm Claude | Bằng chứng / lỗi phát hiện |
+| # | Tiêu chí | Đạt khi | Điểm Script 1 | Điểm Script 2 | Bằng chứng / lỗi phát hiện |
 | --- | --- | --- | :---: | :---: | --- |
 | 1 | Endpoint tồn tại thật | Chỉ dùng `POST /api/login`, `GET /api/products?search=…`, `GET /api/products/:id` với ID 1–5, và `POST /api/checkout`; không dùng `/api/auth/login` hay `/api/orders`. |  |  |  |
 | 2 | Method và body đúng | Login gửi `email`, `password`; checkout gửi tối thiểu `total_amount`, `shipping_address`; JSON POST được `JSON.stringify()`. |  |  |  |
@@ -34,8 +36,8 @@
 
 | Script | Lệnh chạy | Kết quả | Lỗi HTTP/runtime | Ghi chú |
 | --- | --- | --- | --- | --- |
-| `chatgpt_script.js` | `k6 run chatgpt_script.js` | Pass / Fail |  |  |
-| `claude_script.js` | `k6 run claude_script.js` | Pass / Fail |  |  |
+| `gemini_script_real.js` | `k6 run gemini_script_real.js` | Pass / Fail |  |  |
+| `claude_scipt_real.js` | `k6 run claude_scipt_real.js` | Pass / Fail |  |  |
 
 ## Mẫu ghi lỗi để sửa ở D6
 

@@ -1,0 +1,125 @@
+{
+  "auditId": "AUD-20261023-CD3D6B",
+  "auditCreatedAt": "2026-10-23T01:56:34.660Z",
+  "model": "gpt-5.6-luna",
+  "generatedAt": "2026-10-23T01:57:54.057Z",
+  "reasoningEffort": "medium",
+  "summary": "Cả hai script đều smoke pass với 1 VU x 1 iteration, nhưng mỗi lần chạy chỉ thực hiện login và một nhánh ngẫu nhiên nên chưa chứng minh được hành vi của toàn bộ flow. Script 1 ghi nhận p(95) HTTP 120.34ms, checks 100% và failed request 0%; Script 2 ghi nhận p(95) 28ms, checks 100% và failed request 0%. Các ngưỡng dưới đây là điểm khởi đầu tạm thời, không phải SLO đã được chứng minh.",
+  "thresholds": [
+    {
+      "script": "chatgpt_script.js",
+      "metric": "http_req_duration",
+      "expression": "p(95)<400",
+      "reason": "Đặt biên cao hơn đáng kể so với p(95) đo được 120.34ms để tránh biến smoke một mẫu thành baseline quá chặt, nhưng vẫn phát hiện suy giảm rõ rệt ở độ trễ tổng thể.",
+      "evidence": "Smoke ghi nhận http_req_duration p(95)=120.34ms, max=125.71ms trên 2 request; source hiện dùng p(95)<500.",
+      "confidence": "low",
+      "validation": "Chạy tối thiểu 10-15 phút với nhiều VU, phân bố đủ search/detail/checkout; xem p(50), p(90), p(95), p(99) riêng theo endpoint trước khi chốt ngưỡng."
+    },
+    {
+      "script": "chatgpt_script.js",
+      "metric": "checks",
+      "expression": "rate>=0.99",
+      "reason": "Giữ yêu cầu tối thiểu 99% check thành công vì script kiểm tra status, token và orderId; một lỗi nghiệp vụ nên làm giảm chất lượng flow dù HTTP request có thể không bị đánh dấu failed.",
+      "evidence": "Smoke có 3/3 checks thành công, rate=100%; source có check cho login, search, detail và checkout.",
+      "confidence": "low",
+      "validation": "Chạy đủ các nhánh với hàng trăm hoặc hàng nghìn check, đồng thời kiểm tra riêng tỷ lệ thành công của login, search, detail và checkout để tránh một nhánh ít xuất hiện che khuất lỗi."
+    },
+    {
+      "script": "chatgpt_script.js",
+      "metric": "http_req_failed",
+      "expression": "rate<0.01",
+      "reason": "Giới hạn lỗi request dưới 1% phù hợp với flow có login và các request nghiệp vụ; đây là ngưỡng khởi điểm bảo thủ khi chưa có yêu cầu SLA chính thức.",
+      "evidence": "Smoke ghi nhận 0/2 request lỗi, rate=0%; source hiện dùng rate<0.01.",
+      "confidence": "low",
+      "validation": "Chạy tải ổn định và tải tăng dần, kiểm tra lỗi theo status code và theo nhánh; xác nhận các lỗi ứng dụng 4xx/5xx có được k6 phân loại đúng theo expected response hay không."
+    },
+    {
+      "script": "claude_script.js",
+      "metric": "http_req_duration",
+      "expression": "p(95)<300",
+      "reason": "Giá trị này nới rộng so với p(95) smoke 28ms để phù hợp với biến thiên khi tăng tải, nhưng vẫn thấp hơn đáng kể mức 500ms đang có trong source.",
+      "evidence": "Smoke ghi nhận p(95)=28ms, max=29.35ms trên 2 request; chỉ có login và search được thực thi trong lần chạy này.",
+      "confidence": "low",
+      "validation": "Chạy load test có đủ login, search, detail và checkout; thu thập phân vị theo tag name đã được source gắn cho từng request rồi điều chỉnh ngưỡng global hoặc endpoint-specific."
+    },
+    {
+      "script": "claude_script.js",
+      "metric": "checks",
+      "expression": "rate>=0.99",
+      "reason": "Script có nhiều kiểm tra hơn Script 1, bao gồm JSON hợp lệ và dữ liệu token/orderId; yêu cầu 99% giúp phát hiện lỗi nghiệp vụ hoặc schema mà chỉ kiểm tra HTTP status không thấy.",
+      "evidence": "Smoke có 4/4 checks thành công, rate=100%; source kiểm tra status, JSON, token và orderId.",
+      "confidence": "low",
+      "validation": "Chạy với số lượng iteration đủ lớn và ép quan sát cả ba nhánh; bổ sung phân tích tỷ lệ check theo tên check để xác định lỗi JSON, token hay orderId."
+    },
+    {
+      "script": "claude_script.js",
+      "metric": "http_req_failed",
+      "expression": "rate<0.01",
+      "reason": "Giới hạn dưới 1% lỗi request là điểm bắt đầu phù hợp cho API flow có xác thực và checkout, trong khi chưa có baseline dưới tải thực tế.",
+      "evidence": "Smoke ghi nhận 0/2 request lỗi, rate=0%; source hiện dùng rate<0.01.",
+      "confidence": "low",
+      "validation": "Thực hiện soak và stress test, theo dõi failed request theo từng tag name gồm login, search, detail và checkout; đối chiếu với log server để phân biệt lỗi ứng dụng và lỗi hạ tầng."
+    }
+  ],
+  "correlations": [
+    {
+      "script": "chatgpt_script.js",
+      "variable": "token",
+      "extractFrom": "Response JSON của POST /api/login, field token",
+      "injectInto": "Header Authorization của POST /api/checkout dưới dạng Bearer <token>",
+      "finding": "Script đã parse JSON, kiểm tra token là chuỗi không rỗng, lưu vào biến token và dùng trong header checkout. Tuy nhiên smoke chỉ chạy nhánh search nên runtime chưa chứng minh token đã được inject vào checkout.",
+      "suggestion": "Giữ cơ chế extract hiện tại; thêm guard rõ ràng cho kiểu dữ liệu và status trước khi checkout. Chạy lặp đủ nhiều để chắc chắn nhánh checkout thực sự gửi header chứa token hợp lệ.",
+      "evidence": "Source có loginJson.token, biến token và Authorization: Bearer ${token}; smoke chỉ ghi nhận login và search, không có request checkout.",
+      "confidence": "high"
+    },
+    {
+      "script": "chatgpt_script.js",
+      "variable": "orderId",
+      "extractFrom": "Response JSON của POST /api/checkout, field orderId",
+      "injectInto": "Không inject vào request tiếp theo; chỉ dùng trong check",
+      "finding": "Script parse response checkout và kiểm tra orderId khác null/undefined, nhưng không lưu hoặc sử dụng giá trị này cho flow tiếp theo.",
+      "suggestion": "Nếu nghiệp vụ có bước sau checkout, lưu orderId vào biến và inject vào endpoint tiếp theo; nếu không có bước sau thì giữ check hiện tại nhưng chạy riêng nhánh checkout để xác nhận schema thực tế.",
+      "evidence": "Source có checkoutJson.orderId trong check; không có request nào sau checkout sử dụng orderId. Smoke không chạy checkout.",
+      "confidence": "high"
+    },
+    {
+      "script": "claude_script.js",
+      "variable": "token",
+      "extractFrom": "Response JSON của POST /api/login, field token",
+      "injectInto": "Header Authorization của POST /api/checkout dưới dạng Bearer <token>",
+      "finding": "Script có hàm login trả về body.token sau khi kiểm tra status, JSON và token; hàm checkout nhận token và gửi qua Authorization. Smoke chưa đi qua checkout nên mới chỉ xác nhận token tồn tại trong login, chưa xác nhận correlation end-to-end.",
+      "suggestion": "Giữ hàm login làm nguồn duy nhất của token, dừng iteration khi token không hợp lệ như hiện tại, và chạy nhiều iteration hoặc điều khiển seed/branch để xác nhận checkout luôn nhận đúng token.",
+      "evidence": "Source có return body.token trong login, checkout(token), và Authorization: Bearer ${token}; smoke chỉ có các check login và search.",
+      "confidence": "high"
+    },
+    {
+      "script": "claude_script.js",
+      "variable": "orderId",
+      "extractFrom": "Response JSON của POST /api/checkout, field orderId",
+      "injectInto": "Không inject vào request tiếp theo; chỉ dùng trong check",
+      "finding": "Script parse body checkout và kiểm tra hasValue(body.orderId), nhưng không lưu orderId hoặc dùng nó cho bước sau.",
+      "suggestion": "Nếu flow thực tế cần truy vấn hoặc xác nhận đơn hàng, lưu orderId sau khi check thành công và truyền vào request tiếp theo; nếu checkout là bước cuối thì check hiện tại là đủ nhưng cần runtime evidence của nhánh này.",
+      "evidence": "Source có body.orderId trong check checkout: orderId exists; không có request tiếp theo tham chiếu orderId. Smoke không thực hiện checkout.",
+      "confidence": "high"
+    }
+  ],
+  "limitations": [
+    "Cả hai evidence chỉ là smoke 1 VU x 1 iteration; đây chưa phải baseline hiệu năng và mọi ngưỡng số đều có confidence low.",
+    "Mỗi smoke chỉ thực hiện login và nhánh search; chưa có runtime evidence cho product detail hoặc checkout.",
+    "Số mẫu HTTP chỉ là 2 request mỗi script, nên p(95), max và tỷ lệ lỗi không đủ đại diện cho tải thực tế.",
+    "Branch selection là ngẫu nhiên; tỷ lệ 55% search, 25% detail và 20% checkout được khai báo trong source nhưng chưa được kiểm chứng qua phân bố runtime.",
+    "Log không cung cấp latency riêng cho từng endpoint; Script 2 có tag name nhưng chưa có số liệu đủ lớn để đề xuất threshold endpoint-specific đáng tin cậy.",
+    "Không có SLO, mục tiêu tải, kích thước dữ liệu, giới hạn hạ tầng hoặc baseline lịch sử nên chưa thể kết luận các ngưỡng đề xuất là tiêu chuẩn chấp nhận chính thức.",
+    "Runtime smoke pass chỉ chứng minh lần chạy đó không có request/check thất bại; không chứng minh correlation token-to-checkout hoặc orderId hoạt động end-to-end."
+  ],
+  "scriptMapping": [
+    {
+      "storageName": "chatgpt_script.js",
+      "originalName": "gemini_script_real.js"
+    },
+    {
+      "storageName": "claude_script.js",
+      "originalName": "claude_scipt_real.js"
+    }
+  ]
+}

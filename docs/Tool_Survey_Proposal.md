@@ -4,8 +4,10 @@
 - **Giai đoạn nộp:** Stage S1
 - **Nhóm:** 3 thành viên (A, B, C), kế hoạch thực hiện 3 tuần
 - **Công cụ traditional:** k6 (chính) + Apache JMeter (phụ)
-- **Hướng AI:** ChatGPT + Claude (sinh script từ HAR/log) + Grafana k6 AI (correlation/threshold)
-- **Chi phí:** toàn bộ công cụ dùng bản miễn phí / mã nguồn mở / free tier
+- **Hướng AI hiện tại của C:** hai script Gemini/Claude từ HAR; web audit React/Express chạy Acorn + k6; ChatGPT kết nối Luna để nhận xét và đề xuất threshold/correlation.
+- **Chi phí:** k6, JMeter và mã nguồn web dùng công cụ mã nguồn mở; phần AI phụ thuộc quyền tài khoản/dịch vụ được sử dụng.
+
+**Phạm vi thực hiện của C ngày 23/10/2026:** D1 là HAR và chuẩn bị input; D5 là hai script thực tế `gemini_script_real.js` và `claude_scipt_real.js`; D6 là web audit 10 tiêu chí, chạy smoke, duyệt điểm và xuất scorecard; D7 là Luna đề xuất threshold/correlation thành bảng. Phần C trong báo cáo chính dùng phạm vi này; các bảng kế hoạch ban đầu bên dưới được đọc cùng bản phân công cập nhật. Báo cáo và evidence: `submission/Bao_cao_seminar_Performance_Testing.md`.
 
 ---
 
@@ -18,9 +20,9 @@
 | **Locust** | Chỉ so sánh trên giấy, không chạy | Miễn phí | Không chọn vì nhóm đã có 2 công cụ; thêm công cụ thứ ba làm loãng thời gian của 3 người trong 3 tuần. |
 | Chrome DevTools (tab Network) | Capture HAR từ phiên thao tác thật trên frontend-web (`http://localhost:5173`) | Miễn phí | Có sẵn trong trình duyệt, không cần cài thêm. |
 | k6 Studio hoặc `har-to-k6` *(tùy chọn — cần kiểm tra còn hoạt động)* | Chuyển HAR → k6 theo cách phi-AI để làm mốc so sánh với script AI | Mã nguồn mở, miễn phí | Có mốc "máy móc không AI" thì mới đánh giá được AI hơn/kém ở đâu. **Cảnh báo:** k6 Studio đã ngừng phát triển riêng; `har-to-k6` cần kiểm tra npm còn dùng được không trước khi demo. Nếu cài không được thì bỏ, không ảnh hưởng demo chính. |
-| **ChatGPT** (free tier) | AI #1: sinh k6 script "realistic shopping" từ HAR/fake log | Free tier | Đúng gợi ý của brief; dùng chung prompt với Claude để so sánh. |
-| **Claude** (free tier) | AI #2: sinh script từ cùng input, đối chiếu chất lượng với ChatGPT | Free tier | Brief ghi "ChatGPT / Claude"; so sánh 2 mô hình trên cùng rubric cho kết quả thuyết phục hơn dùng một. |
-| **Grafana k6 AI** *(tùy chọn — phụ thuộc quota)* | AI #3: gợi ý correlation và threshold từ lần chạy trước | Grafana Cloud free/trial — **cần kiểm tra quota còn khả dụng** | Phụ thuộc quota và tình trạng dịch vụ; luôn chuẩn bị bản ghi/screenshot dự phòng (mục 9). Nếu không dùng được thì thay bằng phân tích thủ công kết quả k6. |
+| **Gemini** | Sinh script đầu vào thực tế từ HAR và prompt | Phụ thuộc tài khoản | Artifact: `gemini_script_real.js`; đánh giá cùng rubric với Claude. |
+| **Claude** | Sinh script đầu vào thực tế từ HAR và prompt | Phụ thuộc tài khoản | Artifact: `claude_scipt_real.js`; giữ nguyên source để audit. |
+| **Luna qua kết nối ChatGPT** | Nhận xét source và đề xuất threshold/correlation trên web | Phụ thuộc quyền tài khoản | Source + k6 evidence được gửi cho model; output JSON được kiểm tra rồi hiển thị thành bảng. |
 | Akamas | Chỉ thảo luận (discuss only) | Không chạy | Brief không yêu cầu chạy. Nhóm dùng phần tinh chỉnh SQLite thủ công (D8) làm ví dụ minh họa ý tưởng "tune tham số DB". |
 | Task Manager / Resource Monitor, SQLite CLI | Theo dõi CPU/RAM của Node và k6 khi chạy; kiểm tra query chậm bằng `EXPLAIN QUERY PLAN` | Có sẵn | Để giải thích nguyên nhân suy giảm, không chỉ báo con số. |
 
@@ -80,9 +82,9 @@ Brief yêu cầu demo có ít nhất 1 tính năng traditional và 1 tính năng
 | D2 | k6 baseline viết tay (k6) | Viết script k6 với: (1) hàm `login()`: `POST /api/login`, extract field `token` từ JSON response; (2) hàm `search()`: `GET /api/products?search=${tukhoa_ngaunhien}`; (3) hàm `detail()`: `GET /api/products/${id_ngaunhien_1_5}`; (4) hàm `checkout()`: `POST /api/checkout` với header `Authorization: Bearer ${token}`; chọn luồng theo % mục 3; dữ liệu từ `SharedArray`; `checks` kiểm tra status 200 và field `token`/`orderId`; thresholds `p(95)<500` và `checks>=0.99`; chạy: `k6 run --vus 50 --duration 5m script.js` | Terminal summary và web dashboard (`k6 run --out web-dashboard`) xuất HTML với p50/p95/p99, error rate; so với SLO thresholds | A |
 | D3 | JMeter dựng lại workload (JMeter) | Thread Group 50 users, ramp-up 10 giây; Throughput Controller chia % như mục 3; Regular Expression Extractor lấy field `token` từ response `POST /api/login`; HTTP Header Manager set `Authorization: Bearer ${token}`; Response Assertion kiểm tra status 200; chạy CLI: `jmeter -n -t eshop_workload.jmx -e -o ./jmeter-report` | HTML report JMeter trong `./jmeter-report`; bảng đối chiếu p95/error với kết quả k6; giải thích chênh lệch | B |
 | D4 | Spike và Stress (k6) | Chạy profile Spike (50→500 VU / 30s, giữ 1 phút, về 50 trong 1 phút) và Stress (50→400 VU từng bậc 2 phút) theo mục 4; mở Task Manager theo dõi CPU/RAM của `node server.js`; sau khi chạy, mở SQLite CLI chạy `EXPLAIN QUERY PLAN SELECT * FROM products WHERE name LIKE '%iPhone%'` để chỉ ra full-table scan (không có index trên cột `name`) | Biểu đồ VU và latency đồng thời; bậc tải p95 vượt 500ms; dự đoán `POST /api/checkout` gây lỗi trước (writer-lock DB), sau đó tìm kiếm LIKE; ảnh chụp Task Manager khi spike đỉnh | A |
-| D5 | AI sinh script (ChatGPT và Claude) | Đưa cùng HAR từ D1 (đã ẩn password, thay token bằng `<REDACTED>`) và cùng prompt vào cả hai AI: *"Sinh k6 script realistic shopping cho EShop: base URL http://localhost:3000, 3 luồng (search 55%, detail 25%, checkout 20%), correlation token từ POST /api/login (field 'token' trong JSON), header Authorization Bearer cho /api/checkout, dữ liệu tham số hóa (từ khóa: iPhone/Samsung/MacBook/AirPods/Keychron; ID sản phẩm 1-5), think-time, thresholds p95<500ms"* | Hai script AI (chạy thử hoặc ghi rõ lỗi phát sinh) và so sánh bằng rubric mục 6 với script viết tay D2 | C |
-| D6 | Audit và sửa script AI | Chấm 2 script AI theo rubric 10 tiêu chí (mục 6); chỉ ra lỗi thường gặp: endpoint sai (ví dụ AI sinh `/api/auth/login` không tồn tại trong SUT; hoặc `/api/orders` thay vì `/api/checkout`); thiếu header `Authorization: Bearer ${token}` cho `POST /api/checkout` → trả 401; ID sản phẩm cứng ngoài dải 1–5; thiếu think-time; tỷ lệ checkout sai; sửa và chạy lại ở 50 VU 2 phút | Bảng điểm trước/sau audit (10 tiêu chí × 2 AI); số liệu p95 trước/sau sửa; diff script | C + B |
-| D7 | Grafana k6 AI (tùy chọn) | Nếu quota Grafana Cloud còn: đưa script đã sửa và kết quả JSON các lần chạy lên Grafana Cloud k6; lấy gợi ý threshold và correlation; áp dụng vào script. Nếu hết quota: trình bày gợi ý từ bản ghi/screenshot đã chụp sẵn. | Ảnh chụp gợi ý Grafana k6 AI (hoặc bản ghi dự phòng), diff script trước/sau, kết quả chạy lại; ghi rõ nếu dùng bản ghi thay live demo | C |
+| D5 | Hai script Gemini và Claude | HAR và prompt chuẩn làm đầu vào sinh script; lưu hai source thực tế trong samples. | Hai file nguyên bản và tên file hiển thị trên web | C |
+| D6 | Web audit và duyệt điểm | Acorn phân tích source; k6 chạy smoke 1 VU x 1 iteration; đọc metric, hiển thị rubric và cho phép duyệt điểm. | Scorecard, log/summary và ảnh web; bộ test evaluator | C |
+| D7 | Luna gợi ý hiệu năng | Prompt cố định cấu trúc JSON; Luna tự đề xuất threshold/correlation theo source và evidence. | JSON output và bảng gợi ý trên web | C |
 | D8 | Tinh chỉnh SQLite thủ công (mở rộng, k6) | **Trên bản sao SUT** (copy thư mục backend, đổi tên DB thành `database_tuned.sqlite`): (1) mở SQLite CLI: `CREATE INDEX idx_products_name ON products(name);`; (2) bật WAL: `PRAGMA journal_mode=WAL;` (tách read/write lock, giúp đọc song song với ghi); (3) chạy lại k6 baseline 50 VU 5 phút và spike 50→500 VU; đối chiếu với kết quả D2/D4 trên bản gốc. Lưu ý: LIKE `'%keyword%'` với index vẫn là full-scan (chỉ prefix LIKE mới dùng index); WAL chủ yếu giúp luồng đọc (search, detail) song song với checkout mà không bị block. | So sánh p95/error trước và sau; giải thích tại sao WAL giúp luồng đọc nhưng ít giúp checkout; nối với ý tưởng Akamas (discuss only) | B + A |
 
 **Bản rút gọn cho screencast 5–8 phút (Stage S4):** D1 (30 giây) → D2 (2 phút) → D4 spike (1,5 phút) → D5+D6 (2 phút) → D7 (1 phút). D3 và D8 để trong user guide và slides.
@@ -121,8 +123,8 @@ Mỗi tiêu chí 0/1 điểm, tổng 10:
 | Tuần | Thành viên A (k6, stress/spike) | Thành viên B (JMeter, dữ liệu, SUT) | Thành viên C (AI, HAR, báo cáo) |
 | --- | --- | --- | --- |
 | 1 | Cài k6; dựng SUT local: `cd backend && node database.js` (seed), sau đó `node server.js`; viết smoke script 4 luồng với endpoint thật; xác nhận correlation token hoạt động | Dựng SUT local; tạo bộ dữ liệu test (CSV 50 tài khoản, danh sách từ khóa, ID 1–5); viết script seed và reset DB; xác nhận endpoint bằng curl/Postman; hoàn thiện proposal | Capture HAR (D1) trên `http://localhost:5173`; soạn prompt chuẩn cho AI kèm spec endpoint thật; xây dựng rubric mục 6; hoàn thiện proposal phần AI |
-| 2 | D2 baseline 50 VU 5 phút; D4 spike 50→500 VU và stress 50→400 VU; ghi lại số liệu p50/p95/p99 | D3: dựng file `eshop_workload.jmx`, Regular Expression Extractor lấy token từ `POST /api/login`, chạy CLI `jmeter -n -t eshop_workload.jmx -e -o ./jmeter-report`; đối chiếu số liệu với D2 | D5: đưa HAR + prompt vào ChatGPT và Claude; thu hai script; chạy smoke 1 VU; bắt đầu D6 chấm rubric |
-| 3 | D8 (trên bản sao SUT): tạo index, bật WAL, chạy lại baseline và spike; chạy chính thức lấy số liệu cuối; hỗ trợ quay screencast | D8 (kiểm tra tính tái lập kết quả); viết 1-page performance report; chuẩn bị slides đối chiếu D2/D3 | D6 hoàn tất (sửa script AI, so sánh trước/sau); D7 Grafana k6 AI (hoặc dự phòng bản ghi); tổng hợp failure modes; dựng screencast |
+| 2 | D2 baseline 50 VU 5 phút; D4 spike 50→500 VU và stress 50→400 VU; ghi lại số liệu p50/p95/p99 | D3: dựng file `eshop_workload.jmx`, Regular Expression Extractor lấy token từ `POST /api/login`, chạy CLI `jmeter -n -t eshop_workload.jmx -e -o ./jmeter-report`; đối chiếu số liệu với D2 | D5/D6: hai script Gemini/Claude, React/Express audit, k6 smoke và rubric |
+| 3 | D8 (trên bản sao SUT): tạo index, bật WAL, chạy lại baseline và spike; chạy chính thức lấy số liệu cuối; hỗ trợ quay screencast | D8 (kiểm tra tính tái lập kết quả); viết 1-page performance report; chuẩn bị slides đối chiếu D2/D3 | D6/D7: hoàn thiện evaluator, Luna JSON, kiểm thử hồi quy và báo cáo Markdown có evidence |
 
 Khối lượng vừa sức: mỗi tuần mỗi người tập trung 1–2 demo item + task hỗ trợ chung. Tuần 3 có D8 chia cho cả A và B vì cần so sánh song song (A chạy, B xác nhận tái lập).
 
@@ -132,7 +134,7 @@ Chéo vai trò: cuối tuần 3 mỗi thành viên tự chạy script của ngư
 
 ## 9. Rủi ro và phương án dự phòng
 
-- **Hết quota Grafana k6 AI / lỗi mạng:** dùng screenshot và bản ghi đã chuẩn bị từ lần chạy trước; hoặc thay bằng phân tích thủ công output JSON của k6.
+- **Phiên ChatGPT hết hạn hoặc lỗi mạng:** hiển thị lỗi kết nối AI; audit bằng rule/k6 và tải scorecard vẫn sử dụng được.
 - **Backend sập khi spike 500 VU:** giữ sẵn lệnh reset (`node backend/database.js` seed lại; `node backend/server.js` restart); giảm đỉnh xuống 200–300 VU nếu máy không đủ tài nguyên và ghi rõ trong báo cáo.
 - **AI sinh script sai endpoint (ví dụ `/api/auth/login` hoặc `/api/orders`):** ghi nhận đó là kết quả thực nghiệm (tính vào rubric tiêu chí 1), sửa tay và chạy lại để có số liệu so sánh trước/sau.
 - **Không cài được k6 Studio / har-to-k6:** bỏ mốc "phi-AI", chỉ so sánh với script viết tay D2.

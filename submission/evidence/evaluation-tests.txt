@@ -1,0 +1,24 @@
+✔ logout disconnects the app, preserves host identity, and can be repeated (21.0347ms)
+✔ an in-flight token refresh cannot restore a logged-out profile (15.4939ms)
+✔ accepts dynamic thresholds, nullable recommendations, and correlation fields (4.9076ms)
+✔ rejects invalid JSON, unknown scripts, missing fields and missing script coverage (2.0864ms)
+✔ streams Luna JSON into saved data and Markdown tables without changing scores (77.4174ms)
+✔ recognizes valid source patterns: chatgpt_script_good.js (31.9622ms)
+✔ recognizes valid source patterns: gemini_script_real.js (13.9713ms)
+✔ recognizes valid source patterns: claude_scipt_real.js (14.5646ms)
+✔ intentional error sample stays rejected and comments cannot satisfy rules (7.0345ms)
+✔ rejects real regressions instead of accepting names and literal hints (50.7395ms)
+✔ unknown patterns and syntax errors are explained for manual review (1.349ms)
+✔ reads flat summary-export metrics including p95 (0.6421ms)
+✔ reads nested handleSummary metrics (0.4168ms)
+✔ exit zero does not hide check/HTTP failures (0.3501ms)
+✔ fails closed on missing metrics, no work, timeouts, exits and exceptions (0.7224ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 307.5578
+

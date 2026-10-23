@@ -24,7 +24,7 @@ Hãy lấy HAR làm bằng chứng về URL/method/response, nhưng ưu tiên AP
   {"email":"test@eshop.com","password":"Test1234!"}
 
 - Response JSON có field `token`.
-- Phải extract token bằng `res.json('token')`.
+- Lấy field `token` từ JSON response; có thể dùng `res.json('token')` hoặc JSON.parse/hàm parse an toàn tương đương.
 
 ### 2. Search products
 
@@ -64,7 +64,7 @@ Hãy lấy HAR làm bằng chứng về URL/method/response, nhưng ưu tiên AP
 ## Yêu cầu chất lượng script
 
 - Import đúng từ `k6/http` và `k6`.
-- Đặt `BASE_URL` thành `http://localhost:3000`.
+- Dùng `__ENV.BASE_URL` với mặc định `http://localhost:3000`.
 - Dùng `JSON.stringify()` cho JSON POST body và header `Content-Type: application/json`.
 - Dùng `check()` để kiểm tra:
   - Login status 200 và token tồn tại.
@@ -78,9 +78,10 @@ Hãy lấy HAR làm bằng chứng về URL/method/response, nhưng ưu tiên AP
 - Cấu hình smoke test mặc định: 1 VU, 1 iteration hoặc thời lượng rất ngắn để có thể chạy ngay.
 - Không dùng Node.js APIs như `require`, `fs`, npm package ngoài, hoặc placeholder chưa được định nghĩa.
 - Không in hay hard-code JWT token. Token chỉ được lấy runtime từ response login.
+- Xử lý body rỗng/JSON không hợp lệ trước khi đọc token hoặc orderId.
 
 ## HAR đã redacted
 
-Dán nội dung HAR đã che dữ liệu nhạy cảm bên dưới dòng này trước khi gửi prompt cho AI:
+Đính kèm file HAR đã che dữ liệu nhạy cảm, hoặc dán nội dung bên dưới:
 
 <PASTE_REDACTED_HAR_HERE>

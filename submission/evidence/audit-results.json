@@ -1,0 +1,293 @@
+{
+  "auditId": "AUD-20261023-E85CDC",
+  "createdAt": "2026-10-23T02:50:07.105Z",
+  "capturedAt": "2026-10-23T02:50:07.880Z",
+  "profile": "1 VU x 1 iteration, timeout 45s",
+  "scripts": [
+    {
+      "label": "Script 1",
+      "file": "gemini_script_real.js",
+      "sha256": "383cce61c60643cfa370296239e6343483b25b56e6fa55d68f1e04168b05cd4e",
+      "score": 10,
+      "criteria": [
+        {
+          "criterionId": 1,
+          "pass": true,
+          "message": "Dùng đúng nhóm endpoint EShop.",
+          "suggestion": "Dùng POST /api/login, GET /api/products, GET /api/products/:id và POST /api/checkout.",
+          "line": 56,
+          "reviewRequired": false,
+          "title": "Endpoint tồn tại thật",
+          "autoScore": 1,
+          "finalScore": 1,
+          "overrideReason": ""
+        },
+        {
+          "criterionId": 2,
+          "pass": true,
+          "message": "Login và checkout có JSON body bắt buộc.",
+          "suggestion": "Dùng http.post(..., JSON.stringify({...}), { headers: { \"Content-Type\": \"application/json\" } }).",
+          "line": 56,
+          "reviewRequired": false,
+          "title": "Method và body đúng",
+          "autoScore": 1,
+          "finalScore": 1,
+          "overrideReason": ""
+        },
+        {
+          "criterionId": 3,
+          "pass": true,
+          "message": "Có guard dừng flow khi thiếu token lấy từ login.",
+          "suggestion": "Chỉ gọi checkout trong nhánh token hợp lệ sau login.",
+          "line": 56,
+          "reviewRequired": false,
+          "title": "Thứ tự flow hợp lý",
+          "autoScore": 1,
+          "finalScore": 1,
+          "overrideReason": ""
+        },
+        {
+          "criterionId": 4,
+          "pass": true,
+          "message": "Trích xuất token và truyền Authorization Bearer.",
+          "suggestion": "Lấy loginRes.json(\"token\") rồi đặt Authorization: `Bearer ${token}` khi checkout.",
+          "line": 61,
+          "reviewRequired": false,
+          "title": "Correlation token đúng",
+          "autoScore": 1,
+          "finalScore": 1,
+          "overrideReason": ""
+        },
+        {
+          "criterionId": 5,
+          "pass": true,
+          "message": "Có think-time random đúng khoảng cho search/detail/checkout.",
+          "suggestion": "Dùng random 1–3s cho search, 2–5s cho detail, 3–6s cho checkout.",
+          "line": 84,
+          "reviewRequired": false,
+          "title": "Think-time hợp lý",
+          "autoScore": 1,
+          "finalScore": 1,
+          "overrideReason": ""
+        },
+        {
+          "criterionId": 6,
+          "pass": true,
+          "message": "Có nhánh random với ngưỡng 55% và 80%.",
+          "suggestion": "Dùng r < 0.55 cho search, r < 0.80 cho detail, còn lại checkout.",
+          "line": 32,
+          "reviewRequired": false,
+          "title": "Workload đúng",
+          "autoScore": 1,
+          "finalScore": 1,
+          "overrideReason": ""
+        },
+        {
+          "criterionId": 7,
+          "pass": true,
+          "message": "Keyword và product ID được parameterize.",
+          "suggestion": "Khai báo mảng 5 keyword và dùng Math.floor(Math.random() * 5) + 1 cho product ID.",
+          "line": 18,
+          "reviewRequired": false,
+          "title": "Dữ liệu được parameterize",
+          "autoScore": 1,
+          "finalScore": 1,
+          "overrideReason": ""
+        },
+        {
+          "criterionId": 8,
+          "pass": true,
+          "message": "Có check status, token và orderId.",
+          "suggestion": "Thêm check cho login status/token, response product và checkout status/orderId.",
+          "line": 59,
+          "reviewRequired": false,
+          "title": "Có checks cần thiết",
+          "autoScore": 1,
+          "finalScore": 1,
+          "overrideReason": ""
+        },
+        {
+          "criterionId": 9,
+          "pass": true,
+          "message": "Có ngưỡng p95 và check rate SLO.",
+          "suggestion": "Thêm thresholds: { http_req_duration: ['p(95)<500'], checks: ['rate>=0.99'] }.",
+          "line": 7,
+          "reviewRequired": false,
+          "title": "Có thresholds SLO",
+          "autoScore": 1,
+          "finalScore": 1,
+          "overrideReason": ""
+        },
+        {
+          "criterionId": 10,
+          "pass": true,
+          "message": "k6 smoke pass trên nhánh đã chạy; chưa chứng minh mọi nhánh nghiệp vụ.",
+          "suggestion": "Không cần sửa smoke run.",
+          "title": "Chạy được",
+          "autoScore": 1,
+          "finalScore": 1,
+          "overrideReason": ""
+        }
+      ],
+      "smoke": {
+        "pass": true,
+        "exitCode": 0,
+        "checksRate": 1,
+        "failedRequestRate": 0,
+        "p95Ms": 33.619499999999995,
+        "requestCount": 2,
+        "message": "k6 smoke pass trên nhánh đã chạy; chưa chứng minh mọi nhánh nghiệp vụ."
+      },
+      "checkNames": [
+        "login status is 200",
+        "login token exists",
+        "search status is 200"
+      ],
+      "medianMs": 18.8694,
+      "checkTotal": 3
+    },
+    {
+      "label": "Script 2",
+      "file": "claude_scipt_real.js",
+      "sha256": "2a6305d8503895665cfd319f8ed83481daa0aa1af056122cc1880ad38769c252",
+      "score": 10,
+      "criteria": [
+        {
+          "criterionId": 1,
+          "pass": true,
+          "message": "Dùng đúng nhóm endpoint EShop.",
+          "suggestion": "Dùng POST /api/login, GET /api/products, GET /api/products/:id và POST /api/checkout.",
+          "line": 58,
+          "reviewRequired": false,
+          "title": "Endpoint tồn tại thật",
+          "autoScore": 1,
+          "finalScore": 1,
+          "overrideReason": ""
+        },
+        {
+          "criterionId": 2,
+          "pass": true,
+          "message": "Login và checkout có JSON body bắt buộc.",
+          "suggestion": "Dùng http.post(..., JSON.stringify({...}), { headers: { \"Content-Type\": \"application/json\" } }).",
+          "line": 57,
+          "reviewRequired": false,
+          "title": "Method và body đúng",
+          "autoScore": 1,
+          "finalScore": 1,
+          "overrideReason": ""
+        },
+        {
+          "criterionId": 3,
+          "pass": true,
+          "message": "Có guard dừng flow khi thiếu token lấy từ login.",
+          "suggestion": "Chỉ gọi checkout trong nhánh token hợp lệ sau login.",
+          "line": 58,
+          "reviewRequired": false,
+          "title": "Thứ tự flow hợp lý",
+          "autoScore": 1,
+          "finalScore": 1,
+          "overrideReason": ""
+        },
+        {
+          "criterionId": 4,
+          "pass": true,
+          "message": "Trích xuất token và truyền Authorization Bearer.",
+          "suggestion": "Lấy loginRes.json(\"token\") rồi đặt Authorization: `Bearer ${token}` khi checkout.",
+          "line": 71,
+          "reviewRequired": false,
+          "title": "Correlation token đúng",
+          "autoScore": 1,
+          "finalScore": 1,
+          "overrideReason": ""
+        },
+        {
+          "criterionId": 5,
+          "pass": true,
+          "message": "Có think-time random đúng khoảng cho search/detail/checkout.",
+          "suggestion": "Dùng random 1–3s cho search, 2–5s cho detail, 3–6s cho checkout.",
+          "line": 92,
+          "reviewRequired": false,
+          "title": "Think-time hợp lý",
+          "autoScore": 1,
+          "finalScore": 1,
+          "overrideReason": ""
+        },
+        {
+          "criterionId": 6,
+          "pass": true,
+          "message": "Có nhánh random với ngưỡng 55% và 80%.",
+          "suggestion": "Dùng r < 0.55 cho search, r < 0.80 cho detail, còn lại checkout.",
+          "line": 10,
+          "reviewRequired": false,
+          "title": "Workload đúng",
+          "autoScore": 1,
+          "finalScore": 1,
+          "overrideReason": ""
+        },
+        {
+          "criterionId": 7,
+          "pass": true,
+          "message": "Keyword và product ID được parameterize.",
+          "suggestion": "Khai báo mảng 5 keyword và dùng Math.floor(Math.random() * 5) + 1 cho product ID.",
+          "line": 8,
+          "reviewRequired": false,
+          "title": "Dữ liệu được parameterize",
+          "autoScore": 1,
+          "finalScore": 1,
+          "overrideReason": ""
+        },
+        {
+          "criterionId": 8,
+          "pass": true,
+          "message": "Có check status, token và orderId.",
+          "suggestion": "Thêm check cho login status/token, response product và checkout status/orderId.",
+          "line": 68,
+          "reviewRequired": false,
+          "title": "Có checks cần thiết",
+          "autoScore": 1,
+          "finalScore": 1,
+          "overrideReason": ""
+        },
+        {
+          "criterionId": 9,
+          "pass": true,
+          "message": "Có ngưỡng p95 và check rate SLO.",
+          "suggestion": "Thêm thresholds: { http_req_duration: ['p(95)<500'], checks: ['rate>=0.99'] }.",
+          "line": 17,
+          "reviewRequired": false,
+          "title": "Có thresholds SLO",
+          "autoScore": 1,
+          "finalScore": 1,
+          "overrideReason": ""
+        },
+        {
+          "criterionId": 10,
+          "pass": true,
+          "message": "k6 smoke pass trên nhánh đã chạy; chưa chứng minh mọi nhánh nghiệp vụ.",
+          "suggestion": "Không cần sửa smoke run.",
+          "title": "Chạy được",
+          "autoScore": 1,
+          "finalScore": 1,
+          "overrideReason": ""
+        }
+      ],
+      "smoke": {
+        "pass": true,
+        "exitCode": 0,
+        "checksRate": 1,
+        "failedRequestRate": 0,
+        "p95Ms": 3.921535,
+        "requestCount": 2,
+        "message": "k6 smoke pass trên nhánh đã chạy; chưa chứng minh mọi nhánh nghiệp vụ."
+      },
+      "checkNames": [
+        "login: status is 200",
+        "login: response is valid JSON",
+        "login: token exists",
+        "detail: status is 200"
+      ],
+      "medianMs": 2.53945,
+      "checkTotal": 4
+    }
+  ]
+}

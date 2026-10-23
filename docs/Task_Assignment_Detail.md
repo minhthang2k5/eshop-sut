@@ -2,6 +2,8 @@
 
 > **3 thành viên · 3 tuần · 8 demo items (D1–D8)**
 
+> **Cập nhật phạm vi thành viên C ngày 23/10/2026:** phần C được triển khai thành web automation `test-web-performance/`: HAR và prompt, hai script thực tế Gemini/Claude, audit rubric bằng Acorn + k6 smoke, duyệt điểm, nhận xét AI, Luna đề xuất threshold/correlation và xuất scorecard. Báo cáo chính và evidence nằm trong `submission/`. Các nhiệm vụ A/B giữ theo phân công của nhóm.
+
 ---
 
 ## Kiến Trúc SUT (Ngữ cảnh để phân công)
@@ -49,11 +51,11 @@ mindmap
       B5[1-page Performance Report]
     C[Thành viên C\nAI + HAR + Báo cáo]
       C1[D1 - Capture HAR]
-      C2[D5 - AI Script Gen]
-      C3[D6 - Audit & Fix]
-      C4[D7 - Grafana k6 AI]
-      C5[Tổng hợp Failure Modes]
-      C6[Dựng Screencast]
+      C2[D5 - Script Gemini và Claude]
+      C3[D6 - Web audit và duyệt điểm]
+      C4[D7 - Luna threshold và correlation]
+      C5[Kiểm thử bộ chấm tự động]
+      C6[Báo cáo và evidence]
 ```
 
 ---
@@ -90,11 +92,11 @@ gantt
     Soạn prompt chuẩn cho AI          :c2, after c1, 1d
     Xây dựng Rubric 10 tiêu chí       :c3, 2026-10-08, 2d
     Hoàn thiện proposal phần AI        :c4, 2026-10-09, 1d
-    D5 — AI Script (ChatGPT + Claude)  :c5, 2026-10-12, 3d
-    D6 — Audit + sửa script AI         :c6, after c5, 3d
-    D7 — Grafana k6 AI (hoặc backup)   :c7, 2026-10-19, 2d
-    Tổng hợp failure modes             :c8, after c7, 2d
-    Dựng screencast 5-8 phút           :c9, 2026-10-23, 2d
+    D5 — Script Gemini và Claude      :c5, 2026-10-12, 3d
+    D6 — Web audit Acorn và k6         :c6, after c5, 3d
+    D7 — Luna threshold và correlation :c7, 2026-10-19, 2d
+    Kiểm thử hồi quy bộ chấm           :c8, after c7, 2d
+    Báo cáo và evidence               :c9, 2026-10-23, 2d
 
     section 🔁 Chéo vai trò (cả 3)
     Cross-run: chạy script của nhau   :cr, 2026-10-24, 1d
@@ -114,7 +116,7 @@ flowchart LR
     D4["⚡ D4\nSpike & Stress\n👤 A"]
     D5["🤖 D5\nAI Script Gen\n👤 C"]
     D6["✏️ D6\nAudit & Fix\n👤 C+B"]
-    D7["☁️ D7\nGrafana k6 AI\n👤 C"]
+    D7["☁️ D7\nLuna threshold/correlation\n👤 C"]
     D8["🔧 D8\nSQLite Tuning\n👤 A+B"]
 
     DATA["📦 Test Data\nCSV + SharedArray\n👤 B"]
@@ -160,7 +162,7 @@ flowchart LR
 | Tạo test data CSV | **B** | `test_accounts.csv` (50 tài khoản) + danh sách keywords | Keywords: `["iPhone","Samsung","MacBook","AirPods","Keychron"]`; ID sản phẩm: 1–5 |
 | Reset script | **B** | `reset_db.sh` hoặc npm script | `node backend/database.js` seed lại; `node backend/server.js` restart |
 | Hoàn thiện proposal | **B** | Proposal finalized | Xác nhận mật khẩu admin bằng curl |
-| Capture HAR (D1) | **C** | `eshop_session.har` | F12 → Network → thực hiện login/search/detail/checkout trên :5173 |
+| Capture HAR (D1) | **C** | `docs/localhost.har` | F12 → Network → thực hiện login/search/detail/checkout trên :5173 |
 | Soạn prompt chuẩn AI | **C** | `ai_prompt_template.txt` | Ẩn password thật, thay token bằng `<REDACTED>` |
 | Xây dựng rubric 10 tiêu chí | **C** | `rubric_audit.md` | 10 tiêu chí 0/1 điểm theo mục 6 proposal |
 
@@ -179,9 +181,9 @@ flowchart LR
 | **D3** — Regular Expression Extractor | **B** | Token extraction hoạt động | Lấy field `token` từ response body `POST /api/login`; HTTP Header Manager set `Authorization: Bearer ${token}` |
 | **D3** — Chạy CLI + HTML report | **B** | `./jmeter-report/` | `jmeter -n -t eshop_workload.jmx -e -o ./jmeter-report` |
 | Bảng đối chiếu D2 vs D3 | **B** | Bảng p95/error k6 vs JMeter | Giải thích chênh lệch (VD: think-time khác nhau, connection pooling khác) |
-| **D5** — ChatGPT sinh script | **C** | `chatgpt_script.js` | Dùng HAR từ D1 + prompt chuẩn; chạy smoke 1VU ngay sau khi nhận |
-| **D5** — Claude sinh script | **C** | `claude_script.js` | Cùng input với ChatGPT để so sánh công bằng |
-| **D6** — Bắt đầu chấm rubric | **C** | Bảng điểm sơ bộ (10 tiêu chí × 2 AI) | Ghi lỗi thường gặp: sai endpoint, thiếu correlation, sai method/body |
+| **D5** — Script thực tế Gemini | **C** | `test-web-performance/samples/gemini_script_real.js` | Script đầu vào cho web, được giữ nguyên source |
+| **D5** — Script thực tế Claude | **C** | `test-web-performance/samples/claude_scipt_real.js` | Tên file được giữ theo artifact đã cung cấp |
+| **D6** — Web audit rubric | **C** | React + Express, điểm và evidence 10 tiêu chí | Phân tích source bằng Acorn và chạy k6 smoke 1 VU × 1 iteration |
 
 ---
 
@@ -195,10 +197,10 @@ flowchart LR
 | **D8b** — Verify tái lập kết quả | **B** | Confirmation run logs | Chạy lại script A trên môi trường B để xác nhận kết quả không phụ thuộc máy |
 | Viết 1-page Performance Report | **B** | `performance_report.pdf/md` | p50/p95/p99, error rate, bottleneck analysis, khuyến nghị |
 | Chuẩn bị slides đối chiếu D2/D3 | **B** | `slides_comparison.pptx` | Bảng k6 vs JMeter side-by-side |
-| **D6** — Hoàn tất audit + sửa 2 script AI | **C+B** | Scripts đã sửa + diff | Bảng điểm trước/sau; số liệu p95 trước/sau; diff rõ ràng |
-| **D7** — Grafana k6 AI | **C** | Gợi ý threshold + correlation | Nếu hết quota: dùng screenshot/bản ghi dự phòng |
-| Tổng hợp failure modes | **C** | `failure_modes.md` | 6 failure modes theo mục 7 proposal |
-| Dựng screencast 5–8 phút | **C** | `screencast_S4.mp4` | Thứ tự: D1(30s) → D2(2min) → D4(1.5min) → D5+D6(2min) → D7(1min) |
+| **D6** — Hoàn thiện bộ chấm web | **C** | Rule phân tích cấu trúc và parser summary k6 | Xử lý hàm hỗ trợ, hằng số và hai dạng summary; giữ quyền duyệt điểm |
+| **D7** — Luna phân tích trên web | **C** | JSON threshold/correlation chuyển thành bảng | Prompt giữ cấu trúc; giá trị do Luna đề xuất từ source và evidence |
+| Kiểm thử bộ đánh giá | **C** | `server/src/evaluation.test.js` và log test | Kiểm tra mẫu đúng, mẫu lỗi, metric thiếu và request/check thất bại |
+| Báo cáo và minh chứng | **C** | `submission/Bao_cao_seminar_Performance_Testing.md` và `submission/evidence/` | Điền phần C; A/B tự bổ sung các phần tương ứng |
 | **Cross-run**: chạy script của nhau | **A+B+C** | Sign-off logs | Brief yêu cầu cả 3 đều làm được k6 lẫn JMeter |
 
 ---
@@ -223,7 +225,7 @@ sequenceDiagram
     A->>A: D4: Spike + Stress profiles
     B->>SUT: D3: JMeter .jmx run
     B->>A: Đối chiếu D2 vs D3
-    C->>C: D5: Gửi HAR vào ChatGPT + Claude
+    C->>C: D5: HAR và script Gemini + Claude
     C->>SUT: D5: Smoke test 2 scripts AI
     C->>C: D6: Bắt đầu chấm rubric
 
@@ -233,8 +235,8 @@ sequenceDiagram
     B->>SUT: D8: Verify tái lập
     C->>B: D6: Bàn giao scripts để B verify
     B->>C: D6: Xác nhận kết quả audit
-    C->>C: D7: Grafana k6 AI
-    C->>C: Dựng screencast
+    C->>C: D7: Luna threshold/correlation
+    C->>C: Báo cáo Markdown và evidence
     A->>B: Cross-run: A chạy .jmx của B
     B->>A: Cross-run: B chạy k6 script của A
 ```
@@ -245,7 +247,7 @@ sequenceDiagram
 
 | Rủi ro | Ảnh hưởng đến | Xác suất | Phương án dự phòng |
 |--------|--------------|---------|-------------------|
-| Hết quota Grafana k6 AI | C (D7) | Trung bình | Screenshot + bản ghi sẵn; hoặc phân tích JSON output k6 thủ công |
+| Hết quota Luna threshold/correlation | C (D7) | Trung bình | Screenshot + bản ghi sẵn; hoặc phân tích JSON output k6 thủ công |
 | Backend sập khi spike 500VU | A (D4) | Cao | `node backend/database.js` seed lại; giảm đỉnh xuống 200–300VU |
 | AI sinh sai endpoint `/api/auth/login` | C (D5/D6) | Cao | Ghi nhận vào rubric tiêu chí 1; sửa tay → có diff để demo D6 |
 | Token AI gửi sai vị trí (body thay header) | C (D5/D6) | Trung bình | Minh họa: middleware `authenticateToken` L100–L110 `server.js` kiểm tra `Authorization` header |
@@ -276,17 +278,14 @@ sequenceDiagram
 - [ ] D8 verification logs
 
 ### Thành viên C
-- [ ] `eshop_session.har` — HAR export từ Chrome DevTools
-- [ ] `ai_prompt_template.txt` — prompt chuẩn (token redacted)
-- [ ] `rubric_audit.md` — 10 tiêu chí × 2 AI
-- [ ] `chatgpt_script.js` — script raw từ ChatGPT
-- [ ] `claude_script.js` — script raw từ Claude
-- [ ] `chatgpt_script_fixed.js` — sau audit D6
-- [ ] `claude_script_fixed.js` — sau audit D6
-- [ ] `rubric_scorecard.md` — điểm trước/sau với diff
-- [ ] D7 Grafana screenshots/recording
-- [ ] `failure_modes.md`
-- [ ] `screencast_S4.mp4` — 5–8 phút
+- [x] `docs/localhost.har` — HAR đầu vào; chỉ chia sẻ bản đã che dữ liệu nhạy cảm
+- [x] `docs/ai_prompt_template.txt` và `docs/d7_luna_prompt.md`
+- [x] `docs/rubric_audit.md` — chuẩn 10 tiêu chí cho hai script
+- [x] Hai script thực tế Gemini và Claude trong `test-web-performance/samples/`
+- [x] Web React + Express chạy rule, k6 smoke, duyệt điểm và xuất scorecard
+- [x] Đăng nhập/đăng xuất ChatGPT để dùng nhận xét AI và gợi ý Luna
+- [x] Bộ kiểm thử hồi quy 15 test
+- [x] Báo cáo Markdown và evidence trong `submission/`
 
 ---
 
@@ -302,8 +301,8 @@ gantt
     D1 - HAR capture highlights   :s1, 00:00, 30s
     D2 - k6 baseline live run     :s2, after s1, 120s
     D4 - Spike VU chart + bottleneck :s3, after s2, 90s
-    D5+D6 - AI script + audit diff :s4, after s3, 120s
-    D7 - Grafana k6 AI suggestion  :s5, after s4, 60s
+    D5+D6 - Web audit hai script :s4, after s3, 120s
+    D7 - Luna threshold/correlation suggestion  :s5, after s4, 60s
 ```
 
 > [!TIP]

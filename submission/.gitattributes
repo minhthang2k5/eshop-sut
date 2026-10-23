@@ -1,0 +1,2 @@
+# Keep evidence bytes unchanged so SHA256SUMS.txt remains valid across platforms.
+evidence/** -text

@@ -21,8 +21,8 @@ Mở `http://localhost:5175`. Khởi động SUT API trước ở `http://localh
 
 ## Đầu vào và đầu ra
 
-- Upload: một HAR đã redacted, `chatgpt_script.js`, `claude_script.js`.
-- Rubric: tự nạp từ `../docs/rubric_audit.md`; cấu hình máy đọc nằm ở `server/src/rubric.js`.
+- Upload: một HAR đã redacted và hai file `.js` bất kỳ, hiển thị Script 1 / Script 2 cùng tên file. Hai artifact thực tế trong samples là Gemini và Claude.
+- Rubric: server dùng cấu hình máy đọc `server/src/rubric.js`, được đối chiếu với tài liệu chuẩn `../docs/rubric_audit.md`; không yêu cầu upload rubric.
 - Smoke profile: 1 VU, 1 iteration, timeout 45 giây.
 - Đầu ra: audit dashboard, evidence theo từng tiêu chí, và `rubric_scorecard.md` tải từ dashboard.
 
@@ -58,9 +58,9 @@ Không cần API key để chạy audit, chấm điểm, chỉnh điểm hay t�
 
 AI chỉ nhận source script, rubric và evidence k6 để giải thích/rà soát thêm. AI không thay đổi điểm tự động; điểm luôn do rule engine, k6 và reviewer quyết định. Luồng này chỉ hoạt động khi tài khoản được ChatGPT cấp quyền `chatgpt.tokens.use.direct`; nếu không, cứ bỏ qua AI review và dùng đầy đủ phần audit còn lại.
 
-## D7 — Luna backup cho threshold và correlation
+## D7 — Luna đề xuất threshold và correlation
 
-Dashboard có mục **D7 · Luna performance guidance**. Luna 5.6 reasoning medium tự phân tích source và smoke evidence để đề xuất threshold và correlation cho từng script. Prompt cố định cấu trúc JSON, không cố định con số hoặc flow. Backend kiểm tra dữ liệu rồi lưu kết quả; frontend dựng hai bảng từ JSON. Threshold có lý do, evidence, độ tin cậy và cách kiểm chứng; correlation có nguồn lấy dữ liệu, nơi truyền vào, hiện trạng và cách sửa. Điểm rubric không thay đổi.
+Dashboard có mục **Gợi ý hiệu năng**. Luna 5.6 reasoning medium tự phân tích source và smoke evidence để đề xuất threshold và correlation cho từng script. Prompt cố định cấu trúc JSON, không cố định con số hoặc flow. Backend kiểm tra dữ liệu rồi lưu kết quả; frontend dựng hai bảng từ JSON. Threshold có lý do, evidence và cách kiểm chứng; correlation có nguồn lấy dữ liệu, nơi truyền vào, hiện trạng và cách sửa. Trường confidence được lưu trong JSON nhưng không hiện nhãn độ tin cậy trên giao diện. Điểm rubric không thay đổi.
 
 Chưa kết nối ChatGPT thì D7 hiển thị trạng thái chưa có đề xuất. Smoke 1 iteration không đủ làm baseline; Luna được phép để expression null khi thiếu dữ liệu. Kết quả cũ dùng template cố định cần tạo lại; không được gắn nhãn là đề xuất Luna. Output mới được xuất thành bảng trong scorecard. Prompt để tự tạo bản ghi D7 bằng ChatGPT nằm ở [`../docs/d7_luna_prompt.md`](../docs/d7_luna_prompt.md).
 
