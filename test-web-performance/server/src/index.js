@@ -39,7 +39,11 @@ function fileByField(files, field) {
   if (Array.isArray(files)) return files.find((file) => file.fieldname === field);
   return files?.[field]?.[0];
 }
-async function readAudit(id) { return JSON.parse(await fs.readFile(path.join(auditsRoot, id, 'audit.json'), 'utf8')); }
+async function readAudit(id) {
+  const audit = JSON.parse(await fs.readFile(path.join(auditsRoot, id, 'audit.json'), 'utf8'));
+  audit.scripts = audit.scripts.map((script, index) => ({ ...script, label: `Script ${index + 1}` }));
+  return audit;
+}
 async function saveAudit(audit) { const directory = path.join(auditsRoot, audit.id); await fs.mkdir(directory, { recursive: true }); await fs.writeFile(path.join(directory, 'audit.json'), JSON.stringify(audit, null, 2)); return directory; }
 function redactionWarnings(har) {
   const raw = JSON.stringify(har);
@@ -62,6 +66,7 @@ app.get('/api/health', (_req, res) => res.json({ ok: true, baseUrl, rubric: { id
 app.get('/api/rubric', (_req, res) => res.json(rubric));
 app.get('/api/auth/chatgpt/status', async (_req, res, next) => { try { res.json(await chatgptAuth.publicStatus()); } catch (error) { next(error); } });
 app.post('/api/auth/chatgpt/start', async (_req, res, next) => { try { res.json({ authorizationUrl: await chatgptAuth.start() }); } catch (error) { next(error); } });
+app.post('/api/auth/chatgpt/logout', async (_req, res, next) => { try { res.json(await chatgptAuth.logout()); } catch (error) { next(error); } });
 app.get('/auth/callback', async (req, res) => {
   try {
     await chatgptAuth.exchangeCallback(req.query);
@@ -77,7 +82,7 @@ app.post('/api/audits', upload.fields([{ name: 'har', maxCount: 1 }, { name: 'ch
     const harFile = fileByField(req.files, 'har');
     const chatgptFile = fileByField(req.files, 'chatgptScript');
     const claudeFile = fileByField(req.files, 'claudeScript');
-    if (!harFile || !chatgptFile || !claudeFile) return res.status(400).json({ error: 'Cần đủ HAR, ChatGPT script và Claude script.' });
+    if (!harFile || !chatgptFile || !claudeFile) return res.status(400).json({ error: 'Cần đủ HAR, Script 1 và Script 2.' });
     if (!harFile.originalname.endsWith('.har') || !chatgptFile.originalname.endsWith('.js') || !claudeFile.originalname.endsWith('.js')) return res.status(400).json({ error: 'HAR phải có đuôi .har và hai script phải có đuôi .js.' });
     const requestedBaseUrl = req.body.baseUrl || baseUrl;
     if (!allowedBaseUrl(requestedBaseUrl)) return res.status(400).json({ error: `Chỉ được phép smoke SUT đã cấu hình: ${baseUrl}` });
@@ -89,8 +94,8 @@ app.post('/api/audits', upload.fields([{ name: 'har', maxCount: 1 }, { name: 'ch
     const auditDirectory = path.join(auditsRoot, id);
     await fs.mkdir(auditDirectory, { recursive: true });
     const rawScripts = [
-      { label: 'ChatGPT script', field: chatgptFile, storageName: 'chatgpt_script.js' },
-      { label: 'Claude script', field: claudeFile, storageName: 'claude_script.js' }
+      { label: 'Script 1', field: chatgptFile, storageName: 'chatgpt_script.js' },
+      { label: 'Script 2', field: claudeFile, storageName: 'claude_script.js' }
     ];
     const scripts = [];
     for (const item of rawScripts) {

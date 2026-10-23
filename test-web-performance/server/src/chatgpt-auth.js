@@ -26,6 +26,13 @@ async function writePrivateJson(file, value) {
 }
 
 export function createChatGPTAuth({ authRoot, port, frontendOrigin }) {
+  let sessionVersion = 0;
+  let profileWrites = Promise.resolve();
+  function updateProfile(work) {
+    const next = profileWrites.then(work);
+    profileWrites = next.catch(() => {});
+    return next;
+  }
   const hostFile = path.join(authRoot, 'host.json');
   const profileFile = path.join(authRoot, 'profile.json');
   const redirectUri = `http://127.0.0.1:${port}/auth/callback`;
@@ -57,6 +64,7 @@ export function createChatGPTAuth({ authRoot, port, frontendOrigin }) {
     return `${AUTHORIZE_URL}?${query}`;
   }
   async function exchangeCallback(params) {
+    const version = sessionVersion;
     const state = String(params.state || '');
     const item = pending.get(state);
     pending.delete(state);
@@ -74,10 +82,14 @@ export function createChatGPTAuth({ authRoot, port, frontendOrigin }) {
     if (payload.nonce !== item.nonce) throw new Error('Nonce đăng nhập không khớp.');
     const scope = tokens.scope || SCOPES;
     const value = { clientId: issuedClientId, identity: { sub: payload.sub, email: typeof payload.email === 'string' ? payload.email : null, name: typeof payload.name === 'string' ? payload.name : null }, accessToken: tokens.access_token, refreshToken: tokens.refresh_token, idToken: tokens.id_token, scope, expiresAt: now() + Number(tokens.expires_in || 3600) * 1000, savedAt: new Date().toISOString() };
-    await writePrivateJson(profileFile, value);
+    await updateProfile(async () => {
+      if (version !== sessionVersion) throw new Error('Phiên đăng nhập đã bị ngắt kết nối.');
+      await writePrivateJson(profileFile, value);
+    });
     return publicProfile(value);
   }
   async function tokenForPlan() {
+    const version = sessionVersion;
     let saved = await profile();
     if (!saved) throw new Error('Hãy Continue with ChatGPT trước.');
     if (!scopesFrom(saved.scope).includes('chatgpt.tokens.use.direct')) throw new Error('Tài khoản chưa cấp quyền dùng ChatGPT plan cho AI review.');
@@ -88,7 +100,10 @@ export function createChatGPTAuth({ authRoot, port, frontendOrigin }) {
     if (!response.ok) throw new Error('Không thể làm mới phiên ChatGPT; hãy đăng nhập lại.');
     const tokens = await response.json();
     saved = { ...saved, accessToken: tokens.access_token, refreshToken: tokens.refresh_token || saved.refreshToken, idToken: tokens.id_token || saved.idToken, scope: tokens.scope || saved.scope, expiresAt: now() + Number(tokens.expires_in || 3600) * 1000, savedAt: new Date().toISOString() };
-    await writePrivateJson(profileFile, saved);
+    await updateProfile(async () => {
+      if (version !== sessionVersion) throw new Error('Phiên ChatGPT đã đăng xuất; hãy đăng nhập lại.');
+      await writePrivateJson(profileFile, saved);
+    });
     return { accessToken: saved.accessToken, profile: saved };
   }
   async function availableModels(accessToken) {
@@ -97,7 +112,13 @@ export function createChatGPTAuth({ authRoot, port, frontendOrigin }) {
     const payload = await response.json();
     return (payload.models || []).filter((model) => model.visibility === 'list' && model.slug);
   }
-  async function markModel(model) { const saved = await profile(); if (saved) await writePrivateJson(profileFile, { ...saved, lastModel: model }); }
+  async function markModel(model) { return updateProfile(async () => { const saved = await profile(); if (saved) await writePrivateJson(profileFile, { ...saved, lastModel: model }); }); }
+  async function logout() {
+    sessionVersion += 1;
+    pending.clear();
+    await updateProfile(() => fs.rm(profileFile, { force: true }));
+    return publicProfile(null);
+  }
   function callbackRedirect(success) { return `${frontendOrigin}/?aiAuth=${success ? 'success' : 'failed'}`; }
-  return { publicStatus: async () => publicProfile(await profile()), start, exchangeCallback, tokenForPlan, availableModels, markModel, callbackRedirect };
+  return { publicStatus: async () => publicProfile(await profile()), start, exchangeCallback, tokenForPlan, availableModels, markModel, logout, callbackRedirect };
 }
