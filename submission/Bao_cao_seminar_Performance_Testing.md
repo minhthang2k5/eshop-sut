@@ -322,13 +322,13 @@ bash performance/k6/run-spike.sh
 
 #### 4.2.2 Demo cơ bản: smoke tuần tự
 
-[Source smoke](../performance/k6/smoke.js) đặt `vus: 1`, `iterations: 1`. Một iteration đi lần lượt qua Login → Search → Detail → Cart → Checkout, nghỉ một giây sau mỗi API. Login trả token; token được truyền vào Cart và Checkout. Mỗi request có check status và check nội dung nên năm request tương ứng mười checks. Đây là demo kiểm tra contract API và correlation trước khi sử dụng script tạo tải lớn.
+[Source smoke](evidence/scripts/smoke.js) đặt `vus: 1`, `iterations: 1`. Một iteration đi lần lượt qua Login → Search → Detail → Cart → Checkout, nghỉ một giây sau mỗi API. Login trả token; token được truyền vào Cart và Checkout. Mỗi request có check status và check nội dung nên năm request tương ứng mười checks. Đây là demo kiểm tra contract API và correlation trước khi sử dụng script tạo tải lớn.
 
 Run dùng để minh họa là `smoke-20261022-195537-4es3Xy`: **5 HTTP requests, 10/10 checks đạt, HTTP lỗi 0%, p50 11.850 ms, p95 47.895 ms**, hai thresholds đạt. Nguồn: [summary smoke](evidence/k6/summaries/smoke-20261022-195537-4es3Xy/summary.json).
 
 #### 4.2.3 Data driven, correlation và checkpoints
 
-[Baseline](../performance/k6/baseline.js), [stress](../performance/k6/stress.js) và [spike](../performance/k6/spike.js) đọc fixture `data/test_accounts.csv` bằng `SharedArray`. Script kiểm tra đúng header `email,password,name,role`, đủ 50 email duy nhất và bốn trường không rỗng, không dùng quoting. Dữ liệu sai làm dừng ở init trước khi phát tải. Đây là parameterization tài khoản; keyword và sản phẩm vẫn cố định, chưa phải dữ liệu ngẫu nhiên trên toàn catalog.
+[Baseline](evidence/scripts/baseline.js), [stress](evidence/scripts/stress.js) và [spike](evidence/scripts/spike.js) đọc fixture `data/test_accounts.csv` bằng `SharedArray`. Script kiểm tra đúng header `email,password,name,role`, đủ 50 email duy nhất và bốn trường không rỗng, không dùng quoting. Dữ liệu sai làm dừng ở init trước khi phát tải. Đây là parameterization tài khoản; keyword và sản phẩm vẫn cố định, chưa phải dữ liệu ngẫu nhiên trên toàn catalog.
 
 Baseline phân một tài khoản cho mỗi VU. Stress/spike phân vòng tròn theo ID:
 
@@ -890,7 +890,39 @@ Trong ba khía cạnh thực hành, HAR đóng vai trò ghi nhận traffic đầ
 
 ### Bài tập 1 — Lê Nguyễn Quốc Thái
 
-[Lê Nguyễn Quốc Thái bổ sung nội dung bài tập và gợi ý thực hiện.]
+#### Tình huống
+
+Bạn nhận hai bảng kết quả kiểm thử website eShop. Hãy đọc số liệu và đánh giá khả năng chịu tải của hệ thống.
+
+**Tiêu chí của bài tập:** Một giai đoạn đạt khi đồng thời có **p95 < 500 ms** và **tỷ lệ HTTP lỗi < 1%**.
+
+#### Bảng A — Stress test: tăng tải theo từng bậc
+
+Mỗi bậc dưới đây được giữ 60 giây. Bảng trích một số bậc, theo đúng thứ tự chạy; các bậc khác được lược bỏ.
+
+| VUs | RPS | p95 (ms) | HTTP lỗi (%) |
+|---:|---:|---:|---:|
+| 500 | 182,22 | 8,35 | 0,009 |
+| 1.000 | 365,37 | 8,62 | 0,000 |
+| 1.250 | 453,27 | 11,08 | 0,004 |
+| 1.500 | 365,37 | 5.380,45 | 2,659 |
+| 1.750 | 633,53 | 7.312,27 | 4,029 |
+
+#### Bảng B — Spike test: tăng tải đột ngột rồi giảm về tải nền
+
+| Giai đoạn | Thời lượng | VUs | RPS | p95 (ms) | HTTP lỗi (%) |
+|---|---:|---:|---:|---:|---:|
+| Trước spike | 30 giây | 50 | 21,13 | 16,96 | 0,000 |
+| Trong spike | 60 giây | 1.500 | 388,17 | 5.344,45 | 1,486 |
+| Sau spike | 60 giây | 50 | 18,08 | 13,04 | 0,000 |
+
+## Câu hỏi
+
+**Câu 1 — Đọc chỉ số (khoảng 1 phút).** Trong spike, p95 = 5.344,45 ms có ý nghĩa gì? Đối chiếu cả p95 và tỷ lệ lỗi để kết luận giai đoạn này đạt hay không đạt.
+
+**Câu 2 — Đọc stress test (khoảng 2 phút).** Trong bảng A, bậc tải đầu tiên không đạt là bậc nào? Dẫn số liệu chứng minh.
+
+**Câu 3 — Đọc spike test (khoảng 2 phút).** Một bạn nói: “RPS trong spike cao hơn trước spike nên hệ thống chịu spike tốt.” Hãy nhận xét ý kiến này và cho biết giai đoạn sau spike có đạt hai tiêu chí của bài tập không, kèm số liệu.
 
 ### Bài tập 2 — Võ Hữu Thắng
 
@@ -1035,6 +1067,7 @@ Bộ evidence k6 gồm bảy summary giữ nguyên bytes nguồn, bốn HTML t�
 
 | Evidence | Nội dung và vị trí sử dụng |
 | --- | --- |
+| [Script k6](evidence/scripts/) | Bốn script smoke/baseline/stress/spike và bốn runner shell; giữ nguyên nội dung source hiện có |
 | [Manifest k6](evidence/k6/README.md) | Mapping đầy đủ run → summary → HTML → hình, nguồn tài nguyên và quy tắc xử lý |
 | [Summary smoke](evidence/k6/summaries/smoke-20261022-195537-4es3Xy/summary.json) | Một VU, năm requests, mười checks; mục 4.2.2 |
 | [B0](evidence/k6/summaries/baseline-20261022-110446-eGLTX1/summary.json), [B1](evidence/k6/summaries/baseline-20261023-084311-TSxg2P/summary.json) | Baseline trước/sau, steady 300s; mục 4.3.2 và 4.4.1 |

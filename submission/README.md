@@ -35,7 +35,7 @@ submission/
     ai_prompt_template.txt
     d7_luna_prompt.md
     SHA256SUMS.txt
-    scripts/
+    scripts/                  # Script AI và 4 script k6 + 4 runner shell
       gemini_script_real.js
       claude_scipt_real.js
 ```
