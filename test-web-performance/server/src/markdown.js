@@ -14,6 +14,7 @@ export function createScorecard(audit) {
     ''
   ];
   for (const script of audit.scripts) {
+    lines.push(`- ${script.label}: ${escapeCell(script.originalName || script.fileName)}`, '');
     lines.push(`## ${script.label} — ${script.finalScore}/10`, '', '| # | Tiêu chí | Điểm | Evidence | Cách sửa |', '| --- | --- | :---: | --- | --- |');
     for (const item of script.criteria) {
       const humanNote = item.overrideReason ? ` Human review: ${item.overrideReason}` : '';

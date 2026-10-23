@@ -44,6 +44,8 @@ Frontend proxy `/api` sang `http://localhost:4000`.
 
 ## AI review bằng ChatGPT (tùy chọn)
 
+Menu tài khoản ở đầu trang hỗ trợ đăng nhập và đăng xuất ChatGPT. Đăng xuất xóa phiên kết nối của ứng dụng trên máy; không đăng xuất tài khoản khỏi website ChatGPT và không xóa audit. Audit đang xem và các chỉnh điểm được khôi phục sau khi quay lại từ đăng nhập (trong cùng tab, khi trình duyệt cho phép session storage). Đầu vào dùng nhãn Script 1 / Script 2 và hiển thị tên file; tên field upload và tên file lưu nội bộ được giữ để tương thích với audit cũ.
+
 Không cần API key để chạy audit, chấm điểm, chỉnh điểm hay tải scorecard. Sau khi audit xong, chọn **Bỏ qua AI review** để giữ nguyên kết quả rule engine + k6, hoặc chọn **Continue with ChatGPT** rồi cấp quyền dùng ChatGPT plan. Credentials OAuth được lưu cục bộ trong `server/data/chatgpt-auth/` (đã bị Git ignore), không được gửi vào Git.
 
 AI chỉ nhận source script, rubric và evidence k6 để giải thích/rà soát thêm. AI không thay đổi điểm tự động; điểm luôn do rule engine, k6 và reviewer quyết định. Luồng này chỉ hoạt động khi tài khoản được ChatGPT cấp quyền `chatgpt.tokens.use.direct`; nếu không, cứ bỏ qua AI review và dùng đầy đủ phần audit còn lại.

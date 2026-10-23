@@ -14,6 +14,24 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visib
 button:disabled { cursor: wait; opacity: .58; }
 
 .app-shell { max-width: 1240px; margin: 0 auto; padding: 56px 24px 80px; }
+.topbar { position: relative; z-index: 5; display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 36px; padding-bottom: 18px; border-bottom: 1px solid #dce4f0; }
+.app-wordmark { display: inline-flex; align-items: center; gap: 10px; color: #174593; font-size: 1.3rem; font-weight: 900; }
+.app-wordmark span { color: #40516e; font-size: .88rem; font-weight: 750; }
+.account-login, .ai-actions button { gap: 8px; }
+.account-menu { position: relative; }
+.account-menu summary { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border: 1px solid #d3dfef; border-radius: 12px; background: #fff; cursor: pointer; list-style: none; }
+.account-menu summary::-webkit-details-marker { display: none; }
+.account-menu summary:hover, .account-menu[open] summary { border-color: #86a9e7; background: #f4f8ff; }
+.account-avatar { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: #e8f0ff; color: #245dcc; }
+.account-label { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #253b5c; font-size: .83rem; font-weight: 750; }
+.account-label small { display: block; color: #17744d; font-size: .72rem; font-weight: 600; }
+.account-popover { position: absolute; right: 0; top: calc(100% + 10px); width: min(300px, calc(100vw - 32px)); padding: 18px; border: 1px solid #d3dfef; border-radius: 13px; background: #fff; box-shadow: 0 14px 38px #182f5426; }
+.account-email { margin: 4px 0 15px; color: #5d6d85; font-size: .85rem; overflow-wrap: anywhere; }
+.account-popover button { width: 100%; justify-content: flex-start; gap: 8px; margin-bottom: 8px; }
+.account-popover .account-logout { border: 1px solid #edcbd0; background: #fff5f5; box-shadow: none; color: #ab303b; }
+.account-popover .account-logout:hover:not(:disabled) { background: #ffe9ea; }
+.account-popover > small { display: block; color: #738096; font-size: .74rem; }
+.topbar + .auth-notice { margin: -16px 0 24px; }
 .hero { display: flex; gap: 18px; align-items: flex-start; max-width: 920px; margin: 0 0 34px; }
 .brand-mark { display: grid; flex: 0 0 auto; width: 50px; height: 50px; place-items: center; border-radius: 14px; background: #173f8a; box-shadow: 0 10px 22px rgba(23, 63, 138, .21); color: #fff; font-size: 1.05rem; font-weight: 900; letter-spacing: -.04em; }
 .eyebrow { margin: 0 0 7px; color: #245dcc; font-size: .73rem; font-weight: 800; letter-spacing: .115em; text-transform: uppercase; }
@@ -100,6 +118,8 @@ button.secondary:hover:not(:disabled) { border-color: #aebfe0; background: #e0eb
 .summary p { margin-bottom: 3px; color: #64728a; font-size: .87rem; font-weight: 700; }
 .summary strong { display: block; color: #172645; font-size: 2.6rem; letter-spacing: -.075em; line-height: 1; }
 .summary small { margin-left: 3px; color: #718099; font-size: .95rem; letter-spacing: 0; }
+.summary > div { min-width: 0; }
+.script-file { display: block; margin: 0 0 10px; color: #65738a; font-size: .77rem; overflow-wrap: anywhere; }
 .run { display: inline-flex; gap: 6px; align-items: center; font-size: .84rem; font-weight: 800; white-space: nowrap; }
 .run i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 .pass-text { color: #16774b; }
@@ -135,7 +155,9 @@ tbody tr:hover { background: #fbfcff; }
 .smoke summary small { display: block; margin-top: 2px; color: #728096; font-size: .78rem; }
 pre { max-height: 290px; margin: 0 0 13px; overflow: auto; padding: 15px; border-radius: 9px; background: #111c31; color: #d9e6ff; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .78rem; line-height: 1.52; white-space: pre-wrap; }
 
-.model-review { border-bottom: 0; }
+.d7-guidance { border-bottom: 0; }
+.sign-in-notice { display: grid; gap: 12px; margin-top: 16px; padding: 16px; border: 1px solid #c0d4f5; border-radius: 10px; background: #f0f6ff; color: #254575; }
+.sign-in-notice p { margin: 0; font-size: .9rem; }
 .optional-badge { padding: 4px 9px; border: 1px solid #cbd7ed; background: #f1f5fd; color: #587093; }
 .panel-intro { max-width: 760px; margin-bottom: 15px; color: #5d6d85; }
 .d7-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 14px; }
@@ -182,6 +204,7 @@ pre { max-height: 290px; margin: 0 0 13px; overflow: auto; padding: 15px; border
 .connected { color: #137448; font-weight: 750; }
 .muted { color: #637188; }
 .ai-connection { display: flex; gap: 18px; justify-content: space-between; align-items: center; margin-top: 14px; }
+.ai-connection:has(> .ai-actions:only-child) { justify-content: flex-end; }
 .ai-connection p { margin-bottom: 0; font-size: .88rem; }
 .ai-actions { display: flex; flex: 0 0 auto; flex-wrap: wrap; gap: 9px; }
 .model-markdown { max-height: 380px; margin-top: 12px; overflow: auto; padding: 20px; border: 1px solid #c9dfd2; border-radius: 9px; background: #fff; color: #26384e; font-size: .91rem; line-height: 1.65; }
@@ -211,6 +234,9 @@ pre { max-height: 290px; margin: 0 0 13px; overflow: auto; padding: 15px; border
 }
 
 @media (max-width: 680px) {
+  .topbar { margin-bottom: 25px; gap: 10px; }
+  .account-label { max-width: 115px; }
+  .account-login { font-size: .78rem; padding: 9px; }
   .app-shell { padding: 34px 15px 55px; }
   .hero { gap: 12px; margin-bottom: 23px; }
   .brand-mark { width: 39px; height: 39px; border-radius: 11px; font-size: .88rem; }
