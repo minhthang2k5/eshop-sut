@@ -1,4 +1,6 @@
-# Đối chiếu D2 (k6) và D3 (JMeter)
+# Đối chiếu kết quả kiểm thử hiệu năng k6 và JMeter
+
+Trong bảng phân công, D2 là bài baseline k6 (tải bình thường) và D3 là bài JMeter. p95 là thời gian phản hồi mà 95% request không vượt quá; SLO là mục tiêu chất lượng: p95 <500ms và tỷ lệ lỗi <1%. Các mã D2/D3 bên dưới dùng để truy vết hai bài kiểm thử này.
 
 Nguồn: [k6 summary](../k6/output/baseline-20261022-110446-eGLTX1/summary.json), [JMeter summary](results/baseline-summary.json), [môi trường JMeter](results/run-environment.json).
 

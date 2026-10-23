@@ -5,7 +5,7 @@ Mở [báo cáo chính](Bao_cao_seminar_Performance_Testing.md) bằng VS Code M
 ## Cách bổ sung của nhóm
 
 - Lê Nguyễn Quốc Thái (A, MSSV 23120352) điền chương 4, bài tập 1 và bổ sung minh chứng thực nghiệm của mình vào bảng đóng góp khi cần.
-- Võ Hữu Thắng (B, MSSV 23120355) đã bổ sung chương 5, bài tập 2, kết quả D3 và D8b; bằng chứng tại [evidence/assignee-b](evidence/assignee-b/README.md). Nội dung trình bày dạng Markdown: [slides_comparison.md](slides_comparison.md); báo cáo một trang: [performance_report.md](performance_report.md). Cross-run toàn nhóm còn chờ xác nhận trực tiếp, xem [bảng trạng thái](../performance/verification/cross_run_signoff.md).
+- Võ Hữu Thắng (MSSV 23120355) đã bổ sung chương 5, bài tập 2, kết quả kiểm thử JMeter và kiểm chứng kết quả k6 trước–sau tối ưu SQLite; bằng chứng tại [thư mục kết quả kiểm chứng](evidence/assignee-b/README.md). Nội dung trình bày: [so sánh k6 và JMeter](slides_comparison.md); [báo cáo hiệu năng một trang](performance_report.md). Việc từng thành viên tự chạy công cụ của người khác và xác nhận hiểu kết quả (cross-run) còn chờ xác nhận trực tiếp, xem [bảng trạng thái](../performance/verification/cross_run_signoff.md).
 - Lê Nguyễn Quốc Thái và Võ Hữu Thắng cùng hoàn thiện bảng so sánh thực nghiệm, kết luận chung và thông tin nhóm ở đầu báo cáo.
 - Phần Trịnh Hồ Minh Thắng (C, MSSV 23120354) đã có nội dung chương 6, bài tập 3, ảnh và dữ liệu minh chứng. Giữ nguyên liên kết evidence khi chỉnh sửa hoặc di chuyển báo cáo.
 

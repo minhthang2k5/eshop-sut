@@ -1,6 +1,8 @@
-# D8b — Confirmation runs trên Windows/PowerShell
+# Chạy lại kiểm thử k6 để kiểm chứng kết quả trên Windows/PowerShell
 
-Phạm vi: D8b theo [phân công Week 3](../../docs/Task_Assignment_Detail.md). Chạy lại k6 của A trên backend gốc và tuned; không thay workload JMeter.
+Mục đích: chạy lại script k6 trên backend gốc và backend đã tối ưu SQLite (tuned: WAL và index tên sản phẩm), kiểm tra kết quả ban đầu có tái lập trên máy khác hay không. Đây là nhiệm vụ “Verify tái lập kết quả”, mã D8b trong [phân công tuần 3](../../docs/Task_Assignment_Detail.md).
+
+Quy ước: A là thành viên đo k6 ban đầu trên Linux; B là thành viên kiểm chứng trên Windows và phụ trách JMeter; C phụ trách đánh giá script AI. Baseline là tải bình thường; spike là tải tăng đột biến; smoke là bài kiểm tra nhanh để xác nhận API và script chạy được trước khi tạo tải.
 
 ## Trạng thái Week 3 của B
 
@@ -8,7 +10,7 @@ Phạm vi: D8b theo [phân công Week 3](../../docs/Task_Assignment_Detail.md). 
 | --- | --- | --- |
 | D8b — xác minh tái lập | Hoàn tất chạy và phân tích; tái lập một phần kết quả A | [Verification report](verification_report.md), summary/log/metadata: baseline gốc/tuned mỗi bản một lần, spike mỗi bản hai lần, hai smoke entry |
 | Báo cáo hiệu năng một trang | Hoàn tất | [performance_report.md](../../submission/performance_report.md) |
-| Slides D2/D3 | Hoàn tất dạng Markdown theo yêu cầu, không xuất PPTX | [slides_comparison.md](../../submission/slides_comparison.md) |
+| Slides so sánh k6 và JMeter | Hoàn tất dạng Markdown | [slides_comparison.md](../../submission/slides_comparison.md) |
 | Phần B trong báo cáo chung | Đã điền chương 5, bài tập 2 và kết luận liên quan | [Báo cáo chung](../../submission/Bao_cao_seminar_Performance_Testing.md) |
 | Cross-run | Chưa hoàn tất sign-off trực tiếp của thành viên | [Hướng dẫn và bảng Pending](cross_run_signoff.md) |
 
@@ -16,9 +18,9 @@ D8b hoàn tất công việc kiểm chứng dù spike SLO fail: hai baseline đ�
 
 Để hoàn tất cross-run: B cần cung cấp xác nhận lượt k6 trực tiếp, A/C cung cấp các lượt chạy công cụ theo yêu cầu cùng log/run ID và nhận xét. Run do trợ lý thực thi đã có evidence nhưng chưa thay sign-off của thành viên.
 
-## Phạm vi file cho lần commit Week 3 sau này
+## File bàn giao và dữ liệu cục bộ
 
-Chỉ chọn `performance/verification/` (trừ `local-runs/` đã ignore), `submission/evidence/assignee-b/`, `submission/performance_report.md`, `submission/slides_comparison.md` và các thay đổi phần B trong `submission/Bao_cao_seminar_Performance_Testing.md`, `submission/README.md`. Chưa stage hoặc commit trong lượt dọn này.
+Script và hướng dẫn nằm trong `performance/verification/`; bằng chứng tại `submission/evidence/assignee-b/`; báo cáo và slides tại `submission/performance_report.md`, `submission/slides_comparison.md`. Chương JMeter, bài tập phân tích kết quả và kết luận được tích hợp trong `submission/Bao_cao_seminar_Performance_Testing.md`.
 
 Giữ summary/log/metadata gốc để truy số liệu và trạng thái WAL/index; giữ cả hai lượt spike, hai smoke entry và bộ tổng hợp/checksum. Raw metrics, DB/SUT bản sao và native dashboard nằm ở `local-runs/`, chỉ giữ local để điều tra/tính lại, không đưa vào commit. Các tài liệu kế hoạch/khảo sát đã hết vai trò và output không được dùng trong báo cáo đã chuyển ra kho lưu ngoài repo để có thể khôi phục.
 

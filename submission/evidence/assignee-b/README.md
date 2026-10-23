@@ -1,6 +1,6 @@
-# Evidence Week 3 — Assignee B
+# Bằng chứng kiểm chứng kết quả k6 trước và sau tối ưu SQLite
 
-Phạm vi: bước 1–5 của kế hoạch, chạy k6 của A để xác minh D8b trên Windows/PowerShell. Các run được trợ lý thực hiện trong workspace B; không đại diện sign-off thủ công của A/C.
+Thư mục lưu các lần chạy lại script k6 trên Windows/PowerShell để kiểm tra khả năng tái lập kết quả đo ban đầu trên Linux. Trong tài liệu, A là thành viên đo k6 ban đầu, B là thành viên kiểm chứng trên Windows, C phụ trách đánh giá script AI. Nhiệm vụ kiểm chứng có mã D8b trong bảng phân công. Các lần chạy do trợ lý Codex thực hiện trên môi trường của B; từng thành viên vẫn cần trực tiếp xác nhận việc tự chạy công cụ và đọc kết quả (cross-run).
 
 Mỗi thư mục timestamp chứa:
 

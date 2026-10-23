@@ -1,6 +1,8 @@
-# EShop — Performance Report (D8b, Assignee B)
+# EShop — Kiểm chứng hiệu năng trước và sau tối ưu SQLite
 
 **23/10/2026 · Confirmation trên Windows/PowerShell · Kết luận: tái lập một phần.**
+
+Phép đo này chạy lại cùng script k6 trên hai môi trường: máy A chạy Linux là nơi đo ban đầu; máy B chạy Windows là nơi kiểm chứng. Baseline là tải bình thường, spike là tải tăng đột biến; bản tuned là backend bật SQLite WAL và thêm index tên sản phẩm. p95 là thời gian phản hồi mà 95% request không vượt quá; SLO là mục tiêu chất lượng cần đạt.
 
 **Môi trường:** Windows 10.0.26200 x64, Ryzen 7 5700U/16 logical CPUs, RAM 7.35 GiB; Node 24.20.0, k6 2.2.0, SQLite 3.52.0. SUT và k6 cùng máy. Mỗi run dùng SUT bản sao mới, 50 account k6, 5 sản phẩm, 0 orders ban đầu. Đã xác nhận bản gốc journal DELETE; tuned WAL + index tên sản phẩm. Query `LIKE '%iPhone%'` vẫn `SCAN products` ở cả hai.
 
@@ -21,4 +23,4 @@ SLO: p95 <500ms, HTTP lỗi <1%, checks ≥99%, có mẫu tổng/từng API, ski
 
 **Phân tích và khuyến nghị:** tuning đi cùng latency thấp hơn, nhưng chưa tách tác động WAL/index; chưa có bằng chứng xác định DB là bottleneck. Thu socket/backlog, event-loop, CPU/RAM từng process và DB I/O đồng thời; chạy lặp cùng snapshot, đối soát orders sau lỗi kết nối. Baseline một lần và spike hai lần mỗi cấu hình trên B; hai máy khác OS, reference thiếu metadata đầy đủ; recovery 60s không chứng minh ổn định dài hạn.
 
-Nguồn số liệu, run IDs và cách chạy lại: [confirmation report](../performance/verification/verification_report.md), [evidence](evidence/assignee-b/README.md). Hai smoke đều đủ 5 request/10 checks; DB nguồn không bị reset. Thực thi bởi Codex trên workspace B, chưa phải sign-off cross-run của A/C.
+Nguồn số liệu, mã lần chạy và cách chạy lại: [báo cáo kiểm chứng](../performance/verification/verification_report.md), [bằng chứng thực nghiệm](evidence/assignee-b/README.md). Hai bài kiểm tra nhanh (smoke) đều đủ 5 request/10 checks; DB nguồn không bị reset. Trợ lý Codex thực hiện trên máy B; các thành viên chưa trực tiếp xác nhận việc tự chạy và đọc kết quả của công cụ do người khác chuẩn bị (cross-run).

@@ -632,7 +632,9 @@ Bộ minh chứng của chương được liệt kê tại mục 9.4, gồm summ
 
 ### 5.1 Môi trường và dữ liệu
 
-D3 được đo ngày 21/10/2026 trên Windows 10.0.26200 x64, AMD Ryzen 7 5700U, 16 logical CPUs, RAM khoảng 7.35 GiB. Công cụ: Apache JMeter 5.6.3, Temurin Java 17.0.20.1+1, Node.js v24.20.0. SUT và load generator cùng máy; VS Code và JMeter GUI nhàn rỗi cũng mở lúc đo. GUI không nằm trong quy trình nghiệm thu; phát tải và sinh report bằng CLI. Nguồn môi trường: [run-environment.json](../performance/jmeter/results/run-environment.json).
+Trong chương này, bài kiểm thử tải bình thường bằng k6 có mã D2; bài JMeter có mã D3; nhiệm vụ chạy lại k6 để kiểm chứng có mã D8b trong bảng phân công. Máy A là môi trường Linux đo k6 ban đầu; máy B là môi trường Windows đo JMeter và kiểm chứng k6. “Tuned” là bản backend bật SQLite WAL và thêm index tên sản phẩm.
+
+Bài JMeter được đo ngày 21/10/2026 trên Windows 10.0.26200 x64, AMD Ryzen 7 5700U, 16 logical CPUs, RAM khoảng 7.35 GiB. Công cụ: Apache JMeter 5.6.3, Temurin Java 17.0.20.1+1, Node.js v24.20.0. SUT và load generator cùng máy; VS Code và JMeter GUI nhàn rỗi cũng mở lúc đo. Phát tải và sinh report bằng CLI. Nguồn môi trường: [run-environment.json](../performance/jmeter/results/run-environment.json).
 
 Backend gốc dùng SQLite; reset/restart và chờ seed hoàn tất trước baseline. Dữ liệu gồm 50 account riêng cho 50 threads từ `backend/test-data/test_accounts.csv`, năm sản phẩm ID 1–5 từ `test_products.csv`; các keyword iPhone/Samsung/MacBook/AirPods/Keychron được chọn theo catalog. Account giữ trong cả phiên, mỗi thread login một lần. Bản baseline không áp dụng tuning WAL/index của D8.
 
@@ -694,9 +696,9 @@ D3 actions có p50/p95/p99=2/16/21ms, đạt SLO; toàn test có 5190 samples g�
 
 **Giới hạn so sánh:** D2 có Cart và mix 55/25/14/6, dữ liệu cố định iPhone/ID 1, lazy login, đo steady và chạy Linux. D3 không Cart, checkout 20%, dữ liệu ID 1–5 ngẫu nhiên, login ngay đầu thread, đo cả ramp và chạy Windows. Think-time của API chung cùng khoảng nhưng vị trí timer và cơ chế chọn action khác. JMeter failure bao gồm assertions; k6 tách HTTP error và checks. Percentile JMeter dùng nearest rank trên elapsed ms; k6 dùng `http_req_duration`. Chưa có thí nghiệm kiểm soát connection pooling hoặc đủ metadata reference để quy nguyên nhân. Hai công cụ đều đạt SLO riêng; không dùng tổng khác phạm vi để xếp hạng công cụ.
 
-### 5.4 D8b — Xác minh trên máy B
+### 5.4 Kiểm chứng kết quả k6 trước và sau tối ưu SQLite trên Windows
 
-D8b dùng script **k6 của A**, không phải JMeter. Ngày 23/10, Codex thực hiện trong workspace B trên Windows/PowerShell, k6 2.2.0, Node 24.20.0 và SQLite 3.52.0. Mỗi run dùng SUT bản sao mới và account seed đúng DB; file SQLite nguồn được hash kiểm tra không đổi. Bản gốc journal DELETE; tuned WAL + index; cả hai truy vấn `LIKE '%iPhone%'` vẫn `SCAN products`.
+Phép kiểm chứng dùng cùng script **k6 đã chạy trên Linux**. Ngày 23/10, trợ lý Codex thực hiện trên máy B bằng Windows/PowerShell, k6 2.2.0, Node 24.20.0 và SQLite 3.52.0. Mỗi lần chạy dùng ứng dụng bản sao mới và khởi tạo tài khoản đúng DB; file SQLite nguồn được kiểm tra bằng hàm băm để xác nhận không đổi. Bản gốc journal DELETE; bản tối ưu dùng WAL + index; cả hai truy vấn `LIKE '%iPhone%'` vẫn `SCAN products`.
 
 Hai smoke đều đủ 5 requests/10 checks. Baseline gốc/tuned đạt 25/25 thresholds: steady p50/p95/p99 lần lượt 1.806/12.381/16.353 và 1.656/5.524/9.010ms, HTTP lỗi 0%. Spike giữ 50 VUs 30s →1500 VUs 60s →50 VUs recovery 60s được chạy hai lượt mỗi cấu hình:
 
@@ -1001,13 +1003,13 @@ Mỗi bậc dưới đây được giữ 60 giây. Bảng trích một số bậ
 
 #### Tình huống
 
-Bạn nhận kết quả D3: Search 2840 samples, Detail 1283, Checkout 1017; 50 Login báo riêng. Actions p95=16ms, lỗi 0%. Sau đó nhận spike tuned k6 chạy trên Windows: p95 đỉnh=59.286ms, HTTP lỗi=3.434%, skipped=490. Tiêu chí: p95 <500ms, lỗi <1%; k6 còn yêu cầu skipped=0.
+Bạn nhận kết quả kiểm thử JMeter: Search 2840 samples, Detail 1283, Checkout 1017; 50 Login báo riêng. Các request nghiệp vụ có p95=16ms, lỗi 0%. Sau đó nhận kết quả k6 tăng tải đột biến trên Windows với backend đã tối ưu SQLite: p95 đỉnh=59.286ms, HTTP lỗi=3.434%, skipped=490 (thao tác bị bỏ qua do đăng nhập thất bại). Tiêu chí: p95 <500ms, lỗi <1%; k6 còn yêu cầu skipped=0.
 
 #### Thao tác và câu hỏi (5–7 phút)
 
 1. Mở [test plan](../performance/jmeter/eshop_workload.jmx) và xác định các node lấy JWT, gửi Bearer header và kiểm tra response. Dữ liệu CSV tác động tới request nào?
 2. Tính tỷ lệ thực tế Search/Detail/Checkout. Vì sao không tính 50 Login vào mẫu số workload?
-3. D3 có đạt SLO không? Spike tuned có đạt không dù p95 thấp hơn 500ms?
+3. Bài JMeter có đạt mục tiêu chất lượng (SLO) không? Bài k6 tăng tải đột biến với backend tối ưu có đạt không dù p95 thấp hơn 500ms?
 4. Nếu checkout bị 401, kiểm tra lần lượt phần nào? Có nên bỏ assertion hoặc đưa token vào body để tiếp tục không?
 5. Người khác cần lưu gì để chứng minh cross-run? Kết quả trợ lý chạy trên máy B có đủ để ký xác nhận cả A/B/C không?
 
@@ -1017,7 +1019,7 @@ Tùy thời gian có thể chạy smoke 1 user/60s bằng lệnh ở mục 5.2 t
 
 - Once Only Controller/login → Regex Extractor `token` → checkout Header Manager; assertions kiểm tra status/body. Account giữ theo thread; keyword, product ID và giá checkout lấy từ CSV.
 - Mẫu số actions=5140: tỷ lệ 55.253/24.961/19.786%. Login là lưu lượng khởi tạo, không thuộc ba action được phân bổ.
-- D3 PASS; spike tuned FAIL do error >1% và skipped khác 0. Không nhìn riêng p95 hoặc throughput để kết luận đạt.
+- Bài JMeter PASS; bài k6 tăng tải đột biến với backend tối ưu FAIL do error >1% và skipped khác 0. Không nhìn riêng p95 hoặc throughput để kết luận đạt.
 - Với 401: kiểm tra account/seed, response login, extractor, biến token và Bearer header; giữ assertions. SUT yêu cầu token trong Authorization header; không đưa token/password vào evidence.
 - Cross-run cần người thực sự thao tác, phiên bản/môi trường, lệnh, run ID và output; nhận xét kết quả có căn cứ. Các run trợ lý là evidence kỹ thuật, chưa thay sign-off của thành viên.
 

@@ -1,21 +1,23 @@
-# Nội dung slides — D2/D3 và D8b
+# So sánh kiểm thử hiệu năng bằng k6 và JMeter
 
-Võ Hữu Thắng — Assignee B · 23/10/2026. Bản Markdown theo yêu cầu, dùng để trình bày hoặc chuyển sang slide sau này. Số thập phân dùng dấu chấm, latency đơn vị ms.
+Võ Hữu Thắng · 23/10/2026. Nội dung trình bày kết quả kiểm thử ứng dụng EShop và kiểm chứng kết quả trước–sau tối ưu SQLite trên hai máy. Số thập phân dùng dấu chấm, thời gian phản hồi đơn vị ms.
+
+Quy ước: **máy A** là môi trường Linux thực hiện phép đo k6 ban đầu; **máy B** là môi trường Windows chạy JMeter và chạy lại k6 để kiểm chứng. A/B chỉ người và môi trường thực hiện, không phải tên công cụ.
 
 ## Slide 1 — Mục tiêu và bằng chứng
 
-- D2: k6 viết tay của A, baseline tải bình thường.
-- D3: JMeter của B, API workload có JWT, dữ liệu CSV và assertions.
-- D8b: dùng **k6 của A** trên máy Windows B để xác minh trước/sau SQLite tuning.
-- SLO latency/error: p95 <500ms, lỗi <1%. k6 có thêm checks/count/skipped thresholds.
+- **k6:** đo hiệu năng ở tải bình thường bằng script do thành viên A viết.
+- **JMeter:** đo các thao tác API với token đăng nhập JWT, dữ liệu CSV và kiểm tra nội dung phản hồi.
+- **Kiểm chứng trên máy khác:** chạy lại script k6 trên máy B với backend gốc và backend đã tối ưu SQLite.
+- **Mục tiêu chất lượng (SLO):** p95 <500ms và tỷ lệ lỗi <1%. p95 là mức thời gian mà 95% request có thời gian phản hồi không vượt quá. k6 còn kiểm tra tỷ lệ checks thành công, số request và số thao tác bị bỏ qua.
 
-Nguồn: [D2](evidence/k6/summaries/baseline-20261022-110446-eGLTX1/summary.json), [D3](../performance/jmeter/results/baseline-summary.json), [D8b](../performance/verification/verification_report.md).
+Nguồn: [Kết quả k6](evidence/k6/summaries/baseline-20261022-110446-eGLTX1/summary.json), [Kết quả JMeter](../performance/jmeter/results/baseline-summary.json), [Báo cáo kiểm chứng trên máy B](../performance/verification/verification_report.md).
 
-Lời trình bày: D3 đối chiếu hai công cụ; D8b đối chiếu khả năng tái lập của cùng script trên môi trường khác. Hai mục đích cần được trình bày riêng.
+Lời trình bày: phần đầu so sánh hai bài kiểm thử k6/JMeter; phần sau kiểm tra cùng script k6 có cho kết luận tương tự trên máy khác hay không.
 
-## Slide 2 — Hai workload D2/D3 khác nhau ở đâu?
+## Slide 2 — Hai bài kiểm thử tạo tải khác nhau ở đâu?
 
-| Thành phần | D2 k6 A | D3 JMeter B |
+| Thành phần | k6 trên máy A | JMeter trên máy B |
 | --- | --- | --- |
 | Tải | Ramp 60s, steady 50 VUs/300s, giảm tải 60s | 50 threads, ramp 10s trong tổng 300s |
 | API/mix | Search/Detail/Cart/Checkout=55/25/14/6 | Search/Detail/Checkout=55/25/20 |
@@ -28,26 +30,28 @@ Lời trình bày: D3 đối chiếu hai công cụ; D8b đối chiếu khả n�
 
 Lời trình bày: cả hai là closed workload có think-time. VUs bằng nhau chưa tạo điều kiện benchmark tương đương; không suy JMeter/k6 nhanh hơn từ bảng latency.
 
-## Slide 3 — Kết quả D2/D3
+## Slide 3 — Kết quả k6 và JMeter
 
-| API | D2 p95 | D2 HTTP lỗi | D3 p95 | D3 sample failure |
+| API | k6 p95 (ms) | k6 HTTP lỗi | JMeter p95 (ms) | JMeter request thất bại |
 | --- | ---: | ---: | ---: | ---: |
 | Search | 3.071 | 0% | 5 | 0% |
 | Detail | 3.031 | 0% | 5 | 0% |
 | Cart | 2.770 | 0% | N/A | N/A |
 | Checkout | 16.006 | 0% | 21 | 0% |
 
-| Login toàn run, báo riêng | D2 | D3 |
+| Đăng nhập trong toàn bài, báo riêng | k6 | JMeter |
 | --- | ---: | ---: |
 | Count | 50 | 50 |
 | p95 | 4.820 | 157 |
 | Lỗi | 0% | 0% |
 
-D3 actions: 5140 mẫu, p50/p95/p99=2/16/21ms, lỗi 0%; tỷ lệ thực tế 55.253/24.961/19.786%. D2 tổng steady: 5925 mẫu, p50/p95/p99=2.034/8.122/14.546ms, HTTP lỗi 0%; có 6 Login và Cart. Hai tổng này không cùng phạm vi mẫu.
+JMeter có 5140 request nghiệp vụ, p50/p95/p99=2/16/21ms, lỗi 0%; tỷ lệ Search/Detail/Checkout thực tế là 55.253/24.961/19.786%. k6 có 5925 request trong giai đoạn tải ổn định, p50/p95/p99=2.034/8.122/14.546ms, HTTP lỗi 0%; bao gồm Cart và 6 request Login. Hai tổng này không cùng phạm vi mẫu.
 
 Lời trình bày: cả hai đạt SLO của lần đo tương ứng. JMeter sample failure gồm assertion; k6 tách HTTP failure và checks. Số liệu không đủ để quy chênh lệch cho connection pooling.
 
-## Slide 4 — D8b: baseline tái lập được gì?
+## Slide 4 — Chạy lại k6 trên máy khác: kết quả ở tải bình thường
+
+Giữ cùng script k6, chạy backend gốc và backend đã tối ưu trên mỗi máy. “Tuned” trong bảng là bản bật chế độ ghi SQLite WAL và thêm index tên sản phẩm.
 
 | Máy / cấu hình | p95 steady | HTTP lỗi | Kết quả |
 | --- | ---: | ---: | --- |
@@ -60,9 +64,9 @@ B chạy k6 2.2.0, Node 24.20.0, SQLite 3.52.0 trên Windows; source và môi tr
 
 Lời trình bày: baseline có cùng kết luận PASS và xu hướng latency thấp hơn sau tuning. Chưa tách riêng tác dụng WAL/index hoặc biến động máy; chưa chứng minh quan hệ nhân quả từ một cặp baseline.
 
-## Slide 5 — D8b: spike chạy hai lần trên B
+## Slide 5 — Tải tăng đột biến: hai lần kiểm chứng bằng k6 trên máy B
 
-Đỉnh tải 1500 VUs trong 60s, cùng script/profile với A.
+Spike là bài kiểm thử tăng tải đột ngột. Đỉnh tải ở đây là 1500 người dùng ảo (VUs) trong 60s, cùng script và lịch tải với máy A. B1/B2 là lần chạy thứ nhất/thứ hai trên máy B; Skipped là số thao tác nghiệp vụ bị bỏ qua do đăng nhập thất bại.
 
 | Cấu hình | Lượt | p95 | HTTP lỗi | Skipped | Kết quả |
 | --- | --- | ---: | ---: | ---: | --- |
@@ -79,10 +83,10 @@ Lời trình bày: kết quả spike tuned PASS của A chưa tái lập sau hai
 
 **Cross-run:** thành viên khác tự chạy script của người viết, biết chuẩn bị SUT/dữ liệu và đọc output. Mục tiêu là kiểm tra khả năng chuyển giao công cụ, không yêu cầu mọi timing giống nhau hoặc mọi bài tải đều PASS.
 
-- Đã có: trợ lý chạy k6 A trong workspace B, metadata/log đầy đủ; đây là evidence kỹ thuật D8b.
+- Đã có: trợ lý chạy script k6 của A trên môi trường B, lưu thông tin môi trường và log đầy đủ làm bằng chứng kiểm chứng kỹ thuật.
 - Còn cần: B trực tiếp xác nhận chạy k6; A/C tự chạy JMeter và các lượt còn lại theo phân công, lưu người chạy, phiên bản, lệnh, run ID và output.
 - Chưa được đánh dấu cả nhóm hoàn thành cross-run; không ký thay người khác.
 
-Kết luận: D3 đạt SLO của workload đã đo; D8b tái lập được baseline và xu hướng latency, chưa tái lập PASS spike tuned. Ưu tiên đo socket/backlog, event-loop, DB I/O và tài nguyên từng process, rồi đối soát orders sau lỗi transport.
+Kết luận: bài JMeter đạt mục tiêu chất lượng của cấu hình đã đo. Chạy lại k6 trên máy B xác nhận được kết quả PASS ở tải bình thường và xu hướng thời gian phản hồi thấp hơn sau tối ưu; kết quả PASS ở tải đột biến của bản tối ưu trên máy A chưa tái lập được trên máy B. Cần đo thêm kết nối mạng, hàng đợi xử lý, hoạt động đọc/ghi DB và tài nguyên từng tiến trình để tìm nguyên nhân, đồng thời đối soát đơn hàng sau lỗi kết nối.
 
 Hướng dẫn/sign-off: [cross_run_signoff.md](../performance/verification/cross_run_signoff.md). Báo cáo ngắn: [performance_report.md](performance_report.md).

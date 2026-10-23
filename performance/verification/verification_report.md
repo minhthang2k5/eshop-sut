@@ -1,6 +1,8 @@
-# D8b — Kiểm chứng tái lập trên môi trường B
+# Kiểm chứng kết quả k6 trước và sau tối ưu SQLite trên máy khác
 
-Ngày chạy: 23/10/2026. Người thực thi: Codex trong workspace của Assignee B. Đây là confirmation run, không phải xác nhận A/C đã thao tác cross-run.
+Ngày chạy: 23/10/2026. Người thực thi: trợ lý Codex trên môi trường Windows của Võ Hữu Thắng. Trong báo cáo, máy A là môi trường Linux đo k6 ban đầu; máy B là môi trường Windows chạy lại để kiểm chứng. “Tuned” là backend bật SQLite WAL và thêm index tên sản phẩm. Nhiệm vụ này có mã D8b trong bảng phân công.
+
+Các lần chạy cung cấp bằng chứng kỹ thuật về khả năng tái lập. Việc từng thành viên tự chạy công cụ của người khác và xác nhận hiểu kết quả (cross-run) được theo dõi riêng tại [bảng xác nhận](cross_run_signoff.md).
 
 ## Phương pháp và môi trường
 
@@ -86,7 +88,7 @@ Reference A: baseline gốc `baseline-20261022-110446-eGLTX1`, tuned `baseline-2
 
 **Kết luận D8b: đã chạy lại được; xu hướng latency tốt hơn sau tuning được quan sát trên B, nhưng khả năng spike tuned đạt toàn bộ SLO của A chưa tái lập.** Baseline đạt trên cả hai môi trường. Không thể kết luận hiệu năng độc lập máy: A chạy Linux, B chạy Windows; reference thiếu checksum môi trường/DB/công cụ đầy đủ và chưa có chạy lặp. Hai phép so sánh gốc/tuned không tách riêng tác động WAL khỏi index hoặc biến động hệ thống.
 
-## Run manifest và nghiệm thu bước 1–5
+## Danh mục lần chạy và kiểm tra bằng chứng
 
 Timestamps trong run ID là UTC; cộng 7 giờ để đọc theo Asia/Bangkok. Toàn bộ lượt chạy khoảng 16:29–16:49 ngày 23/10/2026.
 
