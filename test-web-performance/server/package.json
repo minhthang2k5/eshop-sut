@@ -4,10 +4,12 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "test": "node --test src/*.test.js",
     "dev": "node --watch src/index.js",
     "start": "node src/index.js"
   },
   "dependencies": {
+    "acorn": "^8.19.0",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^5.1.0",

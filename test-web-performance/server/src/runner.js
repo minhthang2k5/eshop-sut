@@ -38,16 +38,33 @@ export async function runSmoke({ scriptPath, baseUrl, outputDir }) {
 
 export function smokeEvidence(result) {
   const metrics = result.summary?.metrics || {};
-  const checks = metrics.checks?.values?.rate;
-  const failedRequests = metrics.http_req_failed?.values?.rate;
-  const pass = result.exitCode === 0 && !result.timedOut && (checks === undefined || checks === 1) && (failedRequests === undefined || failedRequests === 0);
+  const number = (...values) => values.find((value) => typeof value === 'number' && Number.isFinite(value)) ?? null;
+  // --summary-export uses flat metric fields; handleSummary uses nested values.
+  const checks = number(metrics.checks?.values?.rate, metrics.checks?.value);
+  const failedRequests = number(metrics.http_req_failed?.values?.rate, metrics.http_req_failed?.value);
+  const p95 = number(metrics.http_req_duration?.values?.['p(95)'], metrics.http_req_duration?.['p(95)']);
+  const requests = number(metrics.http_reqs?.values?.count, metrics.http_reqs?.count);
+  const checkMetric = metrics.checks?.values || metrics.checks;
+  const checkCount = checkMetric && typeof checkMetric.passes === 'number' && typeof checkMetric.fails === 'number' ? checkMetric.passes + checkMetric.fails : null;
+  const runtimeError = /(?:level=error|ERRO)[^\n]*(?:TypeError|ReferenceError|SyntaxError|GoError|Uncaught)/i.test(result.log || '');
+  const reasons = [];
+  if (result.exitCode !== 0) reasons.push(`exit ${result.exitCode}`);
+  if (result.timedOut) reasons.push('quá thời gian chạy');
+  if (runtimeError) reasons.push('exception trong script');
+  if (!(requests > 0)) reasons.push('không có request được xác nhận');
+  if (checks === null || failedRequests === null || p95 === null) reasons.push('thiếu metric cần thiết trong summary');
+  if (!(checkCount > 0)) reasons.push('không xác nhận được check đã thực thi');
+  if (checks !== null && checks !== 1) reasons.push('có check thất bại');
+  if (failedRequests !== null && failedRequests !== 0) reasons.push('có request thất bại');
+  const pass = reasons.length === 0;
   return {
     pass,
     exitCode: result.exitCode,
-    checksRate: checks ?? null,
-    failedRequestRate: failedRequests ?? null,
-    p95Ms: metrics.http_req_duration?.values?.['p(95)'] ?? null,
-    message: pass ? 'k6 smoke pass: script hoàn tất, không có request/check thất bại.' : `k6 smoke fail (exit ${result.exitCode}).`,
+    checksRate: checks,
+    failedRequestRate: failedRequests,
+    p95Ms: p95,
+    requestCount: requests,
+    message: pass ? 'k6 smoke pass trên nhánh đã chạy; chưa chứng minh mọi nhánh nghiệp vụ.' : `k6 smoke chưa đạt: ${reasons.join('; ')}.`,
     log: result.log
   };
 }

@@ -26,6 +26,14 @@ Mở `http://localhost:5175`. Khởi động SUT API trước ở `http://localh
 - Smoke profile: 1 VU, 1 iteration, timeout 45 giây.
 - Đầu ra: audit dashboard, evidence theo từng tiêu chí, và `rubric_scorecard.md` tải từ dashboard.
 
+## Độ chính xác của bộ đánh giá
+
+Source được parse bằng Acorn, không thực thi bằng Node. Bộ chấm nhận diện correlation qua JSON.parse/hàm hỗ trợ, header có hoặc không có dấu nháy, xác suất qua hằng số và hàm random dữ liệu. Comment không được tính làm evidence. Mẫu chưa nhận diện được được đánh dấu cần đối chiếu source; phân tích tĩnh hỗ trợ các cấu trúc phổ biến, chưa chứng minh ngữ nghĩa đúng cho mọi JavaScript.
+
+Smoke đọc cả summary-export dạng phẳng và handleSummary dạng nested. Chỉ pass khi có request/check thực thi, đủ metric, không có check/request lỗi, timeout hoặc lỗi runtime được ghi nhận. Smoke 1 iteration chỉ xác nhận nhánh đã chạy.
+
+Chạy `npm --prefix server test` từ thư mục test-web-performance. Audit cũ giữ nguyên evidence/điểm đã lưu; tạo audit mới để áp dụng bộ chấm mới, không tự sửa điểm lịch sử hoặc điểm người chấm đã duyệt.
+
 ## An toàn khi chạy script
 
 Backend chỉ gọi k6 bằng file vừa upload, luôn ép 1 VU/1 iteration, chỉ cho SUT URL nằm trong allowlist (mặc định `http://localhost:3000`), và từ chối import HTTP không phải k6 hoặc chuỗi URL ngoài allowlist. Đây là công cụ chạy trong môi trường học tập/local; không upload script không tin cậy lên server công khai.
