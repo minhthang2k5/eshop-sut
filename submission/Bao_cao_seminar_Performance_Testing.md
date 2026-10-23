@@ -15,7 +15,7 @@
 
 ## Tóm tắt
 
-Nhóm khảo sát kiểm thử hiệu năng trên EShop, một hệ thống thương mại điện tử phục vụ học tập. Nội dung kết hợp công cụ tạo tải với quy trình kiểm chứng script được sinh bằng AI. Phần thực nghiệm k6 và JMeter được tổ chức thành các chương riêng để Lê Nguyễn Quốc Thái và Võ Hữu Thắng bổ sung số liệu và nhận xét của mình.
+Nhóm khảo sát kiểm thử hiệu năng trên EShop, một hệ thống thương mại điện tử phục vụ học tập. Nội dung kết hợp công cụ tạo tải với quy trình kiểm chứng script được sinh bằng AI. Lê Nguyễn Quốc Thái trình bày thực nghiệm k6 trước–sau tuning SQLite: baseline 50 VUs đạt SLO ở cả hai cấu hình; spike 1500 VUs chuyển từ FAIL sang PASS; stress sau tune vẫn fail latency ở plateau 2800 VUs. Phần JMeter được tổ chức thành chương riêng để Võ Hữu Thắng bổ sung số liệu và nhận xét.
 
 Trịnh Hồ Minh Thắng xây dựng web automation bằng React và Node.js/Express. Người dùng cung cấp một HAR đã che dữ liệu nhạy cảm cùng hai script k6; server phân tích source bằng Acorn, chạy k6 smoke, hiển thị rubric 10 tiêu chí và cho phép người chấm duyệt kết quả. Sau khi kết nối ChatGPT, người dùng có thể yêu cầu Luna nhận xét source hoặc đề xuất threshold và correlation. Các đề xuất được trả dưới dạng JSON và chuyển thành bảng trên giao diện.
 
@@ -245,23 +245,388 @@ JMeter có tài liệu chính thức về test plan, recording và dashboard t�
 
 ## 4 Thực nghiệm k6 của Lê Nguyễn Quốc Thái
 
+Phần thực nghiệm do **Lê Nguyễn Quốc Thái — MSSV 23120352** phụ trách, tập trung vào API EShop: thiết kế script, tạo tải baseline/stress/spike và đối chiếu kết quả trước–sau tuning SQLite. Câu hỏi thực nghiệm là: hệ thống có đạt SLO ở tải bình thường, khi tải tăng từng bậc và khi tăng đột ngột hay không; sau giảm tải, cửa sổ quan sát có trở lại SLO không?
 ### 4.1 Môi trường và phương pháp
 
-[Lê Nguyễn Quốc Thái điền: cấu hình máy, phiên bản Node/k6, địa chỉ SUT, dữ liệu ban đầu, profile và cách theo dõi tài nguyên.]
+#### 4.1.1 Phạm vi và môi trường thực nghiệm
+
+EShop sử dụng backend Node.js/Express và SQLite embedded. k6 gửi HTTP trực tiếp tới API, không mở trình duyệt hoặc đo tốc độ render frontend. Load generator và backend chạy chung một máy Linux.
+
+| Thành phần | Cấu hình và tình trạng bằng chứng |
+| --- | --- |
+| Backend gốc | `backend/server.js`, dùng `backend/database.sqlite` qua module `database.js` |
+| Backend sau tune | `tuned-backend/server.js`, dùng `tuned-backend/database_tuned.sqlite`; chạy lần lượt với bản gốc trên cùng cổng |
+| Địa chỉ mặc định | `http://localhost:3000`; các script cho phép truyền `BASE_URL`; không có bản lưu đầy đủ biến môi trường của từng run |
+| Load generator | k6 local, một host dùng chung với server |
+| Dữ liệu | 50 tài khoản từ CSV cho bài tải; keyword `iPhone`, sản phẩm ID 1, số lượng 1, giá trị đơn 30000000 |
+| Monitoring | Quan sát thủ công Linux Resources, ghi chép vào report; không có ảnh hoặc chuỗi thời gian tài nguyên đi kèm |
+| RAM/Swap được ghi nhận | Baseline trước tune: tổng RAM 7.39 GB; các run sau tune: 7.12 GB; tổng Swap 8.59 GB |
+| Thông tin chưa lưu theo run | Model CPU/số core, phiên bản k6/Node.js/SQLite, checksum build, snapshot DB, số orders và trạng thái cart ban đầu |
+
+
+#### 4.1.2 API và tính đúng đắn của workload
+
+| API | Vai trò | Check nội dung trong script tải |
+| --- | --- | --- |
+| `POST /api/login` | Lấy token khi cần thao tác có xác thực | HTTP 200 và token chuỗi không rỗng |
+| `GET /api/products?search=iPhone` | Tìm sản phẩm | HTTP 200 và mảng kết quả không rỗng |
+| `GET /api/products/1` | Xem chi tiết | HTTP 200 và `id === 1` |
+| `POST /api/cart` | Thêm sản phẩm vào giỏ | HTTP 200 và message `Added to cart` |
+| `POST /api/checkout` | Tạo đơn hàng | HTTP 200 và `orderId` nguyên dương |
+
+#### 4.1.3 Mô hình đo và tiêu chí chấp nhận
+
+Các bài tải sử dụng mô hình khép kín theo VUs: VU chọn nghiệp vụ, gửi request, kiểm tra response rồi nghỉ. Khi response chậm, số iteration hoàn tất trong cùng thời gian có thể giảm. Thông lượng được đo như kết quả của workload, không được áp đặt bằng arrival rate cố định. Login là request bổ sung khi VU chưa có token, không nằm trong tỷ lệ chọn bốn API nghiệp vụ.
+
+| Tiêu chí | Ngưỡng | Phạm vi áp dụng |
+| --- | --- | --- |
+| HTTP latency p95 | `<500 ms` | Tổng steady và từng API của baseline; tổng và từng API mỗi plateau/recovery của stress/spike |
+| HTTP error rate | `<1%` | Cùng phạm vi với latency |
+| Checks thành công | `≥99%` | Status và body, cùng phạm vi trên |
+| Số request | `>0` | Tổng và từng API cần đánh giá, chống cửa sổ thiếu mẫu |
+| Nghiệp vụ skipped do Login lỗi | `=0` | Toàn baseline; từng plateau/recovery của stress/spike |
+| Login riêng | Cùng bốn ngưỡng latency/error/checks/count | Baseline toàn run; stress/spike chỉ thống kê Login riêng |
+| Smoke | Checks `=100%`, p95 `<500 ms` | Một VU, một iteration tuần tự năm API |
 
 ### 4.2 Hướng dẫn sử dụng và các kịch bản
 
-[Lê Nguyễn Quốc Thái điền: demo cài đặt, demo chạy cơ bản, demo workload phức tạp. Trình bày cách parameterize dữ liệu, correlation và checkpoint; kèm lệnh và ảnh của chính lần chạy.]
+#### 4.2.1 Chuẩn bị và khởi động
+
+Máy thực hành cần Node.js/npm và binary k6 trong `PATH`. Các lệnh dưới đây mô tả cách sử dụng source hiện có, không phải xác nhận phiên bản lịch sử của các run. Có thể kiểm tra công cụ trước khi chạy bằng `node --version`, `npm --version` và `k6 version`; khi tái lập cần lưu các kết quả này cùng build và cấu hình máy.
+
+Từ thư mục `eshop-sut`, mở terminal A để cài dependencies và khởi động SUT gốc:
+
+```bash
+cd backend
+npm install
+node database.js
+node server.js
+```
+
+Chờ backend khởi tạo xong. Mở terminal B tại `eshop-sut`, seed fixture rồi chạy smoke:
+
+```bash
+node performance/k6/data/seed.js
+bash performance/k6/run-smoke.sh
+```
+
+`seed.js` đọc CSV, kiểm tra header/dữ liệu, mở SQLite đã tồn tại và thêm hoặc cập nhật tài khoản trong transaction. Nếu có lỗi thì rollback, không âm thầm tạo database mới ở đường dẫn sai. Khởi động lại backend sẽ reset bảng, vì vậy seed trước khi khởi động hoặc quên seed lại có thể khiến Login thất bại. Smoke dùng tài khoản mặc định của SUT, do đó smoke đạt không thay thế việc kiểm tra 50 tài khoản CSV của bài tải.
+
+Sau khi xác nhận dữ liệu và smoke, chạy từng bài riêng, chờ kết thúc trước bài tiếp theo:
+
+```bash
+bash performance/k6/run-baseline.sh
+bash performance/k6/run-stress.sh
+bash performance/k6/run-spike.sh
+```
+
+#### 4.2.2 Demo cơ bản: smoke tuần tự
+
+[Source smoke](../performance/k6/smoke.js) đặt `vus: 1`, `iterations: 1`. Một iteration đi lần lượt qua Login → Search → Detail → Cart → Checkout, nghỉ một giây sau mỗi API. Login trả token; token được truyền vào Cart và Checkout. Mỗi request có check status và check nội dung nên năm request tương ứng mười checks. Đây là demo kiểm tra contract API và correlation trước khi sử dụng script tạo tải lớn.
+
+Run dùng để minh họa là `smoke-20261022-195537-4es3Xy`: **5 HTTP requests, 10/10 checks đạt, HTTP lỗi 0%, p50 11.850 ms, p95 47.895 ms**, hai thresholds đạt. Nguồn: [summary smoke](evidence/k6/summaries/smoke-20261022-195537-4es3Xy/summary.json).
+
+#### 4.2.3 Data driven, correlation và checkpoints
+
+[Baseline](../performance/k6/baseline.js), [stress](../performance/k6/stress.js) và [spike](../performance/k6/spike.js) đọc fixture `data/test_accounts.csv` bằng `SharedArray`. Script kiểm tra đúng header `email,password,name,role`, đủ 50 email duy nhất và bốn trường không rỗng, không dùng quoting. Dữ liệu sai làm dừng ở init trước khi phát tải. Đây là parameterization tài khoản; keyword và sản phẩm vẫn cố định, chưa phải dữ liệu ngẫu nhiên trên toàn catalog.
+
+Baseline phân một tài khoản cho mỗi VU. Stress/spike phân vòng tròn theo ID:
+
+```javascript
+const account = accounts[(exec.vu.idInTest - 1) % accounts.length];
+```
+
+Tại 1500 VUs, mỗi tài khoản có tối đa 30 VUs; tại 2800 VUs là 56. Token nằm trong module state riêng từng VU, không chia sẻ qua `setup()`.
+
+Correlation trong bài tải là đọc `body.token` sau Login hợp lệ, cache vào `authToken`, rồi thêm `Authorization: Bearer ...` cho nghiệp vụ được bảo vệ. Ví dụ rút gọn từ source:
+
+```javascript
+if (valid) authToken = body.token;
+if (needsAuth) params.headers.Authorization = `Bearer ${authToken}`;
+```
+
+Login được thực hiện lazy khi lần đầu chọn Cart/Checkout. Nếu Login lỗi, script tăng `business_requests_skipped`, không gửi nghiệp vụ thiếu token và vẫn nghỉ theo think time của nhánh. Stress/spike xóa token khi nghiệp vụ trả 401 để lần chọn nghiệp vụ bảo vệ tiếp theo thử xác thực lại. Không tự retry thao tác ghi: timeout Checkout có thể xảy ra sau khi đơn đã được tạo, nên retry ngay có nguy cơ tạo trùng.
+
+Checkpoints có hai lớp. `http.expectedStatuses(200)` xác định HTTP thành công theo contract; `check()` xác minh body như token, ID sản phẩm, message và order ID. HTTP 200 với body sai vẫn có thể làm checks thất bại. Thresholds theo từng API ngăn API Search chiếm tỷ trọng lớn che khuất Checkout chậm. Ví dụ threshold lấy từ baseline:
+
+```javascript
+'http_req_duration{phase:steady}': ['p(95)<500'],
+'http_req_failed{phase:steady}': ['rate<0.01'],
+'checks{phase:steady}': ['rate>=0.99'],
+'http_reqs{phase:steady}': ['count>0'],
+```
+
+Script xây thêm bộ ngưỡng tương tự cho từng endpoint. Việc chạy HTTP được tự động hóa; chuẩn bị SUT, chọn thứ tự chạy, quan sát tài nguyên và nhận xét kết quả còn do người thực hiện phụ trách. Phần này dùng script HTTP viết sẵn; quy trình HAR/AI ở mục 6 là nội dung riêng, không nhận đây là replay HAR nguyên xi.
+
+#### 4.2.4 Demo workload phức tạp và lịch tải thực đo
+
+| API nghiệp vụ | Baseline | Stress/spike | Think time sau request |
+| --- | ---:| ---:| --- |
+| Search | 55% | 40% | 1–3s |
+| Detail | 25% | 20% | 2–5s |
+| Cart | 14% | 22% | 1–3s |
+| Checkout | 6% | 18% | 3–6s |
+
+Tỷ lệ là xác suất chọn nhánh mỗi iteration, không phải tỷ lệ VUs hay tỷ lệ chắc chắn của request thực gửi. Script vẫn nghỉ sau request thất bại để giữ pacing. Khi Login lỗi, mix request thực gửi có thể lệch vì nghiệp vụ bị bỏ qua. Baseline và stress/spike có mix khác nhau nên không dùng khác biệt RPS giữa chúng làm kết luận tuning.
+
+| Bài | Lịch tải dùng trong các run đối chiếu | Cửa sổ đánh giá |
+| --- | --- | --- |
+| Baseline | 0→50 VUs trong 1 phút; giữ 50 trong 5 phút; hạ về 0 trong 1 phút | `steady`: [60,360)s, 300s |
+| Stress | 11 bậc 500/750/1000/1250/1500/1750/2000/2200/2400/2600/2800; ramp 30s + hold 60s mỗi bậc; giảm về 50 và recovery 60s | `hold_<VUs>` và `recovery_1`, 60s/cửa sổ |
+| Spike | 50 VUs 30s → 1500 VUs 60s → 50 VUs 60s; chuyển mục tiêu bằng stage 0s | `hold_50`, `hold_1500`, `recovery_1` |
+
+Profile stress dài **17m30s**; spike **2m30s**; baseline **7 phút**, chưa tính thời gian khởi tạo và chờ iteration cuối. Stress/spike cho graceful ramp-down/stop 30s, vì vậy VUs đang làm việc có thể chưa giảm ngay khi target giảm. Script hiện tại đã khớp các bậc stress thực đo; mô tả cũ 500–1500, hold 2 phút trong README được cập nhật cùng báo cáo này. Không thực hiện soak.
 
 ### 4.3 Kết quả baseline stress và spike
 
-| Run ID | Profile thực chạy | VU và thời lượng | p50 ms | p95 ms | p99 ms | Error rate | Evidence |
+#### 4.3.1 Bộ run tham chiếu và cách đọc bảng
+
+Ba run ngày 22/10 là mốc trước tune; ba run ngày 23/10 là bản tuned. Bảng sau ghi cửa sổ đại diện: baseline dùng steady, stress dùng bậc đầu tiên vi phạm, spike dùng đỉnh. Kết quả toàn bài vẫn phụ thuộc tất cả thresholds đã cấu hình, không chỉ cửa sổ đại diện này.
+
+| Mã | Run ID / summary |
+| --- | --- |
+| B0 | [`baseline-20261022-110446-eGLTX1`](evidence/k6/summaries/baseline-20261022-110446-eGLTX1/summary.json) |
+| T0 | [`stress-20261022-181718-lx8F4c`](evidence/k6/summaries/stress-20261022-181718-lx8F4c/summary.json) |
+| P0 | [`spike-20261022-190641-UgVeF4`](evidence/k6/summaries/spike-20261022-190641-UgVeF4/summary.json) |
+| B1 | [`baseline-20261023-084311-TSxg2P`](evidence/k6/summaries/baseline-20261023-084311-TSxg2P/summary.json) |
+| T1 | [`stress-20261023-090531-KgTWyh`](evidence/k6/summaries/stress-20261023-090531-KgTWyh/summary.json) |
+| P1 | [`spike-20261023-085706-BOOKoc`](evidence/k6/summaries/spike-20261023-085706-BOOKoc/summary.json) |
+
+| Mã | Cửa sổ | VU / thời lượng | p50 ms | p95 ms | p99 ms | HTTP lỗi | Thresholds toàn bài |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [Điền] | [Điền] | [Điền] | [Điền] | [Điền] | [Điền] | [Điền] | [Điền] |
+| B0 | steady | 50 VUs / 300s | 2.034 | 8.122 | 14.546 | 0.000% | 25/25; PASS |
+| T0 | hold_1500 | 1500 VUs / 60s | 1034.508 | 5380.450 | 9999.615 | 2.659% | 201/252; FAIL |
+| P0 | hold_1500 | 1500 VUs / 60s | 849.899 | 5344.455 | 8653.534 | 1.486% | 47/63; FAIL |
+| B1 | steady | 50 VUs / 300s | 2.062 | 6.328 | 10.586 | 0.000% | 25/25; PASS |
+| T1 | hold_2800 | 2800 VUs / 60s | 87.410 | 5288.187 | 8115.167 | 0.596% | 247/252; FAIL |
+| P1 | hold_1500 | 1500 VUs / 60s | 1.306 | 6.849 | 229.232 | 0.000% | 63/63; PASS |
+
+Quy ước: số thập phân dùng dấu chấm, số đếm không phân cách hàng nghìn; tỷ lệ lỗi/checks hiển thị phần trăm. Mỗi mã trong bảng liên kết tới summary nguyên nội dung đã sao chép. Các run không được cộng dồn để tính percentile chung; p95 của một tập request cũng không bằng trung bình p95 của từng API.
+
+#### 4.3.2 Baseline trước tune: mốc tải bình thường
+
+Run B0 có **5925 requests trong steady 300s**, tương ứng **19.750 requests/s**; p50/p95/p99 là **2.034/8.122/14.546 ms**, HTTP lỗi 0%, checks 100%. Tất cả **25/25 thresholds** đạt, không có nghiệp vụ skipped. Toàn run có 7187 requests và 7137 iterations; 50 request chênh lệch là Login bổ sung. Đây là mốc cho workload 50 VUs, chưa xác định giới hạn hệ thống.
+
+| API steady B0 | Requests | RPS / 300s | p50 ms | p95 ms | p99 ms | HTTP lỗi | Checks đạt |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Search | 3247 | 10.823 | 2.003 | 3.071 | 4.808 | 0.000% | 100.000% |
+| Detail | 1480 | 4.933 | 1.972 | 3.031 | 4.440 | 0.000% | 100.000% |
+| Cart | 843 | 2.810 | 1.867 | 2.770 | 5.721 | 0.000% | 100.000% |
+| Checkout | 349 | 1.163 | 11.516 | 16.006 | 16.681 | 0.000% | 100.000% |
+| Login | 6 | 0.020 | 2.461 | 3.600 | 3.750 | 0.000% | 100.000% |
+
+Bốn API có 5919 request nghiệp vụ; mix thực tế 54.857/25.004/14.242/5.896%, gần mục tiêu 55/25/14/6. Sáu Login trong steady không thuộc mẫu số mix nghiệp vụ. Login toàn run có 50 mẫu và p95 4.820 ms; percentile của sáu mẫu steady không đại diện cho toàn bộ xác thực.
+
+Checkout có p95 16.006 ms, cao hơn Search 3.071 ms, nhưng vẫn thấp hơn 500 ms. Theo source, Checkout ghi đơn SQLite còn Cart chỉ cập nhật RAM; đây là giải thích khả dĩ về khác biệt công việc, chưa phải bằng chứng DB là bottleneck. p95 tổng 8.122 ms thấp hơn Checkout vì tỷ trọng API khác nhau, cho thấy cần giữ kết quả per-API khi theo dõi regression.
+
+Ghi chép tài nguyên của baseline B0: 
+- CPU 4–7%
+- RAM 3.20/7.39 GB (dao động 43–45%)
+- Swap 2.03/8.59 GB (24%).
+
+#### 4.3.3 Stress trước tune: suy giảm theo từng bậc
+
+Run T0 có 524400 requests toàn run, 10010 HTTP lỗi (1.909%), checks đạt 98.091%, 126 nghiệp vụ skipped. Tổng cộng **201/252 thresholds đạt**. Dưới đây là từng plateau và recovery; RPS đều dùng mẫu số 60s.
+
+| Phase T0 | Requests | RPS | p95 ms | p99 ms | HTTP lỗi | Checks đạt | Skipped | Kết quả |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| hold_500 | 10933 | 182.217 | 8.353 | 12.697 | 0.009% | 99.991% | 0 | PASS |
+| hold_750 | 16285 | 271.417 | 8.609 | 14.379 | 0.006% | 99.994% | 0 | PASS |
+| hold_1000 | 21922 | 365.367 | 8.622 | 14.344 | 0.000% | 100.000% | 0 | PASS |
+| hold_1250 | 27196 | 453.267 | 11.083 | 25.835 | 0.004% | 99.996% | 0 | PASS |
+| hold_1500 | 21922 | 365.367 | 5380.450 | 9999.615 | 2.659% | 97.341% | 0 | FAIL |
+| hold_1750 | 38012 | 633.533 | 43.271 | 116.079 | 0.000% | 100.000% | 0 | PASS |
+| hold_2000 | 42870 | 714.500 | 272.740 | 935.951 | 0.023% | 99.977% | 0 | PASS |
+| hold_2200 | 33232 | 553.867 | 4955.390 | 6794.841 | 3.482% | 96.518% | 101 | FAIL |
+| hold_2400 | 51601 | 860.017 | 268.208 | 486.284 | 0.029% | 99.971% | 0 | PASS |
+| hold_2600 | 19463 | 324.383 | 10000.070 | 10000.898 | 37.774% | 62.226% | 14 | FAIL |
+| hold_2800 | 57791 | 963.183 | 815.113 | 2156.682 | 0.121% | 99.879% | 0 | FAIL |
+| recovery_1 | 1079 | 17.983 | 15.031 | 93.499 | 0.000% | 100.000% | 0 | PASS |
+
+![Hình K6-1. Stress trước tune: p95 từng plateau và recovery](evidence/k6/figures/03-stress-before.png)
+
+*Hình K6-1. Run T0, p95 tổng phase và đường SLO 500 ms. Trục ngang là các bậc mục tiêu theo thứ tự thử; R50 là recovery 50 VUs. Nguồn hình: SVG trong HTML tổng hợp từ summary, không phải đường latency liên tục. [Mở HTML stress](evidence/k6/html/stress_report.html).*
+
+Bậc đầu tiên vi phạm là **1500 VUs**: p95 5380.450 ms, HTTP lỗi 2.659%, checks 97.341%. Tại 1250 VUs, p95 11.083 ms vẫn đạt; như vậy khoảng chuyển tiếp quan sát đầu tiên nằm trên 1250 đến 1500 VUs. Không xác định được một ngưỡng chính xác bên trong ramp từ summary này.
+
+Các bậc 1750, 2000 và 2400 sau đó vẫn đạt thresholds, trong khi 2200 và 2600 fail mạnh; 2800 fail latency dù tỷ lệ lỗi thấp hơn 1%. Diễn biến xen kẽ cho thấy bất ổn theo lịch sử tải, không phải một hàm tăng đều theo VUs. Tại 2600, p95 gần 10 giây, HTTP lỗi 37.774% và throughput giảm còn 324.383 requests/s. Không coi RPS 963.183 tại 2800 là năng lực bảo đảm vì p95 vẫn vi phạm.
+
+Recovery có 1079 requests, HTTP lỗi 0%, checks 100%, không skipped, p95 15.029 ms; tổng và từng API đạt ngưỡng trong cửa sổ 60s. Summary không phân loại HTTP status/error code nên không gọi toàn bộ 10010 lỗi là timeout/reset. Run này cũng không có ghi chép tài nguyên tương ứng để quy nguyên nhân cho CPU, DB hay hệ điều hành.
+
+#### 4.3.4 Spike trước tune: đỉnh 1500 VUs
+
+Run P0 tăng mục tiêu từ 50 lên 1500 VUs tức thời, gấp 30 lần. Toàn run có 25009 requests, 346 HTTP lỗi và 1 nghiệp vụ skipped; **47/63 thresholds đạt**. Phân tích theo phase cho thấy lỗi tập trung tại đỉnh, trong khi nền và recovery đạt.
+
+| Phase P0 | Requests | RPS | p50 ms | p95 ms | p99 ms | HTTP lỗi | Checks đạt | Skipped |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| hold_50 | 634 | 21.133 | 2.648 | 16.962 | 36.817 | 0.000% | 100.000% | 0 |
+| hold_1500 | 23290 | 388.167 | 849.899 | 5344.455 | 8653.534 | 1.486% | 98.514% | 1 |
+| recovery_1 | 1085 | 18.083 | 2.073 | 13.044 | 15.451 | 0.000% | 100.000% | 0 |
+
+![Hình K6-2. Spike trước tune: p95 trước, trong và sau đỉnh](evidence/k6/figures/04-spike-before.png)
+
+*Hình K6-2. Run P0, phase nền 30s, đỉnh 60s và recovery 60s; p95 đỉnh vượt xa SLO. Đường nối chỉ biểu diễn ba mẫu tổng hợp. [Mở HTML spike](evidence/k6/html/spike_report.html).*
+
+| API đỉnh P0 | Requests | RPS / 60s | p50 ms | p95 ms | p99 ms | HTTP lỗi | Checks đạt |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Search | 8728 | 145.467 | 1237.287 | 6035.738 | 8866.778 | 1.341% | 98.659% |
+| Detail | 4455 | 74.250 | 1271.960 | 6124.977 | 8985.220 | 1.347% | 98.653% |
+| Cart | 4785 | 79.750 | 413.881 | 2491.635 | 4419.575 | 1.693% | 98.307% |
+| Checkout | 3873 | 64.550 | 1231.010 | 5566.188 | 8413.294 | 2.246% | 97.754% |
+
+Cả bốn API tại đỉnh đều vi phạm latency, error rate và checks. Detail có p95 cao nhất; Checkout có tỷ lệ lỗi cao nhất. Tổng 346 HTTP lỗi tương ứng 692 checks thất bại trong run này; không phải 692 request lỗi. Thông lượng tăng khi có nhiều VUs không bù được việc SLO không đạt.
+
+RPS tổng trước/trong/sau là 21.133/388.167/18.083, gồm tương ứng 50/1449/0 Login. Sau khi loại Login, RPS nghiệp vụ là 19.467/364.017/18.083. Làn sóng xác thực bổ sung là một phần của đỉnh tải. Recovery không có Login mới nên chưa kiểm chứng một làn sóng xác thực tiếp theo.
+
+p95 recovery giảm còn 13.044 ms với 1085 requests, HTTP lỗi 0%, checks 100%; tổng và từng API đều đạt trong 60s quan sát. Chỉ kết luận về cửa sổ này, chưa đo thời gian phục hồi chính xác hoặc chứng minh backlog đã hết. Summary không đủ để xác nhận crash hay nguyên nhân gốc của lỗi kết nối.
 
 ### 4.4 Tuning và phân tích
 
-[Lê Nguyễn Quốc Thái điền: thay đổi trên bản sao SUT, điều kiện trước/sau, bảng số liệu và nguyên nhân có evidence. Tách giả thuyết bottleneck khỏi nguyên nhân đã đo/xác minh.]
+Thử nghiệm tuning được thực hiện trên bản sao SUT tại `tuned-backend/`. Bản tuned mở file riêng `database_tuned.sqlite`, giữ cách reset/seed rồi thêm hai cấu hình:
+
+```sql
+PRAGMA journal_mode=WAL;
+CREATE INDEX IF NOT EXISTS idx_products_name ON products(name);
+```
+
+WAL cho phép cơ chế đọc/ghi có mức đồng thời tốt hơn trong những điều kiện phù hợp nhưng SQLite vẫn chỉ có một writer. Backend dùng chung một connection; không thể suy mức cải thiện chỉ từ việc thêm PRAGMA. Search hiện dùng `LIKE '%keyword%'`, nên index B-tree tên sản phẩm này không giải quyết full-scan của truy vấn có wildcard đầu. Tuning ở đây là gói thay đổi cần đo kiểm, chưa tách riêng tác dụng của WAL và index.
+
+Để sử dụng bản tune, dừng backend gốc ở terminal A rồi khởi động bản sao, lần lượt trên cùng cổng 3000. Từ `eshop-sut`:
+
+```bash
+cd tuned-backend
+npm ci
+node server.js
+```
+
+Tại terminal B, cũng bắt đầu từ `eshop-sut`, seed vào đúng file SQLite rồi chạy cùng các runner:
+
+```bash
+node performance/k6/data/seed.js tuned-backend/database_tuned.sqlite
+bash performance/k6/run-baseline.sh
+bash performance/k6/run-spike.sh
+bash performance/k6/run-stress.sh
+```
+
+Các lệnh minh họa thao tác với source hiện có; số liệu B1/P1/T1 lấy từ các run đã lưu.
+
+#### 4.4.1 Baseline trước và sau tune
+
+| Chỉ số steady | B0 trước | B1 sau | Thay đổi |
+| --- | --- | --- | --- |
+| p50 tổng (ms) | 2.034 | 2.062 | +1.37% |
+| p95 tổng (ms) | 8.122 | 6.328 | -22.08% |
+| p99 tổng (ms) | 14.546 | 10.586 | -27.22% |
+| p95 Search (ms) | 3.071 | 2.996 | -2.44% |
+| p95 Detail (ms) | 3.031 | 2.904 | -4.17% |
+| p95 Cart (ms) | 2.770 | 2.768 | -0.09% |
+| p95 Checkout (ms) | 16.006 | 11.239 | -29.78% |
+| RPS tổng steady | 19.750 | 19.807 | +0.29% |
+| HTTP lỗi / checks đạt | 0% / 100% | 0% / 100% | Không đổi |
+| Thresholds đạt | 25/25 | 25/25 | PASS → PASS |
+
+![Hình K6-3. Các percentile baseline trước và sau tune](evidence/k6/figures/01-baseline-percentiles.png)
+
+*Hình K6-3. B0 và B1, tổng steady 50 VUs trong 300s; cùng trục ms. p50 gần như không đổi, p95/p99 thấp hơn sau tune. Đây là đối chiếu hai lần đo, chưa có khoảng tin cậy.*
+
+![Hình K6-4. p95 từng API baseline trước và sau tune](evidence/k6/figures/02-baseline-api.png)
+
+*Hình K6-4. p95 bốn API nghiệp vụ trong steady. Mọi API đều dưới ngưỡng 500 ms; hình phóng thang để thấy khác biệt nhỏ.*
+
+Baseline sau tune B1 có 5942 requests steady, HTTP lỗi 0%, checks 100%; **25/25 thresholds đạt**. p95 tổng giảm khoảng **22.09%**, p99 giảm **27.22%**; p95 Checkout giảm **29.78%**. Throughput tăng khoảng **0.29%**, gần như không đổi ở workload có think time. p50 tăng nhẹ khoảng 1.37%, vì vậy không nói mọi percentile đều giảm.
+
+Bốn API nghiệp vụ sau tune có 5933 requests; mix 54.913/24.945/13.973/6.169%. So sánh p95 từng API giúp tránh quy toàn bộ thay đổi p95 tổng cho cải thiện từng endpoint khi mix có biến động ngẫu nhiên. Giảm p95 Search rất nhỏ và không được quy cho index tên sản phẩm với truy vấn hiện tại.
+
+#### 4.4.2 Stress trước và sau tune
+
+| Phase | p95 T0 ms | p95 T1 ms | RPS T0 | RPS T1 | HTTP lỗi T0 | HTTP lỗi T1 |
+| --- | --- | --- | --- | --- | --- | --- |
+| hold_500 | 8.353 | 4.783 | 182.217 | 183.467 | 0.009% | 0.000% |
+| hold_750 | 8.609 | 3.996 | 271.417 | 272.717 | 0.006% | 0.000% |
+| hold_1000 | 8.622 | 3.974 | 365.367 | 363.967 | 0.000% | 0.000% |
+| hold_1250 | 11.083 | 42.374 | 453.267 | 445.417 | 0.004% | 0.041% |
+| hold_1500 | 5380.450 | 4.556 | 365.367 | 540.983 | 2.659% | 0.000% |
+| hold_1750 | 43.271 | 3.997 | 633.533 | 635.267 | 0.000% | 0.003% |
+| hold_2000 | 272.740 | 4.886 | 714.500 | 727.183 | 0.023% | 0.002% |
+| hold_2200 | 4955.390 | 10.766 | 553.867 | 796.450 | 3.482% | 0.017% |
+| hold_2400 | 268.208 | 4.191 | 860.017 | 874.200 | 0.029% | 0.000% |
+| hold_2600 | 10000.070 | 7.590 | 324.383 | 935.017 | 37.774% | 0.020% |
+| hold_2800 | 815.113 | 5288.187 | 963.183 | 817.033 | 0.121% | 0.596% |
+| recovery_1 | 15.031 | 9.986 | 17.983 | 18.233 | 0.000% | 0.000% |
+
+![Hình K6-5. Stress: latency, lỗi và thông lượng trước–sau tune](evidence/k6/figures/05-stress-comparison.png)
+
+*Hình K6-5. T0 và T1, cùng 11 plateau hold 60s. Panel latency dùng thang log10; hai panel dưới là HTTP lỗi (%) và RPS. Mỗi điểm là tổng phase có gồm Login; không nối thành chuỗi telemetry hoặc ghép recovery vào plateau.*
+
+Sau tune, **500–2600 VUs đạt mọi threshold** ở từng plateau. Tại 2600, p95 7.590 ms, HTTP lỗi 0.020%, RPS 935.017; PASS vẫn có thể chứa một số lỗi dưới ngưỡng 1%. Bậc đầu fail chuyển từ 1500 ở T0 sang **2800 VUs** ở T1. Toàn T1 có 588550 requests, 400 HTTP lỗi (0.068%), một nghiệp vụ skipped; **247/252 thresholds đạt**, năm điều kiện fail đều là latency tổng và bốn API tại 2800.
+
+| API tại 2800 — T1 | Requests | p95 ms | HTTP lỗi | Checks đạt |
+| --- | --- | --- | --- | --- |
+| Search | 19603 | 6796.876 | 0.587% | 99.413% |
+| Detail | 9761 | 6813.620 | 0.410% | 99.590% |
+| Cart | 10875 | 2540.743 | 0.726% | 99.274% |
+| Checkout | 8751 | 6712.716 | 0.663% | 99.337% |
+
+Tại 2800, p95 tổng tăng lên 5288.187 ms; Search/Detail/Cart/Checkout đều vượt 500 ms. Error/checks/count/skipped tại plateau này vẫn đạt. So với T0, p95 tại 2800 **tăng từ 815.113 lên 5288.187 ms**, RPS giảm từ 963.183 xuống 817.033. Bậc 1250 cũng có p95 tăng từ 11.083 lên 42.374 ms, dù vẫn đạt SLO. Vì vậy kết luận đúng là bậc fail đầu và tổng lỗi tốt hơn, nhưng có regression tại một số điểm tải.
+
+p95 toàn T1 chỉ 104.219 ms, thấp hơn 500 ms, nhưng không thay thế SLO theo phase: plateau 2800 vẫn fail. Cửa sổ recovery T1 có 1094 requests, p95 9.986 ms, lỗi 0%, checks 100%, không skipped và từng API đạt. Ngoài plateau/recovery, các ramp còn có 76 HTTP lỗi và một skipped; không bỏ các lỗi này khi đánh giá toàn run. Khoảng chuyển tiếp quan sát sau tune là trên 2600 đến 2800 VUs, chưa xác nhận mức tải bền vững hoặc điểm fail chính xác.
+
+#### 4.4.3 Spike trước và sau tune
+
+| Phase | p95 P0 ms | p95 P1 ms | RPS P0 | RPS P1 | HTTP lỗi P0 | HTTP lỗi P1 |
+| --- | --- | --- | --- | --- | --- | --- |
+| hold_50 | 16.962 | 24.773 | 21.133 | 20.733 | 0.000% | 0.000% |
+| hold_1500 | 5344.455 | 6.849 | 388.167 | 576.317 | 1.486% | 0.000% |
+| recovery_1 | 13.044 | 9.599 | 18.083 | 18.183 | 0.000% | 0.000% |
+
+![Hình K6-6. Spike: latency, lỗi và thông lượng trước–sau tune](evidence/k6/figures/06-spike-comparison.png)
+
+*Hình K6-6. P0 và P1, cùng profile 50→1500→50 VUs. Latency dùng log10; RPS dùng mẫu số 30/60/60s theo phase và gồm Login. Hình được trích từ [HTML đối chiếu ba loại test](evidence/k6/html/tuned_baseline_report.html).*
+
+P1 đạt **63/63 thresholds**, không HTTP lỗi hoặc nghiệp vụ skipped. p95 tại đỉnh giảm từ 5344.455 xuống 6.849 ms, khoảng **99.87%**; p99 giảm từ 8653.534 xuống 229.232 ms. RPS tổng tại đỉnh tăng từ 388.167 lên 576.317, khoảng **48.47%**; cần đọc cùng lượng Login 1449 trước và 1450 sau, không coi đây là arrival rate được cố định từ đầu.
+
+Sau tune, p95 Search/Detail/Cart/Checkout tại đỉnh lần lượt 6.393/7.961/2.129/5.340 ms; HTTP lỗi 0% và checks 100% cho từng API. Recovery có 1091 requests, p95 9.599 ms và mọi API đạt. Tuy vậy p99 đỉnh 229.232 ms vẫn cao hơn nhiều p95; các request ở đuôi không đồng nhất với phần lớn request rất nhanh.
+
+Metric `http_req_duration` không bao gồm thời gian thiết lập kết nối. Trong P1, p99 `http_req_connecting` toàn run khoảng 1024.146 ms, nên PASS p95 HTTP không bảo đảm toàn bộ chi phí client thấp hơn 500 ms. Kết quả một spike không xác nhận độ ổn định lâu dài, công suất tối đa hoặc đã hết backlog server.
+
+#### 4.4.4 Tài nguyên hệ thống được ghi chép
+
+Các số sau lấy từ phần tài nguyên trong report gốc, do người thực hiện quan sát thủ công. Không có ảnh tài nguyên; không chuyển các số này thành avg/max hay đường thời gian liên tục. Bảng baseline/spike và stress thuộc các run khác nhau.
+
+| Run / thời điểm | CPU toàn máy | Memory | Swap |
+| --- | --- | --- | --- |
+| Baseline trước tune B0 | 4–7% | 3.20/7.39 GB, khoảng 43–45% | 2.03/8.59 GB, 24% |
+| Baseline sau tune B1 | 2–5% | 3.51/7.12 GB, 49% | 475.67 MB/8.59 GB, 6% |
+| Spike sau tune P1, lúc 1500 VUs | 9–14% | 3.62/7.12 GB, 51% | 1.57/8.59 GB, 18% |
+| Stress/spike trước tune | Chưa ghi nhận tương ứng | Chưa ghi nhận tương ứng | Chưa ghi nhận tương ứng |
+
+| Bậc stress sau tune T1 | CPU | RAM GB / 7.12 GB | RAM % | Swap GB / 8.59 GB |
+| --- | --- | ---:| ---:| ---:|
+| 500 | 6–9% | 4.02 | 56 | 1.52 |
+| 750 | 5–7% | 4.22 | 59 | 1.52 |
+| 1000 | 8–12% | 4.21 | 59 | 1.52 |
+| 1250 | 9–11% | 4.22 | 59 | 1.52 |
+| 1500 | 9–13% | 4.30 | 60 | 1.52 |
+| 1750 | 10–11%, đôi khi 18% | 4.19 | 59 | 1.52 |
+| 2000 | 12–13%, đôi khi 23% | 4.25 | 60 | 1.54 |
+| 2200 | 11–13% | 4.24 | 60 | 1.54 |
+| 2400 | 12–13% | 4.31 | 61 | 1.57 |
+| 2600 | 12–13% | 4.31 | 61 | 1.57 |
+| 2800 | 8–9% | 4.73 | 66 | 1.52 |
+
+RAM quan sát tăng từ 56% tại 500 lên 66% tại 2800; Swap khoảng 1.52–1.57 GB, report ghi khoảng 18%. CPU thấp ở bậc fail 2800 không chứng minh server còn dư năng lực: CPU toàn máy có thể che khuất nghẽn một core hoặc thời gian chờ I/O. Chưa có RSS từng process, event-loop lag, DB locks/latency, disk I/O hoặc swap-in/out để xác định bottleneck.
+
+Tổng RAM ghi nhận khác nhau giữa B0 và B1 (7.39 so với 7.12 GB), monitoring không đồng bộ; không kết luận tuning làm CPU/Swap giảm hay RAM tăng. Dữ liệu tài nguyên hỗ trợ mô tả bối cảnh quan sát, chưa đủ quy thuộc tài nguyên riêng cho SQLite, Node.js hay k6.
+
+#### 4.4.5 Kết luận thực nghiệm và giới hạn
+
+Baseline đạt SLO ở 50 VUs trước và sau tune. Stress trước tune bắt đầu vi phạm ở 1500 VUs và có các bậc đạt/fail xen kẽ; sau tune, các plateau 500–2600 đạt nhưng 2800 vẫn fail latency. Spike 1500 VUs chuyển từ FAIL sang PASS trong hai run đối chiếu. Các cửa sổ recovery 60s đều đạt tiêu chí đã cấu hình; chưa đo thời gian phục hồi chính xác hoặc chứng minh ổn định lâu dài.
+
+Bằng chứng hiện có cho thấy khác biệt hiệu năng rõ tại một số điểm tải, đặc biệt spike và stress 1500/2600. Tuy nhiên, chưa có chạy lặp, snapshot build/DB, monitoring đồng bộ hoặc thử nghiệm tách riêng WAL/index; do đó chưa chứng minh toàn bộ chênh lệch là tác động của tuning. Dữ liệu sản phẩm cố định, 50 tài khoản dùng chung ở tải lớn và server/k6 cùng host cũng hạn chế khả năng khái quát.
+
+Nếu tiếp tục nghiên cứu, ưu tiên thử lặp quanh khoảng 2600–2800, giữ cùng build/dataset/profile và lưu cấu hình database thực tế; bổ sung telemetry từng process/core, DB và event-loop để kiểm tra giả thuyết bottleneck. Đây là khuyến nghị, không phải công việc đã thực hiện trong seminar này. **Không thực hiện soak**, nên không kết luận endurance hoặc memory leak.
+
+Bộ minh chứng của chương được liệt kê tại mục 9.4, gồm summary có run ID, bốn HTML tổng hợp và sáu hình trích biểu đồ. Hình không phải ảnh chụp terminal hoặc ảnh tài nguyên; source script được liên kết để người đọc kiểm tra phương pháp.
 
 ## 5 Thực nghiệm JMeter của Võ Hữu Thắng
 
@@ -596,7 +961,7 @@ AI được dùng ở hai vai trò: tạo script đầu vào và phân tích sou
 
 | Thành viên | Công việc và minh chứng |
 | --- | --- |
-| Lê Nguyễn Quốc Thái — 23120352 | [Lê Nguyễn Quốc Thái tự điền đóng góp, đường dẫn artifact và commit liên quan] |
+| Lê Nguyễn Quốc Thái — 23120352 | Thiết kế và thực nghiệm k6 smoke/baseline/stress/spike; đối chiếu tuning SQLite; [chương 4](#4-thực-nghiệm-k6-của-lê-nguyễn-quốc-thái), [summary, HTML và hình](evidence/k6/README.md). Chưa ghi commit gắn với từng run |
 | Võ Hữu Thắng — 23120355 | [Võ Hữu Thắng tự điền đóng góp, đường dẫn artifact và commit liên quan] |
 | Trịnh Hồ Minh Thắng — 23120354 | HAR và prompt; hai script thật; React/Express audit; Acorn source analysis; parser k6; duyệt điểm; ChatGPT session; Luna JSON output; test hồi quy; ảnh và dữ liệu trong evidence |
 
@@ -611,7 +976,7 @@ Các commit là bằng chứng thay đổi source, không tự thay thế bằng
 
 ### 8.3 Tổng hợp của nhóm
 
-[Lê Nguyễn Quốc Thái và Võ Hữu Thắng bổ sung kết luận tổng hợp sau khi điền chương 4–5: kết quả theo từng công cụ, điểm mạnh/yếu quan sát được, khuyến nghị áp dụng và liên kết tài liệu trình bày chung.]
+Kết quả k6 ở chương 4 xác nhận baseline đạt SLO và spike cải thiện trong các run đối chiếu, đồng thời chỉ ra stress 2800 VUs sau tune vẫn vi phạm latency. Các kết luận giới hạn trong workload đã đo, với một lần đo mỗi cấu hình và tài nguyên quan sát thủ công. Phần tổng hợp liên công cụ chờ kết quả JMeter ở chương 5; chưa dùng các run khác workload để xếp hạng hiệu năng công cụ.
 
 ## 9 Tài liệu tham khảo và chỉ mục evidence
 
@@ -662,3 +1027,24 @@ Ngày đối chiếu nguồn: 23/10/2026. Nội dung triển khai, số liệu v
 | [12-ai-correlation-results.png](evidence/12-ai-correlation-results.png) | Ảnh correlation của hai script và giới hạn evidence; không hiển thị audit ID/thời điểm chạy |
 
 Evidence không bao gồm file `.env` hoặc profile OAuth của ChatGPT. Các artifact và ảnh được dùng để người đọc truy lại từng bước thực hiện, thay vì chỉ dựa vào tổng điểm cuối.
+
+
+### 9.4 Minh chứng thực nghiệm k6 — Lê Nguyễn Quốc Thái
+
+Bộ evidence k6 gồm bảy summary giữ nguyên bytes nguồn, bốn HTML tổng hợp và sáu hình trích biểu đồ. Các HTML là tài liệu tổng hợp từ kết quả đã lưu; không phải dashboard gốc của lần chạy. Chỉ đường dẫn nguồn trong bản HTML evidence được điều chỉnh để mở summary và mục tương ứng của báo cáo. Không kèm ảnh tài nguyên; số liệu tài nguyên ở mục 4.4.4 là ghi chép thủ công trong các report thực nghiệm.
+
+| Evidence | Nội dung và vị trí sử dụng |
+| --- | --- |
+| [Manifest k6](evidence/k6/README.md) | Mapping đầy đủ run → summary → HTML → hình, nguồn tài nguyên và quy tắc xử lý |
+| [Summary smoke](evidence/k6/summaries/smoke-20261022-195537-4es3Xy/summary.json) | Một VU, năm requests, mười checks; mục 4.2.2 |
+| [B0](evidence/k6/summaries/baseline-20261022-110446-eGLTX1/summary.json), [B1](evidence/k6/summaries/baseline-20261023-084311-TSxg2P/summary.json) | Baseline trước/sau, steady 300s; mục 4.3.2 và 4.4.1 |
+| [T0](evidence/k6/summaries/stress-20261022-181718-lx8F4c/summary.json), [T1](evidence/k6/summaries/stress-20261023-090531-KgTWyh/summary.json) | Stress trước/sau, plateau/recovery 60s; mục 4.3.3 và 4.4.2 |
+| [P0](evidence/k6/summaries/spike-20261022-190641-UgVeF4/summary.json), [P1](evidence/k6/summaries/spike-20261023-085706-BOOKoc/summary.json) | Spike trước/sau, phase 30/60/60s; mục 4.3.4 và 4.4.3 |
+| [HTML baseline](evidence/k6/html/baseline_report.html) | Tổng hợp baseline B0 |
+| [HTML stress](evidence/k6/html/stress_report.html), [HTML spike](evidence/k6/html/spike_report.html) | Các phase trước tune, bảng số liệu và SLO |
+| [HTML trước–sau tuning](evidence/k6/html/tuned_baseline_report.html) | Đối chiếu cả baseline, stress và spike |
+| [Hình baseline percentile](evidence/k6/figures/01-baseline-percentiles.png), [per-API](evidence/k6/figures/02-baseline-api.png) | Hình K6-3, K6-4 |
+| [Hình stress trước](evidence/k6/figures/03-stress-before.png), [spike trước](evidence/k6/figures/04-spike-before.png) | Hình K6-1, K6-2 |
+| [Hình stress đối chiếu](evidence/k6/figures/05-stress-comparison.png), [spike đối chiếu](evidence/k6/figures/06-spike-comparison.png) | Hình K6-5, K6-6 |
+| [Script trích hình](evidence/k6/render_figures.cjs) | Chuyển SVG trong HTML thành PNG có nhãn, chú giải và nguồn; không phát tải |
+| [Hash evidence k6](evidence/k6/SHA256SUMS.txt) | Kiểm tra toàn vẹn riêng bộ evidence k6 |
