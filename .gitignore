@@ -2,3 +2,9 @@
 metrics.json
 k6.log
 
+node-cpu-ram.csv
+
+# Generated CPU/RAM telemetry and analysis data
+/performance/k6/output/telemetry/
+node-cpu-ram.jsonl
+cpu-ram-*.csv
