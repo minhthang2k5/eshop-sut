@@ -1,0 +1,1284 @@
+{
+  "datasetId": "black-friday-6973a27db8e7-31273d4143c2",
+  "sourceHashes": {
+    "accounts": "6973a27db8e7880162085a0bafa38e635cd6470fe39643f958d3ecdef77792f8",
+    "products": "31273d4143c2572d47994d665dca2de0368a1779f60f15db8f1f72d42f457d87"
+  },
+  "accountCount": 10000,
+  "products": [
+    {
+      "id": 1,
+      "name": "iPhone 15 Pro Max",
+      "price": 30000000
+    },
+    {
+      "id": 2,
+      "name": "Samsung Galaxy S24 Ultra",
+      "price": 28000000
+    },
+    {
+      "id": 3,
+      "name": "MacBook Pro M3",
+      "price": 45000000
+    },
+    {
+      "id": 4,
+      "name": "Tai nghe AirPods Pro 2",
+      "price": 6000000
+    },
+    {
+      "id": 5,
+      "name": "Ban phim co Keychron Q1",
+      "price": 4000000
+    },
+    {
+      "id": 6,
+      "name": "iPhone 2022 Model 02",
+      "price": 1250000
+    },
+    {
+      "id": 7,
+      "name": "iPhone 2023 Model 03",
+      "price": 1375000
+    },
+    {
+      "id": 8,
+      "name": "iPhone 2024 Model 04",
+      "price": 1500000
+    },
+    {
+      "id": 9,
+      "name": "iPhone 2025 Model 05",
+      "price": 1625000
+    },
+    {
+      "id": 10,
+      "name": "iPhone 2026 Model 06",
+      "price": 1750000
+    },
+    {
+      "id": 11,
+      "name": "iPhone 2020 Model 07",
+      "price": 1875000
+    },
+    {
+      "id": 12,
+      "name": "iPhone 2021 Model 08",
+      "price": 2000000
+    },
+    {
+      "id": 13,
+      "name": "iPhone 2022 Model 09",
+      "price": 2125000
+    },
+    {
+      "id": 14,
+      "name": "iPhone 2023 Model 10",
+      "price": 2250000
+    },
+    {
+      "id": 15,
+      "name": "iPhone 2024 Model 11",
+      "price": 2375000
+    },
+    {
+      "id": 16,
+      "name": "iPhone 2025 Model 12",
+      "price": 2500000
+    },
+    {
+      "id": 17,
+      "name": "iPhone 2026 Model 13",
+      "price": 2625000
+    },
+    {
+      "id": 18,
+      "name": "iPhone 2020 Model 14",
+      "price": 2750000
+    },
+    {
+      "id": 19,
+      "name": "iPhone 2021 Model 15",
+      "price": 2875000
+    },
+    {
+      "id": 20,
+      "name": "iPhone 2022 Model 16",
+      "price": 3000000
+    },
+    {
+      "id": 21,
+      "name": "iPhone 2023 Model 17",
+      "price": 3125000
+    },
+    {
+      "id": 22,
+      "name": "iPhone 2024 Model 18",
+      "price": 3250000
+    },
+    {
+      "id": 23,
+      "name": "iPhone 2025 Model 19",
+      "price": 3375000
+    },
+    {
+      "id": 24,
+      "name": "iPhone 2026 Model 20",
+      "price": 3500000
+    },
+    {
+      "id": 25,
+      "name": "iPhone 2020 Model 21",
+      "price": 3625000
+    },
+    {
+      "id": 26,
+      "name": "iPhone 2021 Model 22",
+      "price": 3750000
+    },
+    {
+      "id": 27,
+      "name": "iPhone 2022 Model 23",
+      "price": 3875000
+    },
+    {
+      "id": 28,
+      "name": "iPhone 2023 Model 24",
+      "price": 4000000
+    },
+    {
+      "id": 29,
+      "name": "iPhone 2024 Model 25",
+      "price": 4125000
+    },
+    {
+      "id": 30,
+      "name": "iPhone 2025 Model 26",
+      "price": 4250000
+    },
+    {
+      "id": 31,
+      "name": "iPhone 2026 Model 27",
+      "price": 4375000
+    },
+    {
+      "id": 32,
+      "name": "iPhone 2020 Model 28",
+      "price": 4500000
+    },
+    {
+      "id": 33,
+      "name": "iPhone 2021 Model 29",
+      "price": 4625000
+    },
+    {
+      "id": 34,
+      "name": "iPhone 2022 Model 30",
+      "price": 4750000
+    },
+    {
+      "id": 35,
+      "name": "iPhone 2023 Model 31",
+      "price": 4875000
+    },
+    {
+      "id": 36,
+      "name": "iPhone 2024 Model 32",
+      "price": 5000000
+    },
+    {
+      "id": 37,
+      "name": "iPhone 2025 Model 33",
+      "price": 5125000
+    },
+    {
+      "id": 38,
+      "name": "iPhone 2026 Model 34",
+      "price": 5250000
+    },
+    {
+      "id": 39,
+      "name": "iPhone 2020 Model 35",
+      "price": 5375000
+    },
+    {
+      "id": 40,
+      "name": "iPhone 2021 Model 36",
+      "price": 5500000
+    },
+    {
+      "id": 41,
+      "name": "iPhone 2022 Model 37",
+      "price": 5625000
+    },
+    {
+      "id": 42,
+      "name": "iPhone 2023 Model 38",
+      "price": 5750000
+    },
+    {
+      "id": 43,
+      "name": "iPhone 2024 Model 39",
+      "price": 5875000
+    },
+    {
+      "id": 44,
+      "name": "iPhone 2025 Model 40",
+      "price": 6000000
+    },
+    {
+      "id": 45,
+      "name": "iPhone 2026 Model 41",
+      "price": 6125000
+    },
+    {
+      "id": 46,
+      "name": "iPhone 2020 Model 42",
+      "price": 6250000
+    },
+    {
+      "id": 47,
+      "name": "iPhone 2021 Model 43",
+      "price": 6375000
+    },
+    {
+      "id": 48,
+      "name": "iPhone 2022 Model 44",
+      "price": 6500000
+    },
+    {
+      "id": 49,
+      "name": "iPhone 2023 Model 45",
+      "price": 6625000
+    },
+    {
+      "id": 50,
+      "name": "iPhone 2024 Model 46",
+      "price": 6750000
+    },
+    {
+      "id": 51,
+      "name": "iPhone 2025 Model 47",
+      "price": 6875000
+    },
+    {
+      "id": 52,
+      "name": "iPhone 2026 Model 48",
+      "price": 7000000
+    },
+    {
+      "id": 53,
+      "name": "iPhone 2020 Model 49",
+      "price": 7125000
+    },
+    {
+      "id": 54,
+      "name": "iPhone 2021 Model 50",
+      "price": 7250000
+    },
+    {
+      "id": 55,
+      "name": "Samsung 2022 Model 02",
+      "price": 1250000
+    },
+    {
+      "id": 56,
+      "name": "Samsung 2023 Model 03",
+      "price": 1375000
+    },
+    {
+      "id": 57,
+      "name": "Samsung 2024 Model 04",
+      "price": 1500000
+    },
+    {
+      "id": 58,
+      "name": "Samsung 2025 Model 05",
+      "price": 1625000
+    },
+    {
+      "id": 59,
+      "name": "Samsung 2026 Model 06",
+      "price": 1750000
+    },
+    {
+      "id": 60,
+      "name": "Samsung 2020 Model 07",
+      "price": 1875000
+    },
+    {
+      "id": 61,
+      "name": "Samsung 2021 Model 08",
+      "price": 2000000
+    },
+    {
+      "id": 62,
+      "name": "Samsung 2022 Model 09",
+      "price": 2125000
+    },
+    {
+      "id": 63,
+      "name": "Samsung 2023 Model 10",
+      "price": 2250000
+    },
+    {
+      "id": 64,
+      "name": "Samsung 2024 Model 11",
+      "price": 2375000
+    },
+    {
+      "id": 65,
+      "name": "Samsung 2025 Model 12",
+      "price": 2500000
+    },
+    {
+      "id": 66,
+      "name": "Samsung 2026 Model 13",
+      "price": 2625000
+    },
+    {
+      "id": 67,
+      "name": "Samsung 2020 Model 14",
+      "price": 2750000
+    },
+    {
+      "id": 68,
+      "name": "Samsung 2021 Model 15",
+      "price": 2875000
+    },
+    {
+      "id": 69,
+      "name": "Samsung 2022 Model 16",
+      "price": 3000000
+    },
+    {
+      "id": 70,
+      "name": "Samsung 2023 Model 17",
+      "price": 3125000
+    },
+    {
+      "id": 71,
+      "name": "Samsung 2024 Model 18",
+      "price": 3250000
+    },
+    {
+      "id": 72,
+      "name": "Samsung 2025 Model 19",
+      "price": 3375000
+    },
+    {
+      "id": 73,
+      "name": "Samsung 2026 Model 20",
+      "price": 3500000
+    },
+    {
+      "id": 74,
+      "name": "Samsung 2020 Model 21",
+      "price": 3625000
+    },
+    {
+      "id": 75,
+      "name": "Samsung 2021 Model 22",
+      "price": 3750000
+    },
+    {
+      "id": 76,
+      "name": "Samsung 2022 Model 23",
+      "price": 3875000
+    },
+    {
+      "id": 77,
+      "name": "Samsung 2023 Model 24",
+      "price": 4000000
+    },
+    {
+      "id": 78,
+      "name": "Samsung 2024 Model 25",
+      "price": 4125000
+    },
+    {
+      "id": 79,
+      "name": "Samsung 2025 Model 26",
+      "price": 4250000
+    },
+    {
+      "id": 80,
+      "name": "Samsung 2026 Model 27",
+      "price": 4375000
+    },
+    {
+      "id": 81,
+      "name": "Samsung 2020 Model 28",
+      "price": 4500000
+    },
+    {
+      "id": 82,
+      "name": "Samsung 2021 Model 29",
+      "price": 4625000
+    },
+    {
+      "id": 83,
+      "name": "Samsung 2022 Model 30",
+      "price": 4750000
+    },
+    {
+      "id": 84,
+      "name": "Samsung 2023 Model 31",
+      "price": 4875000
+    },
+    {
+      "id": 85,
+      "name": "Samsung 2024 Model 32",
+      "price": 5000000
+    },
+    {
+      "id": 86,
+      "name": "Samsung 2025 Model 33",
+      "price": 5125000
+    },
+    {
+      "id": 87,
+      "name": "Samsung 2026 Model 34",
+      "price": 5250000
+    },
+    {
+      "id": 88,
+      "name": "Samsung 2020 Model 35",
+      "price": 5375000
+    },
+    {
+      "id": 89,
+      "name": "Samsung 2021 Model 36",
+      "price": 5500000
+    },
+    {
+      "id": 90,
+      "name": "Samsung 2022 Model 37",
+      "price": 5625000
+    },
+    {
+      "id": 91,
+      "name": "Samsung 2023 Model 38",
+      "price": 5750000
+    },
+    {
+      "id": 92,
+      "name": "Samsung 2024 Model 39",
+      "price": 5875000
+    },
+    {
+      "id": 93,
+      "name": "Samsung 2025 Model 40",
+      "price": 6000000
+    },
+    {
+      "id": 94,
+      "name": "MacBook 2022 Model 02",
+      "price": 2250000
+    },
+    {
+      "id": 95,
+      "name": "MacBook 2023 Model 03",
+      "price": 2375000
+    },
+    {
+      "id": 96,
+      "name": "MacBook 2024 Model 04",
+      "price": 2500000
+    },
+    {
+      "id": 97,
+      "name": "MacBook 2025 Model 05",
+      "price": 2625000
+    },
+    {
+      "id": 98,
+      "name": "MacBook 2026 Model 06",
+      "price": 2750000
+    },
+    {
+      "id": 99,
+      "name": "MacBook 2020 Model 07",
+      "price": 2875000
+    },
+    {
+      "id": 100,
+      "name": "MacBook 2021 Model 08",
+      "price": 3000000
+    },
+    {
+      "id": 101,
+      "name": "MacBook 2022 Model 09",
+      "price": 3125000
+    },
+    {
+      "id": 102,
+      "name": "MacBook 2023 Model 10",
+      "price": 3250000
+    },
+    {
+      "id": 103,
+      "name": "MacBook 2024 Model 11",
+      "price": 3375000
+    },
+    {
+      "id": 104,
+      "name": "MacBook 2025 Model 12",
+      "price": 3500000
+    },
+    {
+      "id": 105,
+      "name": "MacBook 2026 Model 13",
+      "price": 3625000
+    },
+    {
+      "id": 106,
+      "name": "MacBook 2020 Model 14",
+      "price": 3750000
+    },
+    {
+      "id": 107,
+      "name": "MacBook 2021 Model 15",
+      "price": 3875000
+    },
+    {
+      "id": 108,
+      "name": "MacBook 2022 Model 16",
+      "price": 4000000
+    },
+    {
+      "id": 109,
+      "name": "MacBook 2023 Model 17",
+      "price": 4125000
+    },
+    {
+      "id": 110,
+      "name": "MacBook 2024 Model 18",
+      "price": 4250000
+    },
+    {
+      "id": 111,
+      "name": "MacBook 2025 Model 19",
+      "price": 4375000
+    },
+    {
+      "id": 112,
+      "name": "MacBook 2026 Model 20",
+      "price": 4500000
+    },
+    {
+      "id": 113,
+      "name": "MacBook 2020 Model 21",
+      "price": 4625000
+    },
+    {
+      "id": 114,
+      "name": "MacBook 2021 Model 22",
+      "price": 4750000
+    },
+    {
+      "id": 115,
+      "name": "MacBook 2022 Model 23",
+      "price": 4875000
+    },
+    {
+      "id": 116,
+      "name": "MacBook 2023 Model 24",
+      "price": 5000000
+    },
+    {
+      "id": 117,
+      "name": "MacBook 2024 Model 25",
+      "price": 5125000
+    },
+    {
+      "id": 118,
+      "name": "MacBook 2025 Model 26",
+      "price": 5250000
+    },
+    {
+      "id": 119,
+      "name": "MacBook 2026 Model 27",
+      "price": 5375000
+    },
+    {
+      "id": 120,
+      "name": "MacBook 2020 Model 28",
+      "price": 5500000
+    },
+    {
+      "id": 121,
+      "name": "MacBook 2021 Model 29",
+      "price": 5625000
+    },
+    {
+      "id": 122,
+      "name": "MacBook 2022 Model 30",
+      "price": 5750000
+    },
+    {
+      "id": 123,
+      "name": "AirPods 2022 Model 02",
+      "price": 3250000
+    },
+    {
+      "id": 124,
+      "name": "AirPods 2023 Model 03",
+      "price": 3375000
+    },
+    {
+      "id": 125,
+      "name": "AirPods 2024 Model 04",
+      "price": 3500000
+    },
+    {
+      "id": 126,
+      "name": "AirPods 2025 Model 05",
+      "price": 3625000
+    },
+    {
+      "id": 127,
+      "name": "AirPods 2026 Model 06",
+      "price": 3750000
+    },
+    {
+      "id": 128,
+      "name": "AirPods 2020 Model 07",
+      "price": 3875000
+    },
+    {
+      "id": 129,
+      "name": "AirPods 2021 Model 08",
+      "price": 4000000
+    },
+    {
+      "id": 130,
+      "name": "AirPods 2022 Model 09",
+      "price": 4125000
+    },
+    {
+      "id": 131,
+      "name": "AirPods 2023 Model 10",
+      "price": 4250000
+    },
+    {
+      "id": 132,
+      "name": "AirPods 2024 Model 11",
+      "price": 4375000
+    },
+    {
+      "id": 133,
+      "name": "AirPods 2025 Model 12",
+      "price": 4500000
+    },
+    {
+      "id": 134,
+      "name": "AirPods 2026 Model 13",
+      "price": 4625000
+    },
+    {
+      "id": 135,
+      "name": "AirPods 2020 Model 14",
+      "price": 4750000
+    },
+    {
+      "id": 136,
+      "name": "iPad 2021 Model 01",
+      "price": 2125000
+    },
+    {
+      "id": 137,
+      "name": "iPad 2022 Model 02",
+      "price": 2250000
+    },
+    {
+      "id": 138,
+      "name": "iPad 2023 Model 03",
+      "price": 2375000
+    },
+    {
+      "id": 139,
+      "name": "iPad 2024 Model 04",
+      "price": 2500000
+    },
+    {
+      "id": 140,
+      "name": "iPad 2025 Model 05",
+      "price": 2625000
+    },
+    {
+      "id": 141,
+      "name": "iPad 2026 Model 06",
+      "price": 2750000
+    },
+    {
+      "id": 142,
+      "name": "iPad 2020 Model 07",
+      "price": 2875000
+    },
+    {
+      "id": 143,
+      "name": "iPad 2021 Model 08",
+      "price": 3000000
+    },
+    {
+      "id": 144,
+      "name": "iPad 2022 Model 09",
+      "price": 3125000
+    },
+    {
+      "id": 145,
+      "name": "iPad 2023 Model 10",
+      "price": 3250000
+    },
+    {
+      "id": 146,
+      "name": "iPad 2024 Model 11",
+      "price": 3375000
+    },
+    {
+      "id": 147,
+      "name": "iPad 2025 Model 12",
+      "price": 3500000
+    },
+    {
+      "id": 148,
+      "name": "Apple Watch 2021 Model 01",
+      "price": 3125000
+    },
+    {
+      "id": 149,
+      "name": "Apple Watch 2022 Model 02",
+      "price": 3250000
+    },
+    {
+      "id": 150,
+      "name": "Apple Watch 2023 Model 03",
+      "price": 3375000
+    },
+    {
+      "id": 151,
+      "name": "Apple Watch 2024 Model 04",
+      "price": 3500000
+    },
+    {
+      "id": 152,
+      "name": "Apple Watch 2025 Model 05",
+      "price": 3625000
+    },
+    {
+      "id": 153,
+      "name": "Apple Watch 2026 Model 06",
+      "price": 3750000
+    },
+    {
+      "id": 154,
+      "name": "Apple Watch 2020 Model 07",
+      "price": 3875000
+    },
+    {
+      "id": 155,
+      "name": "Apple Watch 2021 Model 08",
+      "price": 4000000
+    },
+    {
+      "id": 156,
+      "name": "Apple Watch 2022 Model 09",
+      "price": 4125000
+    },
+    {
+      "id": 157,
+      "name": "Apple Watch 2023 Model 10",
+      "price": 4250000
+    },
+    {
+      "id": 158,
+      "name": "Apple Watch 2024 Model 11",
+      "price": 4375000
+    },
+    {
+      "id": 159,
+      "name": "Apple Watch 2025 Model 12",
+      "price": 4500000
+    },
+    {
+      "id": 160,
+      "name": "Sony 2021 Model 01",
+      "price": 3125000
+    },
+    {
+      "id": 161,
+      "name": "Sony 2022 Model 02",
+      "price": 3250000
+    },
+    {
+      "id": 162,
+      "name": "Sony 2023 Model 03",
+      "price": 3375000
+    },
+    {
+      "id": 163,
+      "name": "Sony 2024 Model 04",
+      "price": 3500000
+    },
+    {
+      "id": 164,
+      "name": "Sony 2025 Model 05",
+      "price": 3625000
+    },
+    {
+      "id": 165,
+      "name": "Sony 2026 Model 06",
+      "price": 3750000
+    },
+    {
+      "id": 166,
+      "name": "Sony 2020 Model 07",
+      "price": 3875000
+    },
+    {
+      "id": 167,
+      "name": "Sony 2021 Model 08",
+      "price": 4000000
+    },
+    {
+      "id": 168,
+      "name": "Sony 2022 Model 09",
+      "price": 4125000
+    },
+    {
+      "id": 169,
+      "name": "Sony 2023 Model 10",
+      "price": 4250000
+    },
+    {
+      "id": 170,
+      "name": "Sony 2024 Model 11",
+      "price": 4375000
+    },
+    {
+      "id": 171,
+      "name": "Sony 2025 Model 12",
+      "price": 4500000
+    },
+    {
+      "id": 172,
+      "name": "Keychron 2022 Model 02",
+      "price": 3250000
+    },
+    {
+      "id": 173,
+      "name": "Keychron 2023 Model 03",
+      "price": 3375000
+    },
+    {
+      "id": 174,
+      "name": "Keychron 2024 Model 04",
+      "price": 3500000
+    },
+    {
+      "id": 175,
+      "name": "Keychron 2025 Model 05",
+      "price": 3625000
+    },
+    {
+      "id": 176,
+      "name": "Keychron 2026 Model 06",
+      "price": 3750000
+    },
+    {
+      "id": 177,
+      "name": "Logitech 2021 Model 01",
+      "price": 3125000
+    },
+    {
+      "id": 178,
+      "name": "Logitech 2022 Model 02",
+      "price": 3250000
+    },
+    {
+      "id": 179,
+      "name": "Logitech 2023 Model 03",
+      "price": 3375000
+    },
+    {
+      "id": 180,
+      "name": "Logitech 2024 Model 04",
+      "price": 3500000
+    },
+    {
+      "id": 181,
+      "name": "Logitech 2025 Model 05",
+      "price": 3625000
+    },
+    {
+      "id": 182,
+      "name": "Logitech 2026 Model 06",
+      "price": 3750000
+    },
+    {
+      "id": 183,
+      "name": "Dell 2021 Model 01",
+      "price": 2125000
+    },
+    {
+      "id": 184,
+      "name": "Dell 2022 Model 02",
+      "price": 2250000
+    },
+    {
+      "id": 185,
+      "name": "Dell 2023 Model 03",
+      "price": 2375000
+    },
+    {
+      "id": 186,
+      "name": "Dell 2024 Model 04",
+      "price": 2500000
+    },
+    {
+      "id": 187,
+      "name": "Dell 2025 Model 05",
+      "price": 2625000
+    },
+    {
+      "id": 188,
+      "name": "Dell 2026 Model 06",
+      "price": 2750000
+    },
+    {
+      "id": 189,
+      "name": "Asus 2021 Model 01",
+      "price": 2125000
+    },
+    {
+      "id": 190,
+      "name": "Asus 2022 Model 02",
+      "price": 2250000
+    },
+    {
+      "id": 191,
+      "name": "Asus 2023 Model 03",
+      "price": 2375000
+    },
+    {
+      "id": 192,
+      "name": "Asus 2024 Model 04",
+      "price": 2500000
+    },
+    {
+      "id": 193,
+      "name": "Asus 2025 Model 05",
+      "price": 2625000
+    },
+    {
+      "id": 194,
+      "name": "Asus 2026 Model 06",
+      "price": 2750000
+    },
+    {
+      "id": 195,
+      "name": "Xiaomi 2021 Model 01",
+      "price": 1125000
+    },
+    {
+      "id": 196,
+      "name": "Xiaomi 2022 Model 02",
+      "price": 1250000
+    },
+    {
+      "id": 197,
+      "name": "Xiaomi 2023 Model 03",
+      "price": 1375000
+    },
+    {
+      "id": 198,
+      "name": "Xiaomi 2024 Model 04",
+      "price": 1500000
+    },
+    {
+      "id": 199,
+      "name": "Xiaomi 2025 Model 05",
+      "price": 1625000
+    },
+    {
+      "id": 200,
+      "name": "Xiaomi 2026 Model 06",
+      "price": 1750000
+    }
+  ],
+  "keywords": [
+    {
+      "keyword": "iPhone",
+      "weight": 25,
+      "expectedIds": [
+        1,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54
+      ]
+    },
+    {
+      "keyword": "Samsung",
+      "weight": 20,
+      "expectedIds": [
+        2,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93
+      ]
+    },
+    {
+      "keyword": "MacBook",
+      "weight": 15,
+      "expectedIds": [
+        3,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122
+      ]
+    },
+    {
+      "keyword": "AirPods",
+      "weight": 7,
+      "expectedIds": [
+        4,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135
+      ]
+    },
+    {
+      "keyword": "iPad",
+      "weight": 6,
+      "expectedIds": [
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147
+      ]
+    },
+    {
+      "keyword": "Apple Watch",
+      "weight": 6,
+      "expectedIds": [
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        156,
+        157,
+        158,
+        159
+      ]
+    },
+    {
+      "keyword": "Sony",
+      "weight": 6,
+      "expectedIds": [
+        160,
+        161,
+        162,
+        163,
+        164,
+        165,
+        166,
+        167,
+        168,
+        169,
+        170,
+        171
+      ]
+    },
+    {
+      "keyword": "Keychron",
+      "weight": 3,
+      "expectedIds": [
+        5,
+        172,
+        173,
+        174,
+        175,
+        176
+      ]
+    },
+    {
+      "keyword": "Logitech",
+      "weight": 3,
+      "expectedIds": [
+        177,
+        178,
+        179,
+        180,
+        181,
+        182
+      ]
+    },
+    {
+      "keyword": "Dell",
+      "weight": 3,
+      "expectedIds": [
+        183,
+        184,
+        185,
+        186,
+        187,
+        188
+      ]
+    },
+    {
+      "keyword": "Asus",
+      "weight": 3,
+      "expectedIds": [
+        189,
+        190,
+        191,
+        192,
+        193,
+        194
+      ]
+    },
+    {
+      "keyword": "Xiaomi",
+      "weight": 3,
+      "expectedIds": [
+        195,
+        196,
+        197,
+        198,
+        199,
+        200
+      ]
+    }
+  ]
+}

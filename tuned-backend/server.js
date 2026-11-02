@@ -3,6 +3,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const db = require("./database");
 const jwt = require("jsonwebtoken");
+const telemetry = require("../performance/k6/telemetry/node.cjs");
 
 const app = express();
 const PORT = 3000;
@@ -568,5 +569,6 @@ app.put("/api/admin/orders/:id/status", authenticateToken, (req, res) => {
 });
 
 app.listen(PORT, () => {
+  telemetry.start({ label: "tuned-backend" });
   console.log(`Server is running on http://localhost:${PORT}`);
 });
