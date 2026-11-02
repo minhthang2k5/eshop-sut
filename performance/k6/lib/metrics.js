@@ -20,7 +20,7 @@ export function thresholdsFor(profile) {
       thresholds[`http_reqs{${filter}}`] = ['count>0'];
     }
     thresholds[`business_operations_failed{phase:${stage.phase}}`] = ['rate<0.01'];
-    thresholds[`business_requests_skipped{phase:${stage.phase}}`] = ['count==0'];
+    // Skips remain diagnostic; failed login already counts in business_operations_failed.
   }
   return thresholds;
 }

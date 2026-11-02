@@ -49,8 +49,8 @@ finish() {
   } > "$RUN_DIR/measurement-timeline.json"
   if [[ -n "$SOURCE" ]]; then
     tail -c "+$((OFFSET + 1))" "$SOURCE" > "$RUN_DIR/node-cpu-ram.jsonl"
-    python3 "$TEST_DIR/telemetry/analyze.py" "$RUN_DIR/node-cpu-ram.jsonl" || printf 'Không tổng hợp được CPU/RAM.\n' >&2
   fi
+  python3 "$TEST_DIR/analyze/analyze.py" "$RUN_DIR" --type stress --report-dir "$TEST_DIR/reports" || printf 'Không tổng hợp được báo cáo stress.\n' >&2
   printf 'Kết quả: %s\n' "$RUN_DIR"
   exit "$RESULT"
 }

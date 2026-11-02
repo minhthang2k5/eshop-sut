@@ -53,11 +53,19 @@ node performance/k6/data/seed.js
 bash performance/k6/run-stress.sh
 ```
 
-`run-stress.sh` điều khiển trực tiếp: `sleep 30` → `k6 run stress.js` → `sleep 60` → `analyze.py` tổng hợp CPU/RAM. Giữ backend chạy đến khi runner kết thúc. Hai bảng CPU/RAM tự cập nhật tại **mục 6.3** của [báo cáo stress](reports/03-stress-test-report.md); lần chạy mới thay số liệu CPU/RAM của lần trước. Các kết quả k6 và nhận xét điền thủ công.
+`run-stress.sh` điều khiển trực tiếp: `sleep 30` → `k6 run stress.js` → `sleep 60` → `analyze.py` tổng hợp k6 và CPU/RAM, tạo báo cáo Markdown/HTML cùng biểu đồ SVG. Giữ backend chạy đến khi runner kết thúc. Toàn bộ [báo cáo stress](reports/03-stress-test-report.md) và [biểu đồ HTML](reports/stress_report.html) được tạo lại từ cùng run; chỉnh sửa thủ công trong hai tệp sẽ bị thay thế. PASS/FAIL tính theo cấu hình stress trong `analyze/profiles.json`; skipped chỉ để theo dõi. Có thể tạo lại mà không chạy tải:
+
+```bash
+python3 performance/k6/analyze/analyze.py performance/k6/output/<run-id> --type stress
+# Xuất sang thư mục riêng:
+python3 performance/k6/analyze/analyze.py performance/k6/output/<run-id> --type stress --report-dir /tmp/stress-report
+```
+
+Analyzer mặc định xuất `report.md`, `report.html` và CSV vào thư mục `analysis/` của run. Runner stress truyền `--report-dir performance/k6/reports` để cập nhật hai báo cáo chính. Analyzer chỉ dùng Python chuẩn, không đọc raw `metrics.json`. Thiếu dữ liệu hiển thị N/A/INCOMPLETE; vi phạm đã quan sát vẫn là FAIL khi run bị ngắt. [Hướng dẫn analyzer dùng chung](analyze/README.md).
 
 - Mix Search/Detail/Cart/Checkout: **40/20/22/18**; login riêng mỗi Cart/Checkout.
 - Login lỗi tính là request nghiệp vụ lỗi và một thao tác thất bại; không gửi HTTP Cart/Checkout khi thiếu token.
-- SLO mỗi hold/recovery: p95 <500ms, HTTP lỗi <1%, checks ≥99%, từng endpoint có mẫu; tỷ lệ thao tác thất bại <1%, skipped =0.
+- SLO mỗi hold/recovery: p95 <500ms, HTTP lỗi <1%, checks ≥99%, từng endpoint có mẫu; tỷ lệ thao tác thất bại <1%; skipped chỉ để theo dõi.
 - CPU 100% = một core; RAM = RSS, đơn vị MiB. [Chi tiết đo](telemetry/README.md).
 
 Chỉ chạy k6:
@@ -78,6 +86,17 @@ Terminal 2, sau khi backend khởi động:
 node performance/k6/data/seed.js
 bash performance/k6/run-spike.sh
 ```
+
+## Phân tích dữ liệu đã lưu
+
+Từ `eshop-sut`:
+
+```bash
+python3 performance/k6/analyze/analyze.py performance/k6/output/<run-id> --type baseline
+python3 performance/k6/analyze/analyze.py performance/k6/output/<run-id> --type spike
+```
+
+Baseline/spike hiện chưa thu CPU/RAM và chưa tự gọi analyzer; dùng dữ liệu summary đã lưu để tạo báo cáo thủ công. Analyzer ghi rõ phần tài nguyên thiếu và RPS theo thời lượng danh định nếu không có timeline. Khi sửa threshold trong script k6, cập nhật `analyze/profiles.json` tương ứng và chạy kiểm thử đối chiếu.
 
 ## Soak
 
@@ -101,10 +120,12 @@ Mỗi lần chạy lưu vào `performance/k6/output/<loại>-.../`.
 |---|---|
 | `summary.json`, `metrics.json`, `k6.log` | Tổng hợp, raw metrics và log k6 |
 | `baseline_report.html` | Dashboard baseline |
-| `node-cpu-ram.jsonl`, `node-cpu-ram.csv` | Mẫu CPU/RAM của stress |
-| `cpu-ram-phases.csv` | Bảng CPU/RAM từng phase |
-| `cpu-ram-before-during-after.csv` | Bảng CPU/RAM trước–trong–sau stress |
+| `node-cpu-ram.jsonl` | Mẫu CPU/RAM gốc của stress |
 | `measurement-timeline.json` | Mốc thời gian chia cửa sổ đo |
+| `analysis/report.md`, `analysis/report.html` | Báo cáo do analyzer tạo mặc định |
+| `analysis/node-cpu-ram.csv`, `analysis/cpu-ram-*.csv` | Mẫu và thống kê tài nguyên do analyzer tạo |
+
+Khi dùng `--report-dir`, báo cáo và CSV được ghi vào thư mục đích đó; runner stress dùng `reports/`.
 
 Exit 99 = threshold fail. Ctrl-C dừng bài test, backend vẫn chạy. Đổi địa chỉ bằng `BASE_URL`, mặc định `http://localhost:3000`.
 

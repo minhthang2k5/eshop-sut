@@ -1,0 +1,94 @@
+{
+  "stress": {
+    "title": "Stress",
+    "markdown_name": "03-stress-test-report.md",
+    "html_name": "stress_report.html",
+    "description": "Skipped chỉ để theo dõi; login lỗi đã tính vào tỷ lệ thao tác thất bại.",
+    "profile": [
+      {"phase": "ramp_200", "seconds": 30, "target": 200},
+      {"phase": "hold_200", "seconds": 120, "target": 200},
+      {"phase": "ramp_400", "seconds": 30, "target": 400},
+      {"phase": "hold_400", "seconds": 120, "target": 400},
+      {"phase": "ramp_600", "seconds": 30, "target": 600},
+      {"phase": "hold_600", "seconds": 120, "target": 600},
+      {"phase": "ramp_800", "seconds": 30, "target": 800},
+      {"phase": "hold_800", "seconds": 120, "target": 800},
+      {"phase": "ramp_1000", "seconds": 30, "target": 1000},
+      {"phase": "hold_1000", "seconds": 120, "target": 1000},
+      {"phase": "ramp_1200", "seconds": 30, "target": 1200},
+      {"phase": "hold_1200", "seconds": 120, "target": 1200},
+      {"phase": "ramp_1400", "seconds": 30, "target": 1400},
+      {"phase": "hold_1400", "seconds": 120, "target": 1400},
+      {"phase": "ramp_1600", "seconds": 30, "target": 1600},
+      {"phase": "hold_1600", "seconds": 120, "target": 1600},
+      {"phase": "ramp_1800", "seconds": 30, "target": 1800},
+      {"phase": "hold_1800", "seconds": 120, "target": 1800},
+      {"phase": "ramp_2000", "seconds": 30, "target": 2000},
+      {"phase": "hold_2000", "seconds": 120, "target": 2000},
+      {"phase": "ramp_2200", "seconds": 30, "target": 2200},
+      {"phase": "hold_2200", "seconds": 120, "target": 2200},
+      {"phase": "ramp_2400", "seconds": 30, "target": 2400},
+      {"phase": "hold_2400", "seconds": 120, "target": 2400},
+      {"phase": "ramp_2600", "seconds": 30, "target": 2600},
+      {"phase": "hold_2600", "seconds": 120, "target": 2600},
+      {"phase": "ramp_2800", "seconds": 30, "target": 2800},
+      {"phase": "hold_2800", "seconds": 120, "target": 2800},
+      {"phase": "ramp_3000", "seconds": 30, "target": 3000},
+      {"phase": "hold_3000", "seconds": 120, "target": 3000},
+      {"phase": "unload", "seconds": 0, "target": 50},
+      {"phase": "recovery_1", "seconds": 60, "target": 50}
+    ],
+    "assess_phases": ["hold_200", "hold_400", "hold_600", "hold_800", "hold_1000", "hold_1200", "hold_1400", "hold_1600", "hold_1800", "hold_2000", "hold_2200", "hold_2400", "hold_2600", "hold_2800", "hold_3000", "recovery_1"],
+    "rules": [
+      {"metric": "http_req_duration", "stat": "p(95)", "op": "<", "limit": 500, "scope": "phase", "endpoints": [null, "login", "search", "detail", "cart", "checkout"]},
+      {"metric": "http_req_failed", "stat": "rate", "op": "<", "limit": 0.01, "scope": "phase", "endpoints": [null, "login", "search", "detail", "cart", "checkout"]},
+      {"metric": "checks", "stat": "rate", "op": ">=", "limit": 0.99, "scope": "phase", "endpoints": [null, "login", "search", "detail", "cart", "checkout"]},
+      {"metric": "http_reqs", "stat": "count", "op": ">", "limit": 0, "scope": "phase", "endpoints": [null, "login", "search", "detail", "cart", "checkout"]},
+      {"metric": "business_operations_failed", "stat": "rate", "op": "<", "limit": 0.01, "scope": "phase", "endpoints": [null]}
+    ]
+  },
+  "spike": {
+    "title": "Spike",
+    "markdown_name": "04-spike-test-report.md",
+    "html_name": "spike_report.html",
+    "description": "Giữ chính sách spike hiện tại: skipped = 0 theo phase. Login có thống kê riêng, không có SLO riêng.",
+    "profile": [
+      {"phase": "hold_50", "seconds": 30, "target": 50},
+      {"phase": "burst", "seconds": 0, "target": 1500},
+      {"phase": "hold_1500", "seconds": 60, "target": 1500},
+      {"phase": "unload", "seconds": 0, "target": 50},
+      {"phase": "recovery_1", "seconds": 60, "target": 50}
+    ],
+    "assess_phases": ["hold_50", "hold_1500", "recovery_1"],
+    "rules": [
+      {"metric": "http_req_duration", "stat": "p(95)", "op": "<", "limit": 500, "scope": "phase", "endpoints": [null, "search", "detail", "cart", "checkout"]},
+      {"metric": "http_req_failed", "stat": "rate", "op": "<", "limit": 0.01, "scope": "phase", "endpoints": [null, "search", "detail", "cart", "checkout"]},
+      {"metric": "checks", "stat": "rate", "op": ">=", "limit": 0.99, "scope": "phase", "endpoints": [null, "search", "detail", "cart", "checkout"]},
+      {"metric": "http_reqs", "stat": "count", "op": ">", "limit": 0, "scope": "phase", "endpoints": [null, "search", "detail", "cart", "checkout"]},
+      {"metric": "business_requests_skipped", "stat": "count", "op": "==", "limit": 0, "scope": "phase", "endpoints": [null]}
+    ]
+  },
+  "baseline": {
+    "title": "Baseline",
+    "markdown_name": "02-baseline-test-report.md",
+    "html_name": "baseline_report.html",
+    "description": "Đánh giá steady và login toàn bài; không yêu cầu login xuất hiện trong steady. Giữ skipped = 0 toàn bài.",
+    "profile": [
+      {"phase": "ramp_up", "seconds": 60, "target": 50},
+      {"phase": "steady", "seconds": 300, "target": 50},
+      {"phase": "ramp_down", "seconds": 60, "target": 0}
+    ],
+    "assess_phases": ["steady"],
+    "rules": [
+      {"metric": "http_req_duration", "stat": "p(95)", "op": "<", "limit": 500, "scope": "phase", "endpoints": [null, "search", "detail", "cart", "checkout"]},
+      {"metric": "http_req_failed", "stat": "rate", "op": "<", "limit": 0.01, "scope": "phase", "endpoints": [null, "search", "detail", "cart", "checkout"]},
+      {"metric": "checks", "stat": "rate", "op": ">=", "limit": 0.99, "scope": "phase", "endpoints": [null, "search", "detail", "cart", "checkout"]},
+      {"metric": "http_reqs", "stat": "count", "op": ">", "limit": 0, "scope": "phase", "endpoints": [null, "search", "detail", "cart", "checkout"]},
+      {"metric": "http_req_duration", "stat": "p(95)", "op": "<", "limit": 500, "scope": "global", "endpoints": ["login"]},
+      {"metric": "http_req_failed", "stat": "rate", "op": "<", "limit": 0.01, "scope": "global", "endpoints": ["login"]},
+      {"metric": "checks", "stat": "rate", "op": ">=", "limit": 0.99, "scope": "global", "endpoints": ["login"]},
+      {"metric": "http_reqs", "stat": "count", "op": ">", "limit": 0, "scope": "global", "endpoints": ["login"]},
+      {"metric": "business_requests_skipped", "stat": "count", "op": "==", "limit": 0, "scope": "global", "endpoints": [null]}
+    ]
+  }
+}

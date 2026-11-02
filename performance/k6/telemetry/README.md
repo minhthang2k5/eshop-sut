@@ -1,30 +1,22 @@
-# CPU/RAM Node.js
+# Thu CPU/RAM Node.js
 
-Chạy stress theo [README](../README.md): mở backend → seed → chạy `run-stress.sh`.
+`telemetry/` giữ phần thu tài nguyên. Phần phân tích và tạo báo cáo nằm trong [analyze/](../analyze/README.md).
 
 ## Cách đo
 
 - `node.cjs` lấy mẫu của chính tiến trình backend mỗi giây.
 - CPU = chênh lệch thời gian CPU user + system / thời gian thực; 100% = một core.
-- RAM = RSS qua `process.memoryUsage.rss()`, đổi sang MiB.
-- `run-stress.sh`: `sleep 30` → chạy `stress.js` bằng k6 → `sleep 60` → gọi `analyze.py` tổng hợp; giữ backend chạy nguyên trạng.
-- Mốc scenario và profile chia mẫu theo ramp/hold/recovery; grace cuối ghi riêng. Chu kỳ lấy mẫu có thể trễ khi Node bận.
+- RAM = RSS qua `process.memoryUsage.rss()`, ghi bytes và được analyzer đổi sang MiB.
+- Chu kỳ lấy mẫu có thể trễ khi Node bận; không giả định một mẫu luôn tương ứng đúng một giây.
 
-## Kết quả
+Chạy stress theo [README](../README.md): mở backend → seed → chạy `run-stress.sh`. Runner thu 30s trước → chạy k6 → thu 60s sau → gọi `analyze/analyze.py`. Giữ backend đến khi runner kết thúc.
 
-Hai bảng tự cập nhật ở **mục 6.3** của [03-stress-test-report.md](../reports/03-stress-test-report.md):
-
-1. CPU/RAM từng phase.
-2. CPU/RAM trước–trong–sau stress và chênh lệch sau − trước.
-
-Bảng gồm số mẫu, CPU TB/max, RAM TB/max/đầu/cuối. TB là trung bình mẫu; thiếu dữ liệu hiển thị `—`. Trong stress gồm recovery và grace, setup được tách riêng.
-
-Thư mục run giữ `node-cpu-ram.jsonl`, `node-cpu-ram.csv`, hai bảng `cpu-ram-*.csv` và `measurement-timeline.json`. Lần chạy mới thay phần CPU/RAM trong báo cáo, giữ các phần khác.
+Run lưu `node-cpu-ram.jsonl` và `measurement-timeline.json`. Analyzer dùng mốc scenario/profile để chia ramp, hold, recovery; grace cuối và setup được tách riêng. Thống kê dùng cửa sổ [bắt đầu, kết thúc), TB là trung bình mẫu. Các CSV phân tích được ghi vào thư mục đích analyzer cùng báo cáo.
 
 ## Tùy chọn
 
-- `TELEMETRY=0 bash performance/k6/run-stress.sh`: chỉ chạy k6, bỏ thời gian thu trước/sau.
+- `TELEMETRY=0 bash performance/k6/run-stress.sh`: bỏ thời gian thu trước/sau; vẫn tạo báo cáo HTTP.
 - `TELEMETRY=0 node backend/server.js`: tắt đo ở backend.
 - Đường dẫn riêng: truyền cùng `TELEMETRY_FILE` cho backend và runner; mặc định runner tìm file của backend đang chạy trong `output/telemetry/`.
 
-Ctrl-C dừng bài test, backend vẫn chạy. Nếu không tìm thấy file đo, k6 vẫn chạy và báo thiếu dữ liệu CPU/RAM.
+Ctrl-C dừng bài test, backend vẫn chạy. Nếu không tìm thấy file đo, k6 vẫn chạy và analyzer ghi thiếu CPU/RAM. Baseline/spike hiện chưa tích hợp tự động phần thu này; analyzer vẫn đọc được summary của chúng.
