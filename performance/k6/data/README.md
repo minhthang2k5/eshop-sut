@@ -26,4 +26,4 @@ Sau khi sửa CSV, cập nhật fixture stress:
 node performance/k6/data/build-manifest.cjs
 ```
 
-Search tìm trong **tên sản phẩm**; cột `search_keyword` là metadata fixture. Baseline/spike hiện yêu cầu đúng 50 account nên chưa dùng được CSV 10.000 account này. Smoke dùng tài khoản startup, không cần seed.
+Search tìm trong **tên sản phẩm**; cột `search_keyword` là metadata fixture. Baseline kiểm tra toàn bộ CSV và cấp 50 account đầu cho 50 VU; sản phẩm ID 1 / iPhone được đọc từ CSV. Spike vẫn yêu cầu đúng 50 account nên chưa dùng được CSV 10.000 account này. Smoke dùng tài khoản startup, không cần seed.

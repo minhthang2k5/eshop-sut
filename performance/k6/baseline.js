@@ -4,23 +4,53 @@ import { SharedArray } from 'k6/data';
 import { Counter } from 'k6/metrics';
 import exec from 'k6/execution';
 
-const BASE_URL = __ENV.BASE_URL || 'http://localhost:3000'.replace(/\/$/, '');
-// This fixture uses four unquoted columns; reject malformed input before sending load.
-const accounts = new SharedArray('baseline accounts', () => {
-  const lines = open('./data/test_accounts.csv').replace(/^\uFEFF/, '').trim().split(/\r?\n/);
-  if (lines.shift() !== 'email,password,name,role') throw new Error('Invalid accounts CSV header');
-  const rows = lines.map((line, index) => {
-    const fields = line.split(',');
-    if (fields.length !== 4 || fields.some((value) => !value.trim() || value.includes('"'))) {
-      throw new Error(`Invalid accounts CSV row ${index + 2}: expected four nonempty unquoted fields`);
+const BASE_URL = (__ENV.BASE_URL || 'http://localhost:3000').replace(/\/+$/, '');
+// Single-line CSV contract matches seed.js; quoted commas and escaped quotes supported.
+function csv(text, header) {
+  const pattern = /(?:^|,)(?:"((?:[^"]|"")*)"|([^",\r\n]*))(?=,|$)/gy;
+  const rows = text.replace(/^\uFEFF/, '').split(/\r?\n/).filter(line => line.trim()).map((line, index) => {
+    pattern.lastIndex = 0;
+    const fields = [];
+    let match, end = 0;
+    while ((match = pattern.exec(line)) !== null) {
+      fields.push(match[1] === undefined ? match[2] : match[1].replace(/""/g, '"'));
+      end = pattern.lastIndex;
+      if (end === line.length) break;
     }
-    return { email: fields[0].trim(), password: fields[1] };
+    if (end !== line.length || fields.length !== header.split(',').length) throw new Error(`Invalid CSV row ${index + 1}`);
+    return fields;
   });
-  if (rows.length !== 50 || new Set(rows.map((row) => row.email)).size !== 50) {
-    throw new Error('Baseline requires exactly 50 unique accounts');
-  }
+  if (!rows.length || rows.shift().join(',') !== header) throw new Error(`Invalid CSV header: ${header}`);
+  return rows;
+}
+const accounts = new SharedArray('baseline accounts', () => {
+  const seen = new Set();
+  const rows = csv(open('./data/test_accounts.csv'), 'email,password,name,role').map(([email, password, name, role]) => {
+    if (![email, password, name, role].every(v => v.trim()) || !['user', 'admin'].includes(role) || seen.has(email)) throw new Error('Invalid/duplicate account');
+    seen.add(email);
+    return { email, password };
+  });
+  if (rows.length < 50) throw new Error('Baseline requires at least 50 unique accounts');
+  return rows.slice(0, 50);
+});
+const products = new SharedArray('baseline products', () => {
+  const ids = new Set();
+  const rows = csv(open('./data/test_product.csv'), 'product_id,name,price,description,image_url,category_id,search_keyword')
+    .map(([id, name, price, description, imageUrl, category, keyword]) => {
+      id = Number(id); price = Number(price); category = Number(category);
+      if (![name, description, imageUrl, keyword].every(v => v.trim()) || !Number.isSafeInteger(id) || id <= 0 || ids.has(id) || !Number.isSafeInteger(price) || price <= 0 || !Number.isSafeInteger(category) || category <= 0) throw new Error('Invalid/duplicate product');
+      ids.add(id);
+      return { id, name, price, keyword };
+    });
+  if (!rows.some(p => p.id === 1 && p.keyword === 'iPhone' && p.name.toLowerCase().includes('iphone'))) throw new Error('Missing baseline product 1 / iPhone');
   return rows;
 });
+const profile = [
+  { phase: 'ramp_up', seconds: 60, target: 50 },
+  { phase: 'steady', seconds: 300, target: 50 },
+  { phase: 'ramp_down', seconds: 60, target: 0 },
+];
+let timelineLogged = false;
 
 // Module state is isolated per VU; never return or share JWTs through setup().
 let authToken = null;
@@ -52,12 +82,15 @@ for (const endpoint of endpoints) {
 }
 
 export const options = {
-  vus: 0,
-  stages: [
-    { duration: '1m', target: 50 },
-    { duration: '5m', target: 50 },
-    { duration: '1m', target: 0 },
-  ],
+  scenarios: {
+    baseline: {
+      executor: 'ramping-vus',
+      startVUs: 0,
+      stages: profile.map(({ seconds, target }) => ({ duration: `${seconds}s`, target })),
+      gracefulRampDown: '30s',
+      gracefulStop: '30s',
+    },
+  },
   summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(90)', 'p(95)', 'p(99)'],
   thresholds,
 };
@@ -94,12 +127,20 @@ function ensureLoggedIn() {
 function phase() {
   // Scenario clock excludes setup. Classify by request START, not iteration end.
   const elapsed = Date.now() - exec.scenario.startTime;
-  if (elapsed < 60000) return 'ramp_up';
-  if (elapsed < 360000) return 'steady';
-  return 'ramp_down';
+  let end = 0;
+  for (const stage of profile) {
+    end += stage.seconds * 1000;
+    if (elapsed < end) return stage.phase;
+  }
+  return 'graceful_stop';
 }
 
 export default function () {
+  if (!timelineLogged && exec.vu.idInTest === 1) {
+    console.log('BASELINE_TIMELINE ' + JSON.stringify({ start_ms: exec.scenario.startTime, profile }));
+    timelineLogged = true;
+  }
+  const product = products.find(p => p.id === 1);
   // Select one business operation per iteration. Lazy Login is additional traffic;
   // it does not participate in the 55/25/14/6 selection probabilities.
   const r = Math.random();
@@ -129,35 +170,36 @@ export default function () {
     sleep(minThink + Math.random() * (maxThink - minThink));
     return;
   }
-  skippedRequests.add(0);
   // Recompute phase AFTER Login, which may cross a stage boundary.
   const tags = { phase: phase(), endpoint, name };
+  skippedRequests.add(0, { phase: tags.phase, endpoint });
   const params = { tags, timeout: '10s', headers: {
     'Content-Type': 'application/json',
   } };
   if (needsAuth) params.headers.Authorization = `Bearer ${authToken}`;
   if (endpoint === 'search') {
-    response = http.get(`${BASE_URL}/api/products?search=iPhone`, params);
+    response = http.get(`${BASE_URL}/api/products?search=${encodeURIComponent(product.keyword)}`, params);
     body = jsonBody(response);
-    validBody = Array.isArray(body) && body.length > 0;
+    validBody = Array.isArray(body) && body.some(p => p && p.id === product.id) && body.every(p => p && typeof p.name === 'string' && p.name.toLowerCase().includes(product.keyword.toLowerCase()));
   } else if (endpoint === 'detail') {
-    response = http.get(`${BASE_URL}/api/products/1`, params);
+    response = http.get(`${BASE_URL}/api/products/${product.id}`, params);
     body = jsonBody(response);
-    validBody = !!body && body.id === 1;
+    validBody = !!body && body.id === product.id && body.name === product.name && Number(body.price) === product.price;
   } else if (endpoint === 'cart') {
     response = http.post(`${BASE_URL}/api/cart`, JSON.stringify({
-      id: 1, name: 'iPhone 15 Pro Max', price: 30000000, quantity: 1,
+      id: product.id, name: product.name, price: product.price, quantity: 1,
     }), params);
     body = jsonBody(response);
     validBody = !!body && body.message === 'Added to cart';
   } else {
     // Current SUT creates orders independently of cart contents.
     response = http.post(`${BASE_URL}/api/checkout`, JSON.stringify({
-      total_amount: 30000000, shipping_address: '123 Le Loi, TP.HCM',
+      total_amount: product.price, shipping_address: '123 Le Loi, TP.HCM',
     }), params);
     body = jsonBody(response);
     validBody = !!body && Number.isInteger(body.orderId) && body.orderId > 0;
   }
+  if (needsAuth && response.status === 401) authToken = null;
   check(response, {
     [`${endpoint}: status is 200`]: (res) => res.status === 200,
     [`${endpoint}: valid response body`]: () => validBody,

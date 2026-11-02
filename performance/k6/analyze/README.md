@@ -38,6 +38,21 @@ Khi dùng `--report-dir`, tên báo cáo theo loại test:
 
 CSV có tên chung trong thư mục đích; xuất các run/loại khác nhau vào thư mục riêng nếu cần lưu toàn bộ CSV. Chạy lại sẽ thay toàn bộ các tệp đầu ra tương ứng, kể cả ghi chú chỉnh tay. Runner stress tự gọi analyzer với đích `reports/`; runner baseline/spike hiện giữ nguyên, chưa tự gọi hoặc thu telemetry.
 
+## Lưu dữ liệu và Git ignore
+
+[`.gitignore`](../../../.gitignore) bỏ qua log trong `performance/k6/output/telemetry/`, `node-cpu-ram.jsonl`, `node-cpu-ram.csv` và `cpu-ram-*.csv`. Hai file `cpu-ram-phases.csv`, `cpu-ram-before-during-after.csv` đều thuộc quy tắc cuối; các quy tắc tên file áp dụng cả trong thư mục run, `analysis/`, `reports/` hoặc thư mục đích riêng trong repository.
+
+Git ignore giữ file trên máy nhưng không đưa chúng vào commit mới. `summary.json`, `measurement-timeline.json`, cấu hình analyzer và báo cáo Markdown/HTML không bị các quy tắc CPU/RAM này bỏ qua. `k6.log` và raw `metrics.json` cũng đã có quy tắc ignore riêng.
+
+Khi cần lưu bằng chứng hoặc chuyển run sang máy khác:
+
+1. Giữ `summary.json` để tái tạo kết quả k6 và bảng đánh giá.
+2. Giữ `node-cpu-ram.jsonl` để tái tạo CSV và biểu đồ tài nguyên; không thể suy ra mẫu CPU/RAM từ summary k6.
+3. Giữ `measurement-timeline.json`; nếu timeline chưa có `scenario_start_ms`/`profile`, giữ thêm `k6.log` có marker `STRESS_TIMELINE`. Analyzer khôi phục mốc trong bộ nhớ, không ghi ngược vào timeline gốc.
+4. Chạy lại lệnh analyzer với đúng `--type` và cấu hình `profiles.json` tương ứng. CSV được tạo lại trong thư mục đích; không cần đưa chúng vào Git.
+
+Thiếu file gốc CPU/RAM thì báo cáo vẫn có thể đánh giá HTTP và ghi N/A cho tài nguyên. Các liên kết đến log/CSV cục bộ trong báo cáo có thể chưa tồn tại trên máy vừa clone repository; cần chép dữ liệu đã lưu riêng hoặc tạo lại CSV trước khi mở các liên kết đó.
+
 ## Dữ liệu đầu vào
 
 | Tệp | Cách sử dụng |

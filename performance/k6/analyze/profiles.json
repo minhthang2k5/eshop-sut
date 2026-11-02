@@ -72,7 +72,7 @@
     "title": "Baseline",
     "markdown_name": "02-baseline-test-report.md",
     "html_name": "baseline_report.html",
-    "description": "Đánh giá steady và login toàn bài; không yêu cầu login xuất hiện trong steady. Giữ skipped = 0 toàn bài.",
+    "description": "50 VU dùng 50 account đầu từ fixture đã kiểm tra; mix 55/25/14/6, lazy login riêng từng VU, sản phẩm 1 / iPhone. Đánh giá steady và login toàn bài; không yêu cầu login trong steady. Skipped = 0 toàn bài.",
     "profile": [
       {"phase": "ramp_up", "seconds": 60, "target": 50},
       {"phase": "steady", "seconds": 300, "target": 50},
