@@ -88,6 +88,22 @@ def main():
     rows.sort(key=lambda row: row[0])
     timeline_file = source.with_name('measurement-timeline.json')
     timeline = json.loads(timeline_file.read_text()) if timeline_file.exists() else None
+    if timeline and 'profile' not in timeline:
+        log_file = source.with_name('k6.log')
+        if log_file.exists():
+            with log_file.open() as log:
+                for line in log:
+                    text = line.replace('\\"', '"')
+                    if 'STRESS_TIMELINE ' not in text:
+                        continue
+                    try:
+                        marker, _ = json.JSONDecoder().raw_decode(text.split('STRESS_TIMELINE ', 1)[1])
+                        timeline['scenario_start_ms'] = marker['start_ms']
+                        timeline['profile'] = marker['profile']
+                        timeline_file.write_text(json.dumps(timeline, indent=2) + '\n')
+                        break
+                    except (ValueError, KeyError):
+                        continue
     periods, phases = intervals(timeline) if timeline else ([], [])
     if timeline:
         rows = [row for row in rows if timeline['before_start_ms'] <= row[0] < timeline['after_end_ms']]

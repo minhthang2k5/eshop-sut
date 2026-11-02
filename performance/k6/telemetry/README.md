@@ -7,7 +7,7 @@ Chạy stress theo [README](../README.md): mở backend → seed → chạy `run
 - `node.cjs` lấy mẫu của chính tiến trình backend mỗi giây.
 - CPU = chênh lệch thời gian CPU user + system / thời gian thực; 100% = một core.
 - RAM = RSS qua `process.memoryUsage.rss()`, đổi sang MiB.
-- Runner thu **30s trước tải → trong stress → 60s sau tải**; giữ backend chạy nguyên trạng.
+- `run-stress.sh`: `sleep 30` → chạy `stress.js` bằng k6 → `sleep 60` → gọi `analyze.py` tổng hợp; giữ backend chạy nguyên trạng.
 - Mốc scenario và profile chia mẫu theo ramp/hold/recovery; grace cuối ghi riêng. Chu kỳ lấy mẫu có thể trễ khi Node bận.
 
 ## Kết quả

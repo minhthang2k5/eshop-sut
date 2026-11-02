@@ -53,7 +53,7 @@ node performance/k6/data/seed.js
 bash performance/k6/run-stress.sh
 ```
 
-Runner thu CPU/RAM **30s trước → trong stress → 60s sau**. Giữ backend chạy đến khi runner kết thúc. Hai bảng CPU/RAM tự cập nhật tại **mục 6.3** của [báo cáo stress](reports/03-stress-test-report.md); lần chạy mới thay số liệu CPU/RAM của lần trước. Các kết quả k6 và nhận xét điền thủ công.
+`run-stress.sh` điều khiển trực tiếp: `sleep 30` → `k6 run stress.js` → `sleep 60` → `analyze.py` tổng hợp CPU/RAM. Giữ backend chạy đến khi runner kết thúc. Hai bảng CPU/RAM tự cập nhật tại **mục 6.3** của [báo cáo stress](reports/03-stress-test-report.md); lần chạy mới thay số liệu CPU/RAM của lần trước. Các kết quả k6 và nhận xét điền thủ công.
 
 - Mix Search/Detail/Cart/Checkout: **40/20/22/18**; login riêng mỗi Cart/Checkout.
 - Login lỗi tính là request nghiệp vụ lỗi và một thao tác thất bại; không gửi HTTP Cart/Checkout khi thiếu token.
