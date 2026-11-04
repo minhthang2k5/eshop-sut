@@ -17,14 +17,14 @@ function read(name, header) {
   return { rows, hash: crypto.createHash('sha256').update(text).digest('hex') };
 }
 const a = read('test_accounts.csv', 'email,password,name,role');
-const p = read('test_product.csv', 'product_id,name,price,description,image_url,category_id,search_keyword');
+const p = read('test_products.csv', 'product_id,name,price,description,image_url,category_id,search_keyword');
 const products = p.rows.map(([id, name, price]) => ({ id: Number(id), name, price: Number(price) }));
-const weights = [['iPhone',25],['Samsung',20],['MacBook',15],['AirPods',7],['iPad',6],['Apple Watch',6],['Sony',6],['Keychron',3],['Logitech',3],['Dell',3],['Asus',3],['Xiaomi',3]];
+const keywords = ["iPhone", "Samsung", "MacBook", "AirPods", "iPad", "Apple Watch", "Sony", "Keychron", "Logitech", "Dell", "Asus", "Xiaomi"];
 const manifest = {
-  datasetId: `black-friday-${a.hash.slice(0,12)}-${p.hash.slice(0,12)}`,
+  datasetId: `test-data-${a.hash.slice(0,12)}-${p.hash.slice(0,12)}`,
   sourceHashes: { accounts: a.hash, products: p.hash }, accountCount: a.rows.length,
   products,
-  keywords: weights.map(([keyword, weight]) => ({ keyword, weight, expectedIds: products.filter(p => p.name.toLowerCase().includes(keyword.toLowerCase())).map(p => p.id).sort((a,b) => a-b) })),
+  keywords: keywords.map(keyword => ({ keyword, expectedIds: products.filter(p => p.name.toLowerCase().includes(keyword.toLowerCase())).map(p => p.id).sort((a,b) => a-b) })),
 };
-fs.writeFileSync(path.join(__dirname, 'black-friday.json'), JSON.stringify(manifest, null, 2) + '\n');
+fs.writeFileSync(path.join(__dirname, 'test-data-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
 console.log(`Built manifest ${manifest.datasetId}`);

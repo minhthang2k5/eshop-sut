@@ -1,0 +1,262 @@
+K6 Load Testing <xt-mark w="performance" style="color: #ff6a00 !important">Performance</xt-mark> Report
+    
+    
+    
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0f172a;
+            color: #f1f5f9;
+            margin: 0;
+            padding: 24px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #38bdf8;
+        }
+        p.subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 32px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .card {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            border: 1px solid #334155;
+        }
+        .card.full-width {
+            grid-column: 1 / -1;
+        }
+        .card h2 {
+            font-size: 16px;
+            margin-top: 0;
+            margin-bottom: 16px;
+            color: #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .badge {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #334155;
+            color: #cbd5e1;
+            font-weight: normal;
+        }
+        canvas {
+            width: 100% !important;
+            height: 320px !important;
+        }
+    
+
+
+
+    Báo Cáo Kết Quả Kiểm Thử Tải (K6 Load Testing)
+    Tiêu chuẩn đánh giá: Response Duration P95 < 500ms | Request Failure Rate < 1%
+
+    
+        
+        
+            Số lượng Virtual Users (VUs) theo từng Phase Traffic Profile
+            
+        
+
+        
+        
+            Tổng thể: Response Time P95 Threshold: < 500ms
+            
+        
+
+        
+        
+            Tổng thể: Tỷ lệ Request Lỗi (%) Threshold: < 1%
+            
+        
+
+        
+        
+            Chi tiết API: Response Time P95 (ms) Threshold: < 500ms
+            
+        
+
+        
+        
+            Chi tiết API: Tỷ lệ Request Lỗi (%) Threshold: < 1%
+            
+        
+    
+
+    
+        const phases = ["hold_200", "hold_400", "hold_600", "hold_800", "hold_1000", "hold_1200", "hold_1400", "hold_1600", "hold_1800", "hold_2000", "hold_2200", "hold_2400", "hold_2600", "hold_2800", "hold_3000", "recovery_1"];
+        const vuData = [200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 10];
+        const overallP95 = [8.62, 8.02, 367.32, 8.14, 544.94, 14.52, 1145.55, 45.03, 2988.2, 3337.05, 2794.74, 586.56, 736.12, 3730.6, 7219.14, 12.61];
+        const overallFail = [0.008, 0, 0.071, 0, 0.541, 0, 0.95, 0.006, 1.527, 1.98, 0.439, 0.033, 0.597, 1.956, 4.261, 0];
+        const epP95 = {"search": [5.05, 6.16, 412.07, 7.4, 651.47, 13.94, 1231.03, 49.89, 3203.07, 3426.14, 3258.07, 605.99, 730.65, 4250.19, 7531.95, 5.45], "detail": [4.69, 6.34, 454.57, 7.73, 580.9, 15.34, 1274.82, 48.8, 3237.79, 3341.19, 3193.0, 611.67, 743.0, 4200.12, 7520.31, 2.68], "cart": [2.04, 2.2, 62.85, 2.83, 169.26, 4.65, 404.85, 17.19, 812.05, 984.83, 1085.61, 253.67, 375.72, 821.68, 2473.69, 1.42], "checkout": [13.29, 12.83, 490.96, 11.8, 844.58, 19.7, 1192.49, 51.7, 3793.88, 3877.77, 3656.11, 588.39, 780.84, 4938.94, 7279.28, 15.63]};
+        const epFail = {"search": [0, 0, 0, 0, 0.822, 0, 1.287, 0, 2.007, 2.695, 0.543, 0.003, 0.339, 2.581, 5.318, 0], "detail": [0, 0, 0, 0, 0.648, 0, 1.247, 0, 2.199, 2.52, 0.596, 0, 0.453, 2.689, 5.07, 0], "cart": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "checkout": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]};
+
+        const commonGridOpts = {
+            color: '#334155'
+        };
+
+        // 1. VU Chart
+        new Chart(document.getElementById('vuChart'), {
+            type: 'bar',
+            data: {
+                labels: phases,
+                datasets: [{
+                    label: 'VUs Target',
+                    data: vuData,
+                    backgroundColor: '#0ea5e9'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { grid: commonGridOpts, ticks: { color: '#94a3b8' } },
+                    y: { grid: commonGridOpts, ticks: { color: '#94a3b8' }, title: { display: true, text: 'VUs', color: '#94a3b8' } }
+                }
+            }
+        });
+
+        // 2. Overall Duration
+        new Chart(document.getElementById('overallDurationChart'), {
+            type: 'line',
+            data: {
+                labels: phases,
+                datasets: [
+                    {
+                        label: 'Total P95 (ms)',
+                        data: overallP95,
+                        borderColor: '#38bdf8',
+                        backgroundColor: '#38bdf820',
+                        tension: 0.2,
+                        fill: true
+                    },
+                    {
+                        label: 'Ngưỡng SLA (500ms)',
+                        data: Array(phases.length).fill(500),
+                        borderColor: '#ef4444',
+                        borderDash: [6, 6],
+                        pointRadius: 0,
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { grid: commonGridOpts, ticks: { color: '#94a3b8' } },
+                    y: { grid: commonGridOpts, ticks: { color: '#94a3b8' }, title: { display: true, text: 'ms', color: '#94a3b8' } }
+                }
+            }
+        });
+
+        // 3. Overall Fail Rate
+        new Chart(document.getElementById('overallFailChart'), {
+            type: 'line',
+            data: {
+                labels: phases,
+                datasets: [
+                    {
+                        label: 'Error Rate (%)',
+                        data: overallFail,
+                        borderColor: '#f59e0b',
+                        backgroundColor: '#f59e0b20',
+                        tension: 0.2,
+                        fill: true
+                    },
+                    {
+                        label: 'Ngưỡng SLA (1%)',
+                        data: Array(phases.length).fill(1.0),
+                        borderColor: '#ef4444',
+                        borderDash: [6, 6],
+                        pointRadius: 0,
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { grid: commonGridOpts, ticks: { color: '#94a3b8' } },
+                    y: { grid: commonGridOpts, ticks: { color: '#94a3b8' }, title: { display: true, text: '%', color: '#94a3b8' } }
+                }
+            }
+        });
+
+        // 4. API Endpoints Duration
+        new Chart(document.getElementById('epDurationChart'), {
+            type: 'line',
+            data: {
+                labels: phases,
+                datasets: [
+                    { label: 'Search', data: epP95['search'], borderColor: '#a855f7', tension: 0.2 },
+                    { label: 'Detail', data: epP95['detail'], borderColor: '#06b6d4', tension: 0.2 },
+                    { label: 'Cart', data: epP95['cart'], borderColor: '#10b981', tension: 0.2 },
+                    { label: 'Checkout', data: epP95['checkout'], borderColor: '#f43f5e', tension: 0.2 },
+                    {
+                        label: 'SLA (500ms)',
+                        data: Array(phases.length).fill(500),
+                        borderColor: '#ef4444',
+                        borderDash: [6, 6],
+                        pointRadius: 0,
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { grid: commonGridOpts, ticks: { color: '#94a3b8' } },
+                    y: { grid: commonGridOpts, ticks: { color: '#94a3b8' }, title: { display: true, text: 'ms', color: '#94a3b8' } }
+                }
+            }
+        });
+
+        // 5. API Endpoints Fail Rate
+        new Chart(document.getElementById('epFailChart'), {
+            type: 'line',
+            data: {
+                labels: phases,
+                datasets: [
+                    { label: 'Search', data: epFail['search'], borderColor: '#a855f7', tension: 0.2 },
+                    { label: 'Detail', data: epFail['detail'], borderColor: '#06b6d4', tension: 0.2 },
+                    { label: 'Cart', data: epFail['cart'], borderColor: '#10b981', tension: 0.2 },
+                    { label: 'Checkout', data: epFail['checkout'], borderColor: '#f43f5e', tension: 0.2 },
+                    {
+                        label: 'SLA (1%)',
+                        data: Array(phases.length).fill(1.0),
+                        borderColor: '#ef4444',
+                        borderDash: [6, 6],
+                        pointRadius: 0,
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { grid: commonGridOpts, ticks: { color: '#94a3b8' } },
+                    y: { grid: commonGridOpts, ticks: { color: '#94a3b8' }, title: { display: true, text: '%', color: '#94a3b8' } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

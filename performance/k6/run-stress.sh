@@ -47,10 +47,27 @@ finish() {
     if [[ -n "$K6_END" ]]; then printf ',"k6_end_ms":%s' "$K6_END"; fi
     printf '}\n'
   } > "$RUN_DIR/measurement-timeline.json"
+  # Persist scenario clock/profile directly; never infer them from directory names.
+  python3 - "$RUN_DIR" <<'PYTIMELINE'
+import json, pathlib, sys
+run = pathlib.Path(sys.argv[1])
+p = run / 'measurement-timeline.json'
+timeline = json.loads(p.read_text())
+log = run / 'k6.log'
+for line in log.read_text().splitlines() if log.exists() else []:
+    if 'STRESS_TIMELINE ' not in line:
+        continue
+    try:
+        marker, _ = json.JSONDecoder().raw_decode(line.replace('\\"', '"').split('STRESS_TIMELINE ', 1)[1])
+        timeline.update(scenario_start_ms=marker['start_ms'], profile=marker['profile'])
+        break
+    except (ValueError, KeyError):
+        continue
+p.write_text(json.dumps(timeline) + '\n')
+PYTIMELINE
   if [[ -n "$SOURCE" ]]; then
     tail -c "+$((OFFSET + 1))" "$SOURCE" > "$RUN_DIR/node-cpu-ram.jsonl"
   fi
-  python3 "$TEST_DIR/analyze/analyze.py" "$RUN_DIR" --type stress --report-dir "$TEST_DIR/reports" || printf 'Không tổng hợp được báo cáo stress.\n' >&2
   printf 'Kết quả: %s\n' "$RUN_DIR"
   exit "$RESULT"
 }
@@ -69,6 +86,8 @@ if [[ "$INTERRUPTED" == true ]]; then exit 130; fi
 K6_START=$(date +%s%3N)
 exec 3> >(tee "$RUN_DIR/k6.log")
 LOGGER_PID=$!
+K6_WEB_DASHBOARD=true K6_WEB_DASHBOARD_OPEN=false K6_WEB_DASHBOARD_PORT=0 \
+K6_WEB_DASHBOARD_EXPORT="$RUN_DIR/stress_report.html" \
 k6 run --out "json=$RUN_DIR/metrics.json" \
   --summary-export="$RUN_DIR/summary.json" \
   "$TEST_DIR/stress.js" >&3 2>&1 &

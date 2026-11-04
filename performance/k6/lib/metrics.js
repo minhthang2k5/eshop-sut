@@ -11,7 +11,7 @@ export const failed = new Rate('business_operations_failed');
 export const skipped = new Counter('business_requests_skipped');
 export function thresholdsFor(profile) {
   const thresholds = {};
-  for (const stage of profile.filter(s => /^(hold_|recovery_)/.test(s.phase))) {
+  for (const stage of profile.filter(s => s.phase === 'steady' || /^(hold_|recovery_)/.test(s.phase))) {
     for (const endpoint of [null, 'login', ...endpoints]) {
       const filter = `phase:${stage.phase}${endpoint ? `,endpoint:${endpoint}` : ''}`;
       thresholds[`http_req_duration{${filter}}`] = ['p(95)<500'];

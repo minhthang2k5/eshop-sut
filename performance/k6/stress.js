@@ -1,8 +1,8 @@
 import http from 'k6/http';
 import { preflight } from './lib/data.js';
-import { profile } from './lib/stress-test-profiles.js';
+import { profile, phaseAt } from './lib/stress-test-profiles.js';
 import { thresholdsFor } from './lib/metrics.js';
-import { iteration } from './lib/workload.js';
+import { createIteration } from './lib/black-friday-workload.js';
 
 http.setResponseCallback(http.expectedStatuses(200));
 
@@ -24,4 +24,4 @@ export function setup() {
   preflight();
 }
 
-export default iteration;
+export default createIteration({ profile, phaseAt, timelineLabel: 'STRESS_TIMELINE' });

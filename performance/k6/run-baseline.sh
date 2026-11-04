@@ -68,7 +68,6 @@ PYTIMELINE
   if [[ -n "$SOURCE" ]]; then
     tail -c "+$((OFFSET + 1))" "$SOURCE" > "$RUN_DIR/node-cpu-ram.jsonl"
   fi
-  python3 "$TEST_DIR/analyze/analyze.py" "$RUN_DIR" --type baseline --report-dir "$TEST_DIR/reports" || printf 'Không tổng hợp được báo cáo baseline.\n' >&2
   printf 'Kết quả: %s\n' "$RUN_DIR"
   exit "$RESULT"
 }

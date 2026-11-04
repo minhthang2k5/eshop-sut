@@ -1,0 +1,244 @@
+{
+    "metrics": {
+        "http_reqs": {
+            "rate": 0.9897692195810014,
+            "count": 5
+        },
+        "http_req_connecting": {
+            "p(95)": 0.14824479999999995,
+            "avg": 0.0370612,
+            "min": 0,
+            "med": 0,
+            "max": 0.185306,
+            "p(90)": 0.11118360000000002
+        },
+        "http_req_waiting": {
+            "med": 2.824076,
+            "max": 31.187036,
+            "p(90)": 20.858324800000002,
+            "p(95)": 26.022680399999995,
+            "avg": 8.679990799999999,
+            "min": 1.269795
+        },
+        "http_req_receiving": {
+            "p(90)": 0.0962116,
+            "p(95)": 0.10140279999999999,
+            "avg": 0.0716866,
+            "min": 0.04627,
+            "med": 0.07248,
+            "max": 0.106594
+        },
+        "http_req_duration{expected_response:true}": {
+            "min": 1.328679,
+            "med": 2.958895,
+            "max": 31.321701,
+            "p(90)": 20.970048200000004,
+            "p(95)": 26.145874599999996,
+            "avg": 8.7886826
+        },
+        "http_req_tls_handshaking": {
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "max": 0,
+            "p(90)": 0,
+            "p(95)": 0
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 5,
+            "value": 0
+        },
+        "group_duration": {
+            "avg": 9.6549958,
+            "min": 1.475526,
+            "med": 3.178027,
+            "max": 34.806222,
+            "p(90)": 23.155064000000003,
+            "p(95)": 28.980642999999993
+        },
+        "data_received": {
+            "count": 2145,
+            "rate": 424.6109952002496
+        },
+        "data_sent": {
+            "count": 1071,
+            "rate": 212.0085668342505
+        },
+        "iterations": {
+            "rate": 0.19795384391620027,
+            "count": 1
+        },
+        "vus_max": {
+            "value": 1,
+            "min": 1,
+            "max": 1
+        },
+        "http_req_sending": {
+            "avg": 0.0370052,
+            "min": 0.012614,
+            "med": 0.031186,
+            "max": 0.062185,
+            "p(90)": 0.0589834,
+            "p(95)": 0.0605842
+        },
+        "iteration_duration": {
+            "med": 5051.496654,
+            "max": 5051.496654,
+            "p(90)": 5051.496654,
+            "p(95)": 5051.496654,
+            "avg": 5051.496654,
+            "min": 5051.496654
+        },
+        "checks": {
+            "passes": 10,
+            "fails": 0,
+            "thresholds": {
+                "rate==1.0": false
+            },
+            "value": 1
+        },
+        "http_req_blocked": {
+            "min": 0.005285,
+            "med": 0.0058,
+            "max": 1.187894,
+            "p(90)": 0.7162860000000001,
+            "p(95)": 0.9520899999999998,
+            "avg": 0.242679
+        },
+        "http_req_duration": {
+            "med": 2.958895,
+            "max": 31.321701,
+            "p(90)": 20.970048200000004,
+            "p(95)": 26.145874599999996,
+            "avg": 8.7886826,
+            "min": 1.328679,
+            "thresholds": {
+                "p(95)<500": false
+            }
+        },
+        "vus": {
+            "value": 1,
+            "min": 1,
+            "max": 1
+        }
+    },
+    "root_group": {
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {
+            "1. Login API": {
+                "id": "cc1776721b32bea30dd20039606d39d7",
+                "groups": {},
+                "checks": {
+                        "login: status is 200": {
+                            "name": "login: status is 200",
+                            "path": "::1. Login API::login: status is 200",
+                            "id": "0725ee9d6b694381831633498f5f43e2",
+                            "passes": 1,
+                            "fails": 0
+                        },
+                        "login: token exists": {
+                            "name": "login: token exists",
+                            "path": "::1. Login API::login: token exists",
+                            "id": "6f3500f970d93a6e3c68b65bde16e713",
+                            "passes": 1,
+                            "fails": 0
+                        }
+                    },
+                "name": "1. Login API",
+                "path": "::1. Login API"
+            },
+            "2. Search Products API": {
+                "name": "2. Search Products API",
+                "path": "::2. Search Products API",
+                "id": "cb7cc9d99c71cf3506778972504df7e5",
+                "groups": {},
+                "checks": {
+                        "search: status is 200": {
+                            "name": "search: status is 200",
+                            "path": "::2. Search Products API::search: status is 200",
+                            "id": "2e8e8104080b5e9f7054d3348e75ae91",
+                            "passes": 1,
+                            "fails": 0
+                        },
+                        "search: return array of products": {
+                            "name": "search: return array of products",
+                            "path": "::2. Search Products API::search: return array of products",
+                            "id": "c3a47344f33ef1d310162397bda3f46a",
+                            "passes": 1,
+                            "fails": 0
+                        }
+                    }
+            },
+            "3. Product Detail API": {
+                "groups": {},
+                "checks": {
+                        "detail: status is 200": {
+                            "path": "::3. Product Detail API::detail: status is 200",
+                            "id": "7e2bad4a776f6a2c4d78c1eaf1aee6d6",
+                            "passes": 1,
+                            "fails": 0,
+                            "name": "detail: status is 200"
+                        },
+                        "detail: product has correct id": {
+                            "name": "detail: product has correct id",
+                            "path": "::3. Product Detail API::detail: product has correct id",
+                            "id": "2fc1f5d09097bf3a350216891572efe0",
+                            "passes": 1,
+                            "fails": 0
+                        }
+                    },
+                "name": "3. Product Detail API",
+                "path": "::3. Product Detail API",
+                "id": "9d786a47c3c0d06a53bc4fc0d4d46c80"
+            },
+            "4. Add to Cart API": {
+                "path": "::4. Add to Cart API",
+                "id": "544b7bf27ac68e10a7cf8b709cfbcc0e",
+                "groups": {},
+                "checks": {
+                        "cart: status is 200": {
+                            "passes": 1,
+                            "fails": 0,
+                            "name": "cart: status is 200",
+                            "path": "::4. Add to Cart API::cart: status is 200",
+                            "id": "fb37537692d22782ff1f17a4f7f06f85"
+                        },
+                        "cart: message added to cart": {
+                            "passes": 1,
+                            "fails": 0,
+                            "name": "cart: message added to cart",
+                            "path": "::4. Add to Cart API::cart: message added to cart",
+                            "id": "cc6df1c98b1bf7897d536d29e0869f27"
+                        }
+                    },
+                "name": "4. Add to Cart API"
+            },
+            "5. Checkout API": {
+                "groups": {},
+                "checks": {
+                        "checkout: status is 200": {
+                            "name": "checkout: status is 200",
+                            "path": "::5. Checkout API::checkout: status is 200",
+                            "id": "cb09fe5fa2be2b92ca0efa98837a9583",
+                            "passes": 1,
+                            "fails": 0
+                        },
+                        "checkout: orderId exists": {
+                            "passes": 1,
+                            "fails": 0,
+                            "name": "checkout: orderId exists",
+                            "path": "::5. Checkout API::checkout: orderId exists",
+                            "id": "43a8f4c576e72adc0b3b6b2cc15b14f2"
+                        }
+                    },
+                "name": "5. Checkout API",
+                "path": "::5. Checkout API",
+                "id": "698661a4464a008f97bf17680d74385f"
+            }
+        },
+        "checks": {},
+        "name": "",
+        "path": ""
+    }
+}

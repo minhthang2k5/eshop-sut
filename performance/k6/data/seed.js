@@ -11,7 +11,7 @@ const backendRequire = createRequire(path.resolve(__dirname, '../../../backend/p
 const sqlite3 = backendRequire('sqlite3');
 
 const accountsCsvPath = path.join(__dirname, 'test_accounts.csv');
-const productsCsvPath = path.join(__dirname, 'test_product.csv');
+const productsCsvPath = path.join(__dirname, 'test_products.csv');
 const dbPath = path.resolve(process.argv[2] || path.join(__dirname, '../../../backend/database.sqlite'));
 
 // Handle quoted fields, escaped quotes, BOM, CRLF and a missing final newline.

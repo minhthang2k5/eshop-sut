@@ -1,5 +1,5 @@
 {
-  "datasetId": "black-friday-6973a27db8e7-31273d4143c2",
+  "datasetId": "test-data-6973a27db8e7-31273d4143c2",
   "sourceHashes": {
     "accounts": "6973a27db8e7880162085a0bafa38e635cd6470fe39643f958d3ecdef77792f8",
     "products": "31273d4143c2572d47994d665dca2de0368a1779f60f15db8f1f72d42f457d87"
@@ -1010,7 +1010,6 @@
   "keywords": [
     {
       "keyword": "iPhone",
-      "weight": 25,
       "expectedIds": [
         1,
         6,
@@ -1066,7 +1065,6 @@
     },
     {
       "keyword": "Samsung",
-      "weight": 20,
       "expectedIds": [
         2,
         55,
@@ -1112,7 +1110,6 @@
     },
     {
       "keyword": "MacBook",
-      "weight": 15,
       "expectedIds": [
         3,
         94,
@@ -1148,7 +1145,6 @@
     },
     {
       "keyword": "AirPods",
-      "weight": 7,
       "expectedIds": [
         4,
         123,
@@ -1168,7 +1164,6 @@
     },
     {
       "keyword": "iPad",
-      "weight": 6,
       "expectedIds": [
         136,
         137,
@@ -1186,7 +1181,6 @@
     },
     {
       "keyword": "Apple Watch",
-      "weight": 6,
       "expectedIds": [
         148,
         149,
@@ -1204,7 +1198,6 @@
     },
     {
       "keyword": "Sony",
-      "weight": 6,
       "expectedIds": [
         160,
         161,
@@ -1222,7 +1215,6 @@
     },
     {
       "keyword": "Keychron",
-      "weight": 3,
       "expectedIds": [
         5,
         172,
@@ -1234,7 +1226,6 @@
     },
     {
       "keyword": "Logitech",
-      "weight": 3,
       "expectedIds": [
         177,
         178,
@@ -1246,7 +1237,6 @@
     },
     {
       "keyword": "Dell",
-      "weight": 3,
       "expectedIds": [
         183,
         184,
@@ -1258,7 +1248,6 @@
     },
     {
       "keyword": "Asus",
-      "weight": 3,
       "expectedIds": [
         189,
         190,
@@ -1270,7 +1259,6 @@
     },
     {
       "keyword": "Xiaomi",
-      "weight": 3,
       "expectedIds": [
         195,
         196,
