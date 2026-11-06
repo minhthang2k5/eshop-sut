@@ -29,6 +29,13 @@ Terminal 2:
 bash performance/k6/run-smoke.sh
 ```
 
+## Build Manifest data
+Chỉ chạy khi có thay đổi file `test_account.csv` và `test_product.csv`
+
+```bash
+node performance/k6/data/build-manifest.cjs
+```
+
 ## Baseline
 
 Ramp lên 50 VU trong 1 phút → giữ 5 phút → hạ tải 1 phút.
@@ -44,11 +51,11 @@ bash performance/k6/run-baseline.sh
 
 Runner thu CPU/RAM 30s trước và 60s sau tải khi tìm thấy telemetry backend. Giữ backend chạy đến khi runner kết thúc. `TELEMETRY=0 bash performance/k6/run-baseline.sh` bỏ thu telemetry và thời gian chờ trước/sau, vẫn lưu kết quả k6.
 
-Mỗi run lưu timeline (scenario/profile), summary, raw metrics, log và dashboard `baseline_report.html`. SLO pha steady tổng/từng API (kể cả login): p95 <500ms, HTTP lỗi <1%, checks ≥99%, count >0; tỷ lệ thao tác thất bại <1%. Skipped dùng để theo dõi. Runner không gọi analyzer và không cập nhật báo cáo trong `reports/`.
+Mỗi run lưu timeline (scenario/profile), summary, raw metrics, log và dashboard `baseline_report.html`. SLO pha steady tổng/từng API (kể cả login): p95 <500ms, HTTP lỗi <1%, checks ≥99%, count >0; tỷ lệ thao tác thất bại <1%. Skipped dùng để theo dõi. Cuối mỗi bài baseline, stress, spike và soak, runner tự gọi `lib/server_analyze.py` sau khi thu telemetry để tạo HTML CPU/RAM trong `output/telemetry/`; nếu không có telemetry thì bỏ qua bước này. Runner không cập nhật báo cáo trong `reports/`.
 
 ## Stress
 
-15 bậc **200–3000 VU**, bước 200; mỗi bậc ramp 30s + hold 120s; recovery 50 VU/60s. Lịch tải **38m30s**, chưa tính grace cuối tối đa 60s.
+10 bậc **200–2000 VU**, bước 200; mỗi bậc ramp 30s + hold 120s; recovery 50 VU/60s. Lịch tải **26 phút** (25 phút tăng/giữ tải + 1 phút recovery), chưa tính grace cuối tối đa 60s. Profile được khai báo trong `lib/stress-test-profiles.js`.
 
 Terminal 2, sau khi backend khởi động:
 
@@ -57,7 +64,7 @@ node performance/k6/data/seed.js
 bash performance/k6/run-stress.sh
 ```
 
-`run-stress.sh` thu telemetry trước/sau tải như baseline và lưu dashboard `stress_report.html`. Runner không gọi analyzer. PASS/FAIL do thresholds trong k6 quyết định.
+`run-stress.sh` thu telemetry trước/sau tải như baseline và lưu dashboard `stress_report.html`. Runner tự gọi `lib/server_analyze.py` để tạo HTML CPU/RAM trong `output/telemetry/`. PASS/FAIL do thresholds trong k6 quyết định.
 
 - Mix Search/Detail/Cart/Checkout: **40/20/22/18**; login riêng mỗi Cart/Checkout.
 - Login lỗi tính là request nghiệp vụ lỗi và một thao tác thất bại; không gửi HTTP Cart/Checkout khi thiếu token.
@@ -72,7 +79,7 @@ TELEMETRY=0 bash performance/k6/run-stress.sh
 
 ## Spike
 
-50 VU/30s → 1000 VU/60s → 50 VU/60s.
+50 VU/30s → 800 VU/60s → 50 VU/60s. Pha tải đỉnh được gắn nhãn `hold_800`.
 
 Dùng chung workload Black Friday với stress (40/20/22/18), fixture và business metrics. Login mỗi lượt Cart/Checkout; preflight kiểm tra catalogue trước khi chạy. Profile nằm trong `lib/spike-test-profiles.js`.
 
@@ -85,7 +92,7 @@ bash performance/k6/run-spike.sh
 
 ## Soak
 
-Soak rút gọn theo `docs/Tool_Survey_Proposal.md`: ramp-up 60 giây → 30 VU trong 15 phút → ramp-down 60 giây (tổng 17 phút, chưa gồm preflight/graceful stop).
+Soak rút gọn theo `docs/Tool_Survey_Proposal.md`: ramp-up 60 giây từ 0 lên 400 VUs → giữ 400 VUs trong 15 phút → ramp-down 60 giây (tổng 17 phút, chưa gồm preflight/graceful stop).
 
 Dùng chung workload ngày thường với baseline (55/25/14/6), dữ liệu, login mỗi lượt Cart/Checkout và business metrics. Thresholds đánh giá pha `steady`; `SOAK_TIMELINE` ghi mốc scenario và profile. Profile nằm trong `lib/soak-test-profiles.js`.
 
@@ -108,7 +115,7 @@ Smoke chạy trực tiếp. Tuned dùng WAL và index tên sản phẩm; xem [WA
 
 ## Kết quả
 
-Bốn file `run-baseline.sh`, `run-stress.sh`, `run-spike.sh`, `run-soak.sh` chạy độc lập, cùng lưu kết quả vào `performance/k6/output/<loại>-.../`. Không runner nào gọi analyzer.
+Bốn file `run-baseline.sh`, `run-stress.sh`, `run-spike.sh`, `run-soak.sh` chạy độc lập, cùng lưu kết quả vào `performance/k6/output/<loại>-.../`. Bốn runner tự gọi `lib/server_analyze.py` sau khi thu telemetry, tạo `output/telemetry/<tên-file-telemetry>.html`; tên file giữ nguyên và dùng đuôi `.html`. Báo cáo cùng tên được cập nhật khi dùng lại cùng file nguồn. Lỗi analyzer không thay đổi exit code k6.
 
 Khi có telemetry backend: thu 30 giây trước tải và 60 giây sau tải. `TELEMETRY=0` tắt thu telemetry và hai khoảng chờ này; `TELEMETRY_FILE` chỉ định file telemetry, `TELEMETRY_DIR` đổi thư mục tìm kiếm. Nếu không tìm thấy telemetry, bài test vẫn chạy và lưu kết quả k6. [Chi tiết telemetry](telemetry/README.md).
 
@@ -126,13 +133,11 @@ RPS hold stress = count/120s; recovery = count/60s. Login là request bổ sung.
 
 Tài liệu: [seed](data/README.md) · [kế hoạch hiện tại](k6-performance-test-plan-v2.md) · [báo cáo seminar](../../submission/Bao_cao_seminar_Performance_Testing.md).
 
-## Kiểm tra runner
+## Kiểm tra cú pháp
 
 ```bash
-python3 -m unittest discover -s performance/k6/tests -v
+python3 -c "import ast, pathlib; ast.parse(pathlib.Path('performance/k6/lib/server_analyze.py').read_text())"
 for type in baseline stress spike soak; do
   bash -n "performance/k6/run-$type.sh"
 done
 ```
-
-Kiểm thử dùng k6 và telemetry giả để xác minh artifact, timeline, exit code và xử lý ngắt; không chạy tải lên backend.

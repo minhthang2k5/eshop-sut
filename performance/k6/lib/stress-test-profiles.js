@@ -1,6 +1,6 @@
 // One timeline drives both the executor and request-start classification.
 export const profile = [];
-for (const target of [200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000]) {
+for (const target of [200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000]) {
   profile.push({ duration: '30s', seconds: 30, target, phase: `ramp_${target}` });
   profile.push({ duration: '120s', seconds: 120, target, phase: `hold_${target}` });
 }

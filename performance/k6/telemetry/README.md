@@ -1,28 +1,34 @@
-# Thu CPU/RAM Node.js
+# Thu và phân tích CPU/RAM Node.js
 
-`telemetry/` giữ phần thu tài nguyên. Phần phân tích và tạo báo cáo nằm trong [analyze/](../analyze/README.md).
+`node.cjs` lấy mẫu của chính tiến trình backend mỗi giây. Dữ liệu mặc định nằm trong `output/telemetry/server-*.jsonl`; `telemetry/` chứa bộ thu; báo cáo HTML nằm trong `output/telemetry/`.
 
-## Cách đo
+- CPU = chênh lệch thời gian CPU user + system / thời gian thực. 100% = một core, có thể vượt 100%.
+- RAM = RSS, ghi bằng byte và hiển thị bằng MiB.
+- Chu kỳ lấy mẫu có thể trễ khi backend bận; biểu đồ dùng timestamp thực tế.
 
-- `node.cjs` lấy mẫu của chính tiến trình backend mỗi giây.
-- CPU = chênh lệch thời gian CPU user + system / thời gian thực; 100% = một core.
-- RAM = RSS qua `process.memoryUsage.rss()`, ghi bytes và được analyzer đổi sang MiB.
-- Chu kỳ lấy mẫu có thể trễ khi Node bận; không giả định một mẫu luôn tương ứng đúng một giây.
+## Tự động sau test
 
-Chạy stress theo [README](../README.md): mở backend → seed → chạy `run-stress.sh`. Runner thu 30s trước → chạy k6 → thu 60s sau → gọi `analyze/analyze.py`. Giữ backend đến khi runner kết thúc.
+Bốn runner baseline, stress, spike và soak thu 30 giây trước tải, chạy k6, rồi thu thêm 60 giây. Giữ backend chạy đến khi runner kết thúc. Runner lưu `node-cpu-ram.jsonl` và `measurement-timeline.json` trong thư mục output của lần chạy rồi gọi `../lib/server_analyze.py`.
 
-Run lưu `node-cpu-ram.jsonl` và `measurement-timeline.json`. Analyzer dùng mốc scenario/profile để chia ramp, hold, recovery; grace cuối và setup được tách riêng. Thống kê dùng cửa sổ [bắt đầu, kết thúc), TB là trung bình mẫu. Các CSV phân tích được ghi vào thư mục đích analyzer cùng báo cáo.
+HTML được ghi vào `output/telemetry/`, cùng tên với file telemetry nguồn, đuôi `.html`. Ví dụ: `server-backend-181580-1793633684076.html`.
 
-## File cục bộ và Git
+## Chạy thủ công
 
-Log trong `output/telemetry/` và bản mẫu từng run `node-cpu-ram.jsonl` được [Git ignore](../../../.gitignore). Ba CSV `node-cpu-ram.csv`, `cpu-ram-phases.csv`, `cpu-ram-before-during-after.csv` cũng được ignore ở mọi thư mục. Ignore không tắt bộ thu, không ngăn analyzer ghi CSV và không xóa file đã có.
+Từ thư mục `eshop-sut`:
 
-Nếu cần lưu hoặc gửi lại kết quả đo, giữ riêng mẫu JSONL của run và timeline; giữ thêm `k6.log` nếu mốc scenario/profile chỉ nằm trong log. CSV có thể tạo lại từ các dữ liệu này bằng [analyzer](../analyze/README.md#cách-chạy); summary k6 không chứa mẫu CPU/RAM. Mẫu gốc đã mất thì không thể khôi phục tài nguyên chỉ từ báo cáo hoặc summary.
+```bash
+python3 performance/k6/lib/server_analyze.py performance/k6/output/telemetry/server-backend-181580-1793633684076.jsonl
+# Có thể truyền nhiều file hoặc glob:
+python3 performance/k6/lib/server_analyze.py performance/k6/output/telemetry/server-*.jsonl
+# Tạo lại báo cáo riêng cho một run, giữ tên nguồn gốc:
+python3 performance/k6/lib/server_analyze.py performance/k6/output/<run>/node-cpu-ram.jsonl --source-name server-backend-181580-1793633684076.jsonl --timeline performance/k6/output/<run>/measurement-timeline.json
+```
 
-## Tùy chọn
+## Tùy chọn bộ thu
 
-- `TELEMETRY=0 bash performance/k6/run-stress.sh`: bỏ thời gian thu trước/sau; vẫn tạo báo cáo HTTP.
-- `TELEMETRY=0 node backend/server.js`: tắt đo ở backend.
-- Đường dẫn riêng: truyền cùng `TELEMETRY_FILE` cho backend và runner; mặc định runner tìm file của backend đang chạy trong `output/telemetry/`.
+- `TELEMETRY=0 node backend/server.js`: tắt đo backend.
+- `TELEMETRY=0 bash performance/k6/run-stress.sh`: bỏ thu telemetry và chờ trước/sau.
+- `TELEMETRY_FILE`: chỉ định cùng đường dẫn cho backend và runner.
+- `TELEMETRY_DIR`: đổi thư mục dữ liệu; mặc định runner tìm file của backend đang chạy trong `output/telemetry/`.
 
-Ctrl-C dừng bài test, backend vẫn chạy. Nếu không tìm thấy file đo, k6 vẫn chạy và analyzer ghi thiếu CPU/RAM. Baseline cũng thu 30s trước / 60s sau tải, lưu timeline và tự gọi analyzer để cập nhật `reports/02-baseline-test-report.md` và `reports/baseline_report.html`. Dùng `TELEMETRY=0 bash performance/k6/run-baseline.sh` để chỉ đo HTTP. Spike chưa tích hợp tự động phần thu này; analyzer vẫn đọc được summary.
+Log telemetry và mẫu JSONL của từng run được Git ignore. Giữ JSONL và timeline nếu cần tạo lại báo cáo; summary k6 không chứa mẫu CPU/RAM.

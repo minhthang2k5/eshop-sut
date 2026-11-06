@@ -68,7 +68,7 @@ Tỷ lệ tính theo lượt thao tác mỗi virtual user-minute; mô hình "sea
 | Baseline (theo brief) | 50 VU, 5 phút | Số liệu nền p50/p95/p99, error rate; SLO: p95 < 500ms, error < 1% |
 | Stress | 50→100→200→300→400 VU, mỗi bậc 2 phút | Tìm điểm gãy (breakpoint): bậc nào p95 vượt 500ms hoặc error rate > 1% |
 | Spike (theo brief) | 50→500 VU trong 30 giây, giữ 1 phút, về 50 trong 1 phút | Quan sát suy giảm đột ngột và khả năng phục hồi sau spike |
-| Soak (rút gọn) | 30 VU, 15 phút | Xem latency và RAM Node có tăng dần theo thời gian không. |
+| Soak (rút gọn) | Ramp-up 0→400 VUs trong 60 giây; giữ 400 VUs trong 15 phút; ramp-down về 0 trong 60 giây (tổng 17 phút, chưa gồm preflight/graceful stop) | Xem latency và RAM Node có tăng dần theo thời gian không. |
 
 ---
 

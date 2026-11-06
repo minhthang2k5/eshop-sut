@@ -375,7 +375,7 @@ Tỷ lệ là xác suất chọn nhánh mỗi iteration, không phải tỷ lệ
 | Stress | 11 bậc 500/750/1000/1250/1500/1750/2000/2200/2400/2600/2800; ramp 30s + hold 60s mỗi bậc; giảm về 50 và recovery 60s | `hold_<VUs>` và `recovery_1`, 60s/cửa sổ |
 | Spike | 50 VUs 30s → 1500 VUs 60s → 50 VUs 60s; chuyển mục tiêu bằng stage 0s | `hold_50`, `hold_1500`, `recovery_1` |
 
-Profile stress dài **17m30s**; spike **2m30s**; baseline **7 phút**, chưa tính thời gian khởi tạo và chờ iteration cuối. Stress/spike cho graceful ramp-down/stop 30s, vì vậy VUs đang làm việc có thể chưa giảm ngay khi target giảm. Script hiện tại đã khớp các bậc stress thực đo; mô tả cũ 500–1500, hold 2 phút trong README được cập nhật cùng báo cáo này. Không thực hiện soak.
+Profile stress dài **17m30s**; spike **2m30s**; baseline **7 phút**, chưa tính thời gian khởi tạo và chờ iteration cuối. Stress/spike cho graceful ramp-down/stop 30s, vì vậy VUs đang làm việc có thể chưa giảm ngay khi target giảm. Profile stress hiện hành (cập nhật ngày 06/11/2026) có 10 bậc **200–2000 VUs**, bước 200; mỗi bậc ramp 30s + hold 120s, sau đó recovery 50 VUs trong 60s, tổng **26 phút**, chưa tính grace cuối tối đa 60s. Profile soak hiện hành (cập nhật ngày 06/11/2026) ramp-up 0→400 VUs trong 60 giây, giữ **400 VUs trong 15 phút**, rồi ramp-down về 0 trong 60 giây; tổng **17 phút**, chưa gồm preflight/graceful stop và thời gian thu telemetry trước/sau tải. Xem [hướng dẫn chạy hiện hành](../performance/k6/README.md). Các bảng kết quả trong chương này vẫn mô tả profile thực đo của từng run lịch sử; chưa có kết quả đo cho profile mới. Không thực hiện soak.
 
 ### 4.3 Kết quả baseline stress và spike
 

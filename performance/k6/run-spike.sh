@@ -67,6 +67,11 @@ p.write_text(json.dumps(timeline) + '\n')
 PYTIMELINE
   if [[ -n "$SOURCE" ]]; then
     tail -c "+$((OFFSET + 1))" "$SOURCE" > "$RUN_DIR/node-cpu-ram.jsonl"
+    if ! python3 "$TEST_DIR/lib/server_analyze.py" "$RUN_DIR/node-cpu-ram.jsonl" \
+      --source-name "${SOURCE##*/}" --timeline "$RUN_DIR/measurement-timeline.json" \
+      --output-dir "$TEST_DIR/output/telemetry"; then
+      printf 'Cảnh báo: không tạo được báo cáo CPU/RAM.\n' >&2
+    fi
   fi
   printf 'Kết quả: %s\n' "$RUN_DIR"
   exit "$RESULT"

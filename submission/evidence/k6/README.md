@@ -1,5 +1,7 @@
 # Evidence k6 — Lê Nguyễn Quốc Thái
 
+> Profile stress hiện hành từ 06/11/2026: 10 bậc 200–2000 VUs, bước 200, ramp 30s + hold 120s/bậc, recovery 50 VUs/60s; tổng 26 phút, chưa tính grace cuối tối đa 60s. Xem [hướng dẫn chạy](../../../performance/k6/README.md). Evidence dưới đây thuộc các run lịch sử và không phải kết quả của profile mới.
+
 Bộ evidence cho [chương 4 báo cáo seminar](../../Bao_cao_seminar_Performance_Testing.md#4-thực-nghiệm-k6-của-lê-nguyễn-quốc-thái), tổng hợp ngày 23/10/2026 từ kết quả hiện có; không chạy lại tải. Số liệu latency tính bằng ms, HTTP lỗi/checks bằng phần trăm. Không thực hiện soak.
 
 ## Run và nguồn số liệu

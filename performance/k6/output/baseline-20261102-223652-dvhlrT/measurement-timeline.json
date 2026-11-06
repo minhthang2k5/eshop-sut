@@ -1,1 +1,0 @@
-{"before_start_ms": 1793633812439, "after_end_ms": 1793634326723, "interrupted": false, "k6_start_ms": 1793633842450, "k6_end_ms": 1793634265974, "scenario_start_ms": 1793633842657, "profile": [{"phase": "ramp_up", "seconds": 60, "target": 50}, {"phase": "steady", "seconds": 300, "target": 50}, {"phase": "ramp_down", "seconds": 60, "target": 0}]}

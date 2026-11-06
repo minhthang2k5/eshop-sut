@@ -1,113 +1,104 @@
-# Baseline Test Report — EShop
+# Baseline Test Report — eShop
 
-Báo cáo tự động từ dữ liệu đã lưu. [Biểu đồ HTML](baseline_report.html).
-
-## 1. Thông tin lần đo
+## 1. Lần đo và nguồn dữ liệu
 
 | Trường | Giá trị |
 |---|---|
-| Run ID | baseline-20261102-223652-dvhlrT |
-| Loại test | baseline |
-| Scenario bắt đầu (UTC+7) | 2026-11-02T22:37:22.657+07:00 |
-| k6 kết thúc (UTC+7) | 2026-11-02T22:44:25.974+07:00 |
-| Độ đầy đủ lần đo | COMPLETE |
-| Môi trường / phiên bản | Không được lưu trong dữ liệu đầu vào; chưa xác nhận |
+| Run ID | `baseline-20261106-180216-cXQggA` |
+| Ngày / múi giờ | 06/11/2026, UTC+07:00 |
+| Scenario bắt đầu | 2026-11-06T18:02:46+07:00 |
+| k6 bắt đầu / kết thúc | 2026-11-06T18:02:46+07:00 / 2026-11-06T18:09:50+07:00 |
+| Thời lượng tiến trình k6 | 423.959 s |
+| Interrupted (timeline) | False |
+| Telemetry backend | `server-backend-28062-1793962904877.jsonl` |
+| Phiên bản/build/máy chạy | Không được xác nhận trong bộ kết quả; chưa có checksum build và snapshot DB |
 
-## 2. Tiêu chí đánh giá
+Nguồn: [summary.json](../output/baseline-20261106-180216-cXQggA/summary.json), [timeline](../output/baseline-20261106-180216-cXQggA/measurement-timeline.json), [biểu đồ K6](../output/baseline-20261106-180216-cXQggA/baseline_report.html), [CPU/RAM JSONL](../output/telemetry/server-backend-28062-1793962904877.jsonl), [biểu đồ CPU/RAM](../output/telemetry/server-backend-28062-1793962904877.html). `telemetry/` chứa bộ thu; dữ liệu đo nằm ở `output/telemetry/`.
 
-Đánh giá theo cấu hình baseline trong analyze/profiles.json, không dùng cờ threshold của summary. 50 VU dùng 50 account đầu từ fixture đã kiểm tra; mix 55/25/14/6, lazy login riêng từng VU, sản phẩm 1 / iPhone. Đánh giá steady và login toàn bài; không yêu cầu login trong steady. Skipped = 0 toàn bài. INCOMPLETE nghĩa là thiếu bằng chứng để xác nhận đạt. COMPLETE/PARTIAL/UNKNOWN mô tả độ đầy đủ lịch tải, độc lập với vi phạm SLO đã quan sát.
+## 2. Mục tiêu, workload và cách đánh giá
 
-| Metric | Ngưỡng | Phạm vi | Endpoint |
+Đánh giá tải thông thường tại 50 VUs.
+
+Mix Search/Detail/Cart/Checkout = 55/25/14/6%. Theo script hiện có, mỗi iteration chọn một nghiệp vụ; Cart/Checkout login riêng trước mỗi thao tác. Think time Search/Detail/Cart/Checkout lần lượt 1–3/2–5/1–3/3–6 giây; timeout HTTP 10 giây. Đây là closed model `ramping-vus`; VU mục tiêu không tương đương số request/giây. Cấu hình mã hiện tại dùng để giải thích workload, không thay thế bằng chứng build tại thời điểm đo.
+
+Ngưỡng trong summary cho từng steady/hold/recovery: p95 <500 ms, HTTP lỗi <1%, checks ≥99%, request count >0 cho tổng và từng API login/search/detail/cart/checkout; business_operations_failed <1% cho tổng phase. Đánh giá trực tiếp giá trị đo và đối chiếu cờ threshold: định dạng summary này dùng `true` cho vi phạm, `false` cho đạt. Skipped là chỉ số chẩn đoán, không có threshold riêng.
+
+## 3. Profile thực đo
+
+| Phase | VU target | Giây | Khoảng từ scenario start (s) |
 |---|---|---|---|
-| http_req_duration | p(95) < 500 | các phase đánh giá | tổng, search, detail, cart, checkout |
-| http_req_failed | rate < 0.01 | các phase đánh giá | tổng, search, detail, cart, checkout |
-| checks | rate >= 0.99 | các phase đánh giá | tổng, search, detail, cart, checkout |
-| http_reqs | count > 0 | các phase đánh giá | tổng, search, detail, cart, checkout |
-| http_req_duration | p(95) < 500 | toàn bài | login |
-| http_req_failed | rate < 0.01 | toàn bài | login |
-| checks | rate >= 0.99 | toàn bài | login |
-| http_reqs | count > 0 | toàn bài | login |
-| business_requests_skipped | count == 0 | toàn bài | tổng |
+| ramp_up | 50 | 60 | 0.000–60.000 |
+| steady | 50 | 300 | 60.000–360.000 |
+| ramp_down | 0 | 60 | 360.000–420.000 |
 
-## 3. Profile và cách chạy
+## 4. Kết quả K6
 
-| Phase | Giây danh định | VU target |
-|---|---|---|
-| ramp_up | 60.00 | 50 |
-| steady | 300.00 | 50 |
-| ramp_down | 60.00 | 0 |
-
-[Script baseline](../baseline.js) · [Hướng dẫn analyzer](../analyze/README.md).
-
-## 4. Nguồn dữ liệu
-
-[summary.json](../output/baseline-20261102-223652-dvhlrT/summary.json) · [measurement-timeline.json](../output/baseline-20261102-223652-dvhlrT/measurement-timeline.json) · [node-cpu-ram.jsonl](../output/baseline-20261102-223652-dvhlrT/node-cpu-ram.jsonl) · [k6.log](../output/baseline-20261102-223652-dvhlrT/k6.log) · [node-cpu-ram.csv](node-cpu-ram.csv) · [cpu-ram-phases.csv](cpu-ram-phases.csv) · [cpu-ram-before-during-after.csv](cpu-ram-before-during-after.csv) · [profiles.json](../analyze/profiles.json)
-
-## 5. Cách đọc kết quả
-
-RPS = request / thời lượng phase: dùng cửa sổ quan sát khi có timeline, nếu thiếu thì dùng thời lượng danh định và ghi rõ trong bảng. VU là mục tiêu profile, không phải VU thực đo. Không cộng hoặc lấy trung bình percentile của các phase. Thứ tự phase theo cấu hình; bảng profile bên dưới ghi lịch của run nếu có, nếu không thì dùng cấu hình.
-
-## 6. Kết quả đo
-
-### 6.1 Tổng quan
+### 4.1 Toàn bài (gồm ramp và grace)
 
 | Chỉ số | Kết quả |
 |---|---|
-| HTTP requests | 7,172 |
-| Throughput (requests/s) | 16.967 |
+| HTTP requests | 8,655.000 |
+| HTTP RPS toàn bài | 20.451 |
+| Iterations hoàn tất | 7,155.000 |
+| VU max quan sát | 50.000 |
+| Latency avg (ms) | 2.261 |
+| Latency median (ms) | 1.883 |
+| Latency p95 (ms) | 4.769 |
+| Latency p99 (ms) | 11.915 |
+| Latency max (ms) | 41.111 |
+| HTTP request lỗi | 0.000 |
+| Checks thất bại | 0.000 |
+| Nghiệp vụ skipped | 0.000 |
 | HTTP lỗi (%) | 0.000 |
 | Checks đạt (%) | 100.000 |
-| Iterations hoàn tất | 7,122 |
-| Nghiệp vụ skipped | 0 |
-| Latency avg (ms) | 2.857 |
-| Latency med (ms) | 1.961 |
-| Latency p(95) (ms) | 3.168 |
-| Latency p(99) (ms) | 6.309 |
-| Latency max (ms) | 658.372 |
-| Threshold đạt / không đạt / thiếu dữ liệu | 25 / 0 / 0 |
-| SLO trên dữ liệu quan sát | PASS |
+| Nghiệp vụ thất bại (%) | 0.000 |
+| Threshold đạt / tổng | 25 / 25 |
+| Kết luận theo thresholds | PASS |
 
-### 6.2 Theo phase
+`http_req_failed.passes` đếm mẫu lỗi, còn `checks.passes` đếm check thành công. Hai check/request không có nghĩa số check lỗi bằng số HTTP lỗi. HTTP requests bao gồm login.
 
-| Phase | VU target | Giây | Cơ sở thời lượng | Requests | RPS | p50 ms | p95 ms | p99 ms | HTTP lỗi % | Checks % | Skipped | SLO |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| steady | 50 | 300.00 | observed | 5,890 | 19.633 | 1.973 | 3.103 | 4.387 | 0.000 | 100.000 | N/A | PASS |
+### 4.2 Theo cửa sổ đánh giá
 
-Điều kiện toàn bài và các điều kiện phase không đạt/thiếu dữ liệu:
+| Phase | VU target | Requests | RPS¹ | p95 ms | p99 ms | HTTP lỗi % | Checks % | Nghiệp vụ lỗi % | Kết quả² |
+|---|---|---|---|---|---|---|---|---|---|
+| steady | 50 | 7141 | 23.803 | 4.675 | 11.878 | 0.000 | 100.000 | 0.000 | PASS |
 
-| Phase | Endpoint | Metric | Điều kiện | Giá trị | Kết quả |
+¹ Count chia thời lượng phase danh định trong timeline; không dùng rate submetric vì mẫu số có thể là toàn run. Phase gắn khi request bắt đầu; đây không phải completion throughput thuần. ² Kết quả xét cả từng API và business_operations_failed, không chỉ hàng tổng. Không cộng hoặc lấy trung bình các percentile.
+
+### 4.3 Chi tiết từng API
+
+| Phase | API | Requests | p95 ms | HTTP lỗi % | Checks % |
 |---|---|---|---|---|---|
-| toàn bài | login | http_req_duration | p(95) < 500 | 4.674 | PASS |
-| toàn bài | login | http_req_failed | rate < 0.01 | 0.000 | PASS |
-| toàn bài | login | checks | rate >= 0.99 | 1.000 | PASS |
-| toàn bài | login | http_reqs | count > 0 | 50.000 | PASS |
-| toàn bài | tổng | business_requests_skipped | count == 0 | 0.000 | PASS |
+| steady | login | 1228 | 4.157 | 0.000 | 100.000 |
+| steady | search | 3250 | 3.054 | 0.000 | 100.000 |
+| steady | detail | 1435 | 2.686 | 0.000 | 100.000 |
+| steady | cart | 845 | 1.590 | 0.000 | 100.000 |
+| steady | checkout | 383 | 13.249 | 0.000 | 100.000 |
 
-### 6.3 CPU và RAM Node.js
+### 4.4 Điều kiện vi phạm
 
-CPU 100% = một core; RAM = RSS (MiB). TB là trung bình mẫu. Cửa sổ [bắt đầu, kết thúc); trong tải gồm recovery và grace, setup tách riêng. Biểu đồ giữ toàn bộ mẫu và ngắt nét khi khoảng cách vượt 2s. N/A là thiếu dữ liệu, không phải 0.
+Không có threshold vi phạm trong summary.
 
-#### Trước / trong / sau tải
+## 5. CPU và RAM của tiến trình backend
 
-| Giai đoạn | VU target | Giây | Mẫu | CPU TB % | CPU max % | RAM TB MiB | RAM max MiB | RAM đầu MiB | RAM cuối MiB |
+CPU 100% tương đương một core; RAM là RSS MiB, không phải RAM toàn máy hay heap. TB là trung bình mẫu, không có trọng số thời gian. Chia cửa sổ theo timestamp timeline [bắt đầu, kết thúc); trong k6 có setup và grace. Không dùng mốc 30/60 giây tính từ đầu/cuối file telemetry vì file có thể chứa dữ liệu ngoài run.
+
+| Cửa sổ | Giây | Mẫu | CPU TB % | CPU max % | RSS TB MiB | RSS max MiB | RSS đầu MiB | RSS cuối MiB | Gap max s |
 |---|---|---|---|---|---|---|---|---|---|
-| before_test | N/A | 30.01 | 30 | 0.04 | 0.10 | 67.86 | 67.86 | 67.86 | 67.86 |
-| during_test | N/A | 423.32 | 423 | 3.17 | 13.22 | 61.70 | 70.98 | 67.86 | 47.43 |
-| after_test | N/A | 60.75 | 60 | 0.02 | 0.09 | 44.46 | 47.43 | 47.43 | 43.18 |
+| Trước k6 | 30.011 | 30 | 0.035 | 0.052 | 67.730 | 67.730 | 67.730 | 67.730 | 1.002 |
+| Trong k6 | 423.959 | 424 | 3.760 | 11.893 | 74.900 | 80.270 | 69.223 | 75.629 | 1.007 |
+| Sau k6 | 60.028 | 60 | 0.112 | 3.831 | 72.559 | 75.629 | 75.629 | 65.934 | 1.002 |
 
-#### Từng phase
-
-| Giai đoạn | VU target | Giây | Mẫu | CPU TB % | CPU max % | RAM TB MiB | RAM max MiB | RAM đầu MiB | RAM cuối MiB |
+| Cửa sổ | Giây | Mẫu | CPU TB % | CPU max % | RSS TB MiB | RSS max MiB | RSS đầu MiB | RSS cuối MiB | Gap max s |
 |---|---|---|---|---|---|---|---|---|---|
-| setup | N/A | 0.21 | 0 | N/A | N/A | N/A | N/A | N/A | N/A |
-| ramp_up | 50 | 60.00 | 60 | 2.51 | 13.22 | 63.65 | 67.86 | 67.86 | 66.81 |
-| steady | 50 | 300.00 | 300 | 3.64 | 8.49 | 64.30 | 70.98 | 66.93 | 47.14 |
-| ramp_down | 0 | 60.00 | 60 | 1.61 | 5.92 | 47.46 | 48.04 | 47.14 | 47.43 |
-| graceful_stop | N/A | 3.32 | 3 | 0.06 | 0.09 | 47.43 | 47.43 | 47.43 | 47.43 |
+| ramp_up | 60.000 | 60 | 2.801 | 8.043 | 73.350 | 76.328 | 69.223 | 76.328 | 1.002 |
+| steady | 300.000 | 300 | 4.253 | 11.893 | 75.093 | 80.270 | 76.828 | 74.418 | 1.002 |
+| ramp_down | 60.000 | 60 | 2.499 | 6.159 | 75.436 | 75.629 | 74.418 | 75.629 | 1.007 |
 
-### 6.4 Nhận xét và kết luận
+Mẫu tại đầu/cuối là mẫu đầu/cuối có trong cửa sổ. Khoảng trễ lấy mẫu có thể bỏ sót đỉnh CPU/RAM; không nội suy phần thiếu. Không có telemetry của DB, k6, disk I/O, event-loop lag hay CPU từng core trong bảng này.
 
-- Steady: PASS. Login toàn bài được đánh giá riêng; login steady không bắt buộc có mẫu.
-- Trong tải: 423 mẫu / 423.32s. TB tài nguyên là trung bình mẫu, không có trọng số thời gian; khoảng thiếu mẫu có thể bỏ sót đỉnh.
-- Sau tải: CPU TB 0.02%; RSS TB 44.46 MiB, chênh trước tải -23.40 MiB.
-- Kết quả một lượt đo không chứng minh sức tải ổn định; CPU/RAM riêng lẻ không đủ kết luận nguyên nhân nghẽn hoặc memory leak.
+## 7. Nhận xét và kết luận
+
+**PASS: 25/25 thresholds đạt.** Các cửa sổ đánh giá và từng API đều đạt ngưỡng đã cấu hình. 
+
+Không suy ra nguyên nhân nghẽn, crash hoặc loại mã lỗi HTTP từ summary và CPU/RSS. Cần log backend, DB latency/locks và event-loop lag để xác minh nguyên nhân. Dùng lần đo này làm mốc đối chiếu; chạy lặp cùng môi trường/dữ liệu trước khi dùng kết quả làm cam kết năng lực.
