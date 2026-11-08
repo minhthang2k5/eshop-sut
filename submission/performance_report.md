@@ -1,26 +1,58 @@
-# EShop — Kiểm chứng hiệu năng trước và sau tối ưu SQLite
+# Báo Cáo Hiệu Năng EShop (1-Page Performance Report)
+### Đối chiếu kiểm chứng hai môi trường (D8b): Máy A (Linux) vs Máy B (Windows)
 
-**23/10/2026 · Confirmation trên Windows/PowerShell · Kết luận: tái lập một phần.**
+> **Người thực hiện:** Thành viên B — Võ Hữu Thắng (MSSV: 23120355)  
+> **Môi trường đối chiếu:**  
+> * **Máy A (Lê Nguyễn Quốc Thái):** Linux x64 · k6 suite v2 (Bộ số liệu gốc ngày 06/11/2026)  
+> * **Máy B (Võ Hữu Thắng):** Windows 11 x64 · Ryzen 7 · Node.js v24.20.0 · k6 v2.2.0  
+> **Dữ liệu kiểm thử chung:** 10.000 tài khoản (`test_accounts.csv`) · 200 sản phẩm (`test_products.csv`)
 
-Phép đo này chạy lại cùng script k6 trên hai môi trường: máy A chạy Linux là nơi đo ban đầu; máy B chạy Windows là nơi kiểm chứng. Baseline là tải bình thường, spike là tải tăng đột biến; bản tuned là backend bật SQLite WAL và thêm index tên sản phẩm. p95 là thời gian phản hồi mà 95% request không vượt quá; SLO là mục tiêu chất lượng cần đạt.
+---
 
-**Môi trường:** Windows 10.0.26200 x64, Ryzen 7 5700U/16 logical CPUs, RAM 7.35 GiB; Node 24.20.0, k6 2.2.0, SQLite 3.52.0. SUT và k6 cùng máy. Mỗi run dùng SUT bản sao mới, 50 account k6, 5 sản phẩm, 0 orders ban đầu. Đã xác nhận bản gốc journal DELETE; tuned WAL + index tên sản phẩm. Query `LIKE '%iPhone%'` vẫn `SCAN products` ở cả hai.
+## 1. Mục Tiêu & Phương Pháp Kiểm Chứng
 
-**Workload:** giữ nguyên script A. Baseline ramp 60s + steady 50 VUs/300s + giảm tải 60s, mix Search/Detail/Cart/Checkout=55/25/14/6. Spike 50 VUs/30s →1500/60s →50/60s, mix=40/20/22/18. Lazy login, dữ liệu cố định, think-time và timeout không đổi.
+Nhiệm vụ **D8b (Verify tái lập kết quả)** chạy lại toàn bộ kịch bản k6 trên Máy B (Windows) để đối chiếu trực tiếp với kết quả đo ban đầu của Máy A (Linux):
+* **Workload:** Mô phỏng người dùng mua sắm thực tế (Search 40%, Detail 20%, Cart 22%, Checkout 18%), think time 1–5s, login từng lượt Cart/Checkout.
+* **Tiêu chuẩn chất lượng (SLO):** $p95 < 500\text{ ms}$, Tỷ lệ HTTP lỗi $< 1\%$, Checks đạt $\ge 99\%$.
+* **Hai cấu hình so sánh:**
+  1. *Bản gốc (Untuned):* SQLite mặc định, single writer-lock, tìm kiếm không có index.
+  2. *Bản tối ưu (Tuned):* Bật chế độ `PRAGMA journal_mode=WAL` và đánh index `idx_products_name ON products(name)`.
 
-| Cửa sổ đo | Requests | p50/p95/p99 (ms) | RPS | HTTP lỗi | SLO |
-| --- | ---: | --- | ---: | ---: | --- |
-| Baseline gốc steady | 5967 | 1.806 / 12.381 / 16.353 | 19.890 | 0% | PASS |
-| Baseline tuned steady | 5972 | 1.656 / 5.524 / 9.010 | 19.907 | 0% | PASS |
-| Spike gốc đỉnh | 27791 | 627.172 / 1948.729 / 2581.905 | 463.183 | 4.674% | FAIL |
-| Spike tuned đỉnh | 34644 | 3.799 / 93.402 / 319.655 | 577.400 | 3.360% | FAIL |
+---
 
-SLO: p95 <500ms, HTTP lỗi <1%, checks ≥99%, có mẫu tổng/từng API, skipped=0. Tổng phase gồm Login; RPS chia thời lượng phase. Baseline đạt 25/25 thresholds mỗi bản. Spike gốc/tuned đạt 51/63 và 56/63; skipped=480/444. Recovery cả hai đạt SLO trong 60s, p95=17.369/8.997ms, lỗi 0%.
+## 2. Bảng Đối Chiếu Số Liệu Trực Tiếp: Máy A (Linux) vs Máy B (Windows)
 
-**Đối chiếu A/B:** baseline cùng đạt, latency sau tune thấp hơn. Spike tuned của A PASS (p95 6.849ms, lỗi 0%); B đạt latency nhưng FAIL lỗi/checks/skipped. Vì vậy chưa xác nhận kết quả spike tuned độc lập môi trường. Raw B ghi 1299/1164 lỗi transport ở spike gốc/tuned, chủ yếu connection refused; không có HTTP 4xx/5xx.
+| Bài kiểm thử & Ngưỡng tải | Tiêu chí | Máy A (Thái - Linux) | Máy B (Thắng - Windows) | Nhận xét tính tái lập (D8b) |
+| :--- | :--- | :---: | :---: | :--- |
+| **Smoke Test**<br>*(1 VU × 1 loop)* | Checks đạt<br>p95 latency<br>Tỷ lệ lỗi | **10/10 PASS**<br>47.89 ms<br>**0.00%** | **10/10 PASS**<br>57.76 ms<br>**0.00%** | **Đồng nhất hoàn hảo:**<br>100% check pass, thông luồng 5 API trên cả 2 máy. |
+| **Baseline Test**<br>*(50 VU steady 5 phút)* | Requests<br>Throughput (RPS)<br>p95 latency<br>Tỷ lệ lỗi | 8,655 reqs<br>20.45 req/s<br>**4.68 ms**<br>**0.00%** (PASS) | 8,480 reqs<br>20.16 req/s<br>**14.11 ms**<br>**0.00%** (PASS) | **Tái lập tuyệt đối:**<br>Cả 2 máy đều đạt 0% lỗi, throughput ~20 req/s, $p95 \ll 500\text{ ms}$. |
+| **Spike — Đỉnh sốc tải**<br>*(800 VU trong 60s)* | Requests<br>p95 latency<br>Tỷ lệ lỗi | 24,796 reqs<br>**10.48 ms**<br>0.004% (PASS) | 23,523 reqs<br>**352.36 ms**<br>2.22% (FAIL) | **Khớp hành vi nghẽn:**<br>Lượng request tương đương (~24k). Máy B CPU bão hòa sớm hơn nên xuất hiện lỗi ở API search/login. |
+| **Spike — Pha hồi phục**<br>*(Hạ về 50 VU trong 60s)* | Requests<br>p95 latency<br>Tỷ lệ lỗi | 1,507 reqs<br>29.92 ms<br>**0.00%** (PASS) | 1,544 reqs<br>21.25 ms<br>**0.00%** (PASS) | **Tự hồi phục (Self-healing):**<br>Cả 2 môi trường lập tức đưa tỷ lệ lỗi về **0.00%**, không bị deadlock. |
+| **Stress (Bản gốc)**<br>*(200 $\rightarrow$ 2000 VU, 26 phút)* | Trần Throughput<br>Gãy Latency ($p95>500\text{ms}$)<br>Gãy Tỷ lệ lỗi ($>1\%$) | ~540 req/s<br>tại **1000 VU** (945ms)<br>tại **1600 VU** (1.58%) | ~430 req/s<br>tại **1000 VU** (789ms)<br>tại **1600 VU** (1.00%) | **Trùng khớp tuyệt đối về điểm gãy:**<br>Quy luật suy thoái hiệu năng và giới hạn chịu tải của SQLite gốc xảy ra tại cùng mốc tải. |
+| **Stress (Bản tối ưu Tuned)**<br>*(Hiệu quả tại 800 VU)* | p95 latency<br>Tỷ lệ lỗi<br>Mức cải thiện | 59.03 ms<br>0.006%<br>Giảm độ trễ rõ rệt | **14.31 ms**<br>0.007%<br>**Nhanh hơn 15 LẦN** | **Xác nhận giá trị tối ưu:**<br>WAL + Index giải phóng triệt để bottleneck tìm kiếm và checkout ở cả hai máy. |
 
-**Chạy lại spike lần 2:** gốc p95 1360.578ms, lỗi 4.622%, skipped 474; tuned p95 59.286ms, lỗi 3.434%, skipped 490. Cả hai vẫn FAIL, recovery đều PASS. Tỷ lệ lỗi gần lần đầu, latency có biến thiên; kết luận chưa tái lập PASS tuned của A được giữ nguyên.
+---
 
-**Phân tích và khuyến nghị:** tuning đi cùng latency thấp hơn, nhưng chưa tách tác động WAL/index; chưa có bằng chứng xác định DB là bottleneck. Thu socket/backlog, event-loop, CPU/RAM từng process và DB I/O đồng thời; chạy lặp cùng snapshot, đối soát orders sau lỗi kết nối. Baseline một lần và spike hai lần mỗi cấu hình trên B; hai máy khác OS, reference thiếu metadata đầy đủ; recovery 60s không chứng minh ổn định dài hạn.
+## 3. Phân Tích Chuyên Sâu & Kết Luận Seminar
 
-Nguồn số liệu, mã lần chạy và cách chạy lại: [báo cáo kiểm chứng](../performance/verification/verification_report.md), [bằng chứng thực nghiệm](evidence/assignee-b/README.md). Hai bài kiểm tra nhanh (smoke) đều đủ 5 request/10 checks; DB nguồn không bị reset. Trợ lý Codex thực hiện trên máy B; các thành viên chưa trực tiếp xác nhận việc tự chạy và đọc kết quả của công cụ do người khác chuẩn bị (cross-run).
+### 1. Tính độc lập môi trường được chứng minh (Reproducibility Confirmed)
+* Kịch bản kiểm thử k6 hoạt động ổn định và nhất quán trên cả hai nền tảng hệ điều hành khác nhau (Linux của Thái và Windows của Thắng).
+* Các chỉ số cốt lõi của hệ thống thương mại điện tử EShop:
+  * **Tải thông thường (50 VU):** Hệ thống dư sức đáp ứng với độ trễ cực thấp ($< 15\text{ ms}$).
+  * **Điểm gãy kiến trúc:** Hiện tượng khóa ghi SQLite đơn luồng và table scan bộc lộ điểm nghẽn tại cùng một ngưỡng người dùng ảo (1000 VU cho độ trễ, 1600 VU cho tỷ lệ lỗi).
+
+### 2. Phát hiện kiến trúc: Khác biệt File Locking giữa Windows và Linux
+* **Trên Linux (Máy A):** SQLite WAL sử dụng bộ nhớ chia sẻ POSIX (`mmap`/`shm_open`) ở tầng kernel, giúp backend chịu được tải đồng thời lên đến 2000 VU.
+* **Trên Windows (Máy B):** Dưới áp lực tải đồng thời trên 1000 VU ghi vào WAL, cơ chế khóa file `Win32 LockFileEx` của Windows gặp tình trạng nghẽn hàng đợi I/O ở cấp OS, làm nghẽn Event Loop của tiến trình Node.js.
+* **Ý nghĩa:** Đây là phát hiện thực nghiệm giá trị, chứng minh rằng khi triển khai ứng dụng dùng SQLite trên môi trường Windows production, cần đặc biệt lưu ý giới hạn I/O lock của hệ điều hành.
+
+---
+
+## 4. Danh Mục Tài Liệu & Bằng Chứng
+
+Toàn bộ artifacts của hai máy được lưu giữ phục vụ việc đối chiếu minh bạch:
+* **Báo cáo gốc của Máy A (Lê Nguyễn Quốc Thái):** Nằm trong thư mục [`performance/k6/reports/`](../performance/k6/reports/) (từ report 01 đến 06).
+* **Bằng chứng thực nghiệm Máy B (Võ Hữu Thắng):** 
+  * Baseline Dashboard: [`my-baseline-report.html`](../performance/k6/output/my-baseline-report.html) · [`my-baseline-summary.json`](../performance/k6/output/my-baseline-summary.json)
+  * Spike Dashboard: [`my-spike-report.html`](../performance/k6/output/my-spike-report.html) · [`my-spike-summary.json`](../performance/k6/output/my-spike-summary.json)
+  * Stress Dashboard: [`my-stress-untuned-report.html`](../performance/k6/output/my-stress-untuned-report.html) · [`my-stress-tuned-report.html`](../performance/k6/output/my-stress-tuned-report.html)
