@@ -16,3 +16,7 @@ __pycache__/
 
 # File tạm của Office khi đang mở Word/Excel
 ~$*
+
+# Thông tin cá nhân của participant và video phiên usability: không đưa lên GitHub
+hw03/usability/04_participants.md
+hw03/usability/recordings/
