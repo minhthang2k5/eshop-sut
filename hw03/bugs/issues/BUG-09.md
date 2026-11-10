@@ -16,5 +16,5 @@ Có thông báo thành công; dòng mới được cuộn tới hoặc làm nổ
 ### Kết quả thực tế
 Dữ liệu đổi nhưng không có thông báo nào. Với bảng dài, dòng mới nối ở cuối (khoảng 8937 px), người dùng không thấy gì xảy ra.
 
-### Ảnh
-_(đính kèm ảnh)_  Cần chụp: sau khi thêm, màn hình không có thông báo (đầu trang).
+### Ảnh / bằng chứng
+![BUG-06_invalid_categories.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-06_invalid_categories.jpg?raw=true)

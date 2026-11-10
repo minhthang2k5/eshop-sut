@@ -15,5 +15,5 @@ Từ chối tên rỗng/toàn khoảng trắng/trùng tên kèm thông báo; có
 ### Kết quả thực tế
 Tất cả đều được lưu: dòng tên rỗng, dòng toàn dấu cách, bản sao 'Laptop', chuỗi 300 ký tự (làm bảng rộng 4631 px), tên giữ nguyên khoảng trắng thừa. Ô nhập không có dấu * hay thuộc tính required.
 
-### Ảnh
-_(đính kèm ảnh)_  Cần chụp: bảng Danh mục sau khi thêm các giá trị trên (thấy dòng rỗng và bản sao).
+### Ảnh / bằng chứng
+![BUG-06_invalid_categories.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-06_invalid_categories.jpg?raw=true)

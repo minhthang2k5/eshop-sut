@@ -15,5 +15,5 @@ Checkbox tiêu đề chọn tất cả; dòng được chọn khác màu; có h�
 ### Kết quả thực tế
 Checkbox tiêu đề chỉ tick chính nó; dòng được chọn không đổi nền; không có hành động nào đi kèm; không có trạng thái trung gian.
 
-### Ảnh
-_(đính kèm ảnh)_  Đã có một phần: evidence/ev_users_table.jpg (bảng có checkbox không tác dụng).
+### Ảnh / bằng chứng
+![BUG-16_select_all.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-16_select_all.jpg?raw=true)

@@ -17,5 +17,5 @@ Mục menu nhận focus và kích hoạt bằng Enter; là liên kết thật; f
 ### Kết quả thực tế
 Mục menu là thẻ li không focus được, không phải liên kết; Tab nhảy thẳng vào checkbox; sau Enter focus rơi về body.
 
-### Ảnh
-_(đính kèm ảnh)_  Cần chụp: DevTools Elements hiện menu là thẻ li.
+### Ảnh / bằng chứng
+![BUG-15_tab_focus.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-15_tab_focus.jpg?raw=true)

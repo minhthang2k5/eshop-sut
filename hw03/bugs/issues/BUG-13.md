@@ -15,5 +15,7 @@ Hiện 'Chưa có đơn hàng' và 'Không tìm thấy sản phẩm phù hợp'.
 ### Kết quả thực tế
 Tab Đơn hàng chỉ có hàng tiêu đề; Home chỉ hiện 'Kết quả tìm kiếm cho: xyz123' và vùng trống.
 
-### Ảnh
-_(đính kèm ảnh)_  Cần chụp: hai màn hình trên.
+### Ảnh / bằng chứng
+![BUG-13_orders_empty.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-13_orders_empty.jpg?raw=true)
+
+![BUG-13_home_no_result.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-13_home_no_result.jpg?raw=true)

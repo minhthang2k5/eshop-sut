@@ -15,5 +15,5 @@ lang='vi'; tiêu đề tab mang tên sản phẩm (ví dụ 'EShop Admin').
 ### Kết quả thực tế
 lang='en'; tiêu đề tab là 'frontend-admin' và 'frontend-web'.
 
-### Ảnh
-_(đính kèm ảnh)_  Cần chụp: tab trình duyệt và thẻ html.
+### Ảnh / bằng chứng
+[BUG-21_lang_title_measure.txt](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-21_lang_title_measure.txt)

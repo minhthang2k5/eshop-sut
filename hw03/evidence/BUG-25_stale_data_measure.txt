@@ -1,0 +1,12 @@
+Môi trường: Chromium (Claude desktop), Windows 11. Admin http://localhost:5174, Web http://localhost:5173, API http://localhost:3000. Ngày 10/11/2026.
+Đo bằng JavaScript trên trang thật. Ảnh chụp không biểu diễn được loại bằng chứng này.
+
+Mở tab Đơn hàng: 8 dòng. Dùng tài khoản khách đặt thêm 1 đơn bằng POST /api/checkout (không tải lại trang Admin).
+Chuyển Dashboard -> Đơn hàng:
+  số dòng trước     = 8
+  số dòng sau       = 8
+  số đơn trong API  = 9  (GET /api/admin/orders)
+  Dashboard         = 'Tổng số đơn hàng 8' (vẫn số cũ)
+Phải tải lại trang (F5) mới thấy đơn mới.
+
+Quan sát thêm cùng đợt đo: Dashboard 'Tổng doanh thu (Delivered)' = 1,600,000 ₫ trong khi hai đơn Đã giao có tổng 800,000 ₫ (gấp đôi, xem BUG-08).

@@ -15,5 +15,5 @@ Không hiện lỗi kỹ thuật; trang trả kết quả hoặc thông báo th�
 ### Kết quả thực tế
 Hiện khung đỏ 'Database Error – SQLITE_ERROR: unrecognized token'. Lộ chi tiết cơ sở dữ liệu và gợi ý có thể SQL injection. Dòng 'Hiển thị 5 sản phẩm' vẫn còn bên dưới.
 
-### Ảnh
-_(đính kèm ảnh)_  Đã có: evidence/ev_home_sql_error.jpg
+### Ảnh / bằng chứng
+![BUG-02_sql_error.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-02_sql_error.jpg?raw=true)

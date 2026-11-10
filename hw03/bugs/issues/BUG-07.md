@@ -15,5 +15,5 @@
 ### Kết quả thực tế
 Đơn Đã hủy hiện nút 'Đánh dấu Đã giao'.
 
-### Ảnh
-_(đính kèm ảnh)_  Cần chụp: dòng đơn 'Đã hủy' kèm nút 'Đánh dấu Đã giao'.
+### Ảnh / bằng chứng
+![BUG-07_cancelled_row.png](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-07_cancelled_row.png?raw=true)

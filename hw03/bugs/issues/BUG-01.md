@@ -16,5 +16,7 @@
 ### Kết quả thực tế
 Chữ '1 Le Loi' hiển thị đậm; innerHTML của ô chứa thẻ `<b>`. Thẻ HTML do người dùng nhập được thực thi, có thể bị lợi dụng để chèn script.
 
-### Ảnh
-_(đính kèm ảnh)_  Cần chụp: bảng Đơn hàng có dòng địa chỉ in đậm, kèm DevTools > Elements hiện thẻ <b>.
+### Ảnh / bằng chứng
+![BUG-01_address_bold.png](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-01_address_bold.png?raw=true)
+
+![BUG-01_orders_full.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-01_orders_full.jpg?raw=true)

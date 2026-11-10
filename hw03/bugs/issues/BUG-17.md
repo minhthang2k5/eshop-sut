@@ -15,5 +15,5 @@ Mỗi thành phần có tên truy cập mô tả (ví dụ 'Xóa test@eshop.com'
 ### Kết quả thực tế
 Nút chỉ có tên 'Xóa'/'Hủy'; checkbox không có nhãn; ô nhập chỉ có placeholder; cả 5 ảnh có alt rỗng.
 
-### Ảnh
-_(đính kèm ảnh)_  Cần chụp: DevTools Accessibility cho một nút Xóa.
+### Ảnh / bằng chứng
+[BUG-17_accessibility_measure.txt](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-17_accessibility_measure.txt)

@@ -17,5 +17,5 @@ Có hộp xác nhận nêu rõ đối tượng và cảnh báo không hoàn tác
 ### Kết quả thực tế
 Các thao tác được thực hiện ngay lập tức, không có xác nhận (hàm confirm không được gọi).
 
-### Ảnh
-_(đính kèm ảnh)_  Cần chụp: dòng biến mất ngay sau khi bấm Xóa (không có hộp thoại).
+### Ảnh / bằng chứng
+![BUG-04_no_confirm.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-04_no_confirm.jpg?raw=true)

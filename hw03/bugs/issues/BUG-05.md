@@ -15,5 +15,5 @@ Hệ thống chặn việc xóa kèm thông báo nêu rõ danh mục đang có s
 ### Kết quả thực tế
 Danh mục bị xóa thành công, không chặn, không cảnh báo; sản phẩm vẫn tham chiếu danh mục đã xóa.
 
-### Ảnh
-_(đính kèm ảnh)_  Cần chụp: bảng Danh mục trước và sau khi xóa 'Laptop'.
+### Ảnh / bằng chứng
+![BUG-05_laptop_deleted.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-05_laptop_deleted.jpg?raw=true)

@@ -16,5 +16,5 @@
 ### Kết quả thực tế
 Số dòng không đổi (vẫn 34); phải F5 mới thấy đơn mới. Dashboard cũng giữ số liệu cũ (từng hiện 35 đơn sau khi dữ liệu đã được seed lại).
 
-### Ảnh
-_(đính kèm ảnh)_  Cần chụp: số dòng trước và sau khi quay lại tab.
+### Ảnh / bằng chứng
+[BUG-25_stale_data_measure.txt](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-25_stale_data_measure.txt)

@@ -1,0 +1,14 @@
+Môi trường: Chromium (Claude desktop), Windows 11. Admin http://localhost:5174, Web http://localhost:5173, API http://localhost:3000. Ngày 10/11/2026.
+Đo bằng JavaScript trên trang thật. Ảnh chụp không biểu diễn được loại bằng chứng này.
+
+ADMIN
+  Nút Xóa (tab Người dùng), 3 nút:   text='Xóa',  aria-label=null
+  Checkbox (4 ô):                    aria-label=null, labels=0
+  Ô 'Tên danh mục mới':              placeholder='Tên danh mục mới', aria-label=null, labels=0, required=false
+  Nút đơn hàng:                      'Xác nhận' và 'Hủy', aria-label=null (không nêu mã đơn)
+
+WEB (Home)
+  Ảnh sản phẩm (5 ảnh):              alt = '' (rỗng) cả 5
+  Ô tìm kiếm:                        placeholder='Tìm kiếm...', aria-label=null, labels=0
+
+Kết luận: các thành phần không có tên truy cập mô tả; trình đọc màn hình chỉ đọc 'Xóa'/'Hủy' hoặc bỏ qua ảnh.

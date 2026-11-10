@@ -16,5 +16,5 @@ F5 giữ nguyên tab; Back quay về tab trước; URL phản ánh trang hiện 
 ### Kết quả thực tế
 URL luôn là '/'; F5 luôn về Dashboard; Back rời khỏi ứng dụng.
 
-### Ảnh
-_(đính kèm ảnh)_  Cần chụp: thanh URL '/' ở nhiều tab khác nhau.
+### Ảnh / bằng chứng
+[BUG-14_navigation_measure.txt](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-14_navigation_measure.txt)

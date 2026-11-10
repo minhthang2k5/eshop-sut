@@ -1,0 +1,6 @@
+Môi trường: Chromium (Claude desktop), Windows 11. Admin http://localhost:5174, Web http://localhost:5173, API http://localhost:3000. Ngày 10/11/2026.
+Đo bằng JavaScript trên trang thật. Ảnh chụp không biểu diễn được loại bằng chứng này.
+
+  Checkbox tab Người dùng:                      13 x 13 px   (yêu cầu tối thiểu 24 x 24 px, WCAG 2.5.8)
+  Nút Xác nhận / Hủy trong ô Hành động (Admin): 72 x 24 px mỗi nút; khoảng cách giữa hai nút = 4 px (yêu cầu >= 8 px)
+  Nút 'Xem chi tiết' và 'Thêm vào giỏ' (Home):   cao 36 px (yêu cầu 44 px trên cảm ứng)

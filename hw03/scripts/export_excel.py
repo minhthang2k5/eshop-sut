@@ -61,12 +61,22 @@ def main():
     ws.append(HEAD)
     results = load_results()
     assert set(results) <= set(ids), set(results) - set(ids)
+    # Ảnh bằng chứng theo bug: mục Failed trỏ tới ảnh của bug chứa nó
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import bugs as bug_mod
+    shot_of, bug_of = {}, {}
+    for b in bug_mod.BUGS:
+        for it in b["items"]:
+            bug_of[it] = b["id"]
+            shot_of[it] = "; ".join("evidence/" + f for f in bug_mod.EVIDENCE[b["id"]])
     for r in rows:
         res = results.get(r["ID"], ("", "", ""))
-        shot = res[2] or ("Chưa chụp" if res[0] == "Failed" else "")
+        shot = shot_of.get(r["ID"], "") if res[0] == "Failed" else ""
+        note = res[1] + (f" [{bug_of[r['ID']]}]" if res[0] == "Failed" and r["ID"] in bug_of else "")
         ws.append([r["ID"], r["Màn hình"], r["IA"], r["Control / Thành phần"], r["Mục kiểm tra"], r["Kết quả mong đợi"],
                    r["Ưu tiên"], r["Nguồn mục"], r["ID nháp (truy vết)"], r["Nguyên tắc / checklist nguồn"],
-                   r["Vì sao AI bỏ sót"], res[0], res[1], shot, DUP.get(r["ID"], "")])
+                   r["Vì sao AI bỏ sót"], res[0], note, shot, DUP.get(r["ID"], "")])
     n = len(rows)
     last = n + 1
 

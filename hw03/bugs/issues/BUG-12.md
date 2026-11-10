@@ -15,5 +15,5 @@ Chỉ một yêu cầu được gửi; nút bị vô hiệu khi đang xử lý.
 ### Kết quả thực tế
 Gửi 2 yêu cầu DELETE, 2 yêu cầu POST (tạo 2 danh mục) hoặc 2 yêu cầu PUT.
 
-### Ảnh
-_(đính kèm ảnh)_  Cần chụp: tab Network có hai request trùng.
+### Ảnh / bằng chứng
+![BUG-12_double_submit.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-12_double_submit.jpg?raw=true)

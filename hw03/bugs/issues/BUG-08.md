@@ -15,5 +15,7 @@
 ### Kết quả thực tế
 Dashboard hiện 1,000,000 ₫.
 
-### Ảnh
-_(đính kèm ảnh)_  Cần chụp: Dashboard và tab Đơn hàng cạnh nhau.
+### Ảnh / bằng chứng
+![BUG-08_dashboard.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-08_dashboard.jpg?raw=true)
+
+![BUG-07_cancelled_row.png](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-07_cancelled_row.png?raw=true)

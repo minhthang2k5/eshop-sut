@@ -14,5 +14,7 @@ Cùng ngôn ngữ, đơn vị tiền, định dạng ID, kiểu nút; số tiề
 ### Kết quả thực tế
 Trộn 'Role', 'Dashboard', '(Delivered)'; Admin dùng '₫', Home dùng 'VND'; ID '#1' ở Danh mục nhưng '1' ở Người dùng; 'Tên Danh Mục' khác 'Tên danh mục mới'; nút Xóa kích thước khác nhau và không đổi màu khi hover; số tiền căn trái; nút 'Hoàn thành' đưa đơn sang 'Đã giao'.
 
-### Ảnh
-_(đính kèm ảnh)_  Đã có một phần: evidence/ev_users_table.jpg
+### Ảnh / bằng chứng
+![BUG-22_users_table.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-22_users_table.jpg?raw=true)
+
+![BUG-08_dashboard.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-08_dashboard.jpg?raw=true)

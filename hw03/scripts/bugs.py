@@ -173,6 +173,52 @@ BUGS = [
 
 SEV = {"Critical": 1, "Major": 2, "Minor": 3, "Cosmetic": 4}
 
+# Bằng chứng cho từng bug (file trong hw03/evidence). Ảnh chụp trên giao diện thật ngày 10/11/2026;
+# .txt là số đo/nhật ký khi bằng chứng không biểu diễn được bằng ảnh.
+EVIDENCE = {
+ "BUG-01": ["BUG-01_address_bold.png", "BUG-01_orders_full.jpg"],
+ "BUG-02": ["BUG-02_sql_error.jpg"],
+ "BUG-03": ["BUG-03_before_delete_admin.jpg", "BUG-03_after_delete_admin.jpg"],
+ "BUG-04": ["BUG-04_no_confirm.jpg"],
+ "BUG-05": ["BUG-05_laptop_deleted.jpg"],
+ "BUG-06": ["BUG-06_invalid_categories.jpg"],
+ "BUG-07": ["BUG-07_cancelled_row.png"],
+ "BUG-08": ["BUG-08_dashboard.jpg", "BUG-07_cancelled_row.png"],
+ "BUG-09": ["BUG-06_invalid_categories.jpg"],
+ "BUG-10": ["BUG-10_console_alerts.txt"],
+ "BUG-11": ["BUG-11_no_loading.jpg"],
+ "BUG-12": ["BUG-12_double_submit.jpg"],
+ "BUG-13": ["BUG-13_orders_empty.jpg", "BUG-13_home_no_result.jpg"],
+ "BUG-14": ["BUG-14_navigation_measure.txt"],
+ "BUG-15": ["BUG-15_tab_focus.jpg"],
+ "BUG-16": ["BUG-16_select_all.jpg"],
+ "BUG-17": ["BUG-17_accessibility_measure.txt"],
+ "BUG-18": ["BUG-18_target_size_measure.txt"],
+ "BUG-19": ["BUG-19_contrast_measure.txt", "BUG-01_orders_full.jpg"],
+ "BUG-20": ["BUG-20_admin_375_users.jpg", "BUG-20_orders_375.jpg", "BUG-20_home_375.jpg"],
+ "BUG-21": ["BUG-21_lang_title_measure.txt"],
+ "BUG-22": ["BUG-22_users_table.jpg", "BUG-08_dashboard.jpg"],
+ "BUG-23": ["BUG-22_users_table.jpg", "BUG-01_orders_full.jpg"],
+ "BUG-24": ["BUG-24_long_table.jpg"],
+ "BUG-25": ["BUG-25_stale_data_measure.txt"],
+}
+REPO = "minhthang2k5/eshop-sut"
+BRANCH = "HW3_THMTHANG"
+
+
+def ev_url(name):
+    return f"https://github.com/{REPO}/blob/{BRANCH}/hw03/evidence/{name}?raw=true"
+
+
+def ev_md(files):
+    lines = []
+    for f in files:
+        if f.lower().endswith((".jpg", ".png")):
+            lines.append(f"![{f}]({ev_url(f)})")
+        else:
+            lines.append(f"[{f}](https://github.com/{REPO}/blob/{BRANCH}/hw03/evidence/{f})")
+    return "\n\n".join(lines)
+
 
 def main():
     failed = {k for k, v in R.items() if v[0] == "Failed"}
@@ -184,6 +230,12 @@ def main():
     assert not dup, f"mục thuộc nhiều bug: {dup}"
     assert not extra, f"mục không Failed nhưng có trong bug: {extra}"
     assert not missing, f"mục Failed chưa thuộc bug nào: {sorted(missing)}"
+
+    assert set(EVIDENCE) == {b["id"] for b in BUGS}, "thiếu bằng chứng cho bug"
+    for b in BUGS:
+        for f in EVIDENCE[b["id"]]:
+            assert (HW / "evidence" / f).exists(), f"thiếu file {f}"
+        b["shot"] = "; ".join("evidence/" + f for f in EVIDENCE[b["id"]])
 
     out = HW / "bugs"; (out / "issues").mkdir(parents=True, exist_ok=True)
     from collections import Counter
@@ -202,7 +254,7 @@ def main():
                f"**Kết quả mong đợi:** {b['expected']}", "", f"**Kết quả thực tế:** {b['actual']}", "", f"**Ảnh:** {b['shot']}", ""]
         body = [f"**Mức độ:** {b['sev']}  \n**Màn hình:** {b['area']}  \n**Mục checklist liên quan:** {', '.join(b['items'])}  \n**Môi trường:** {ENV}", "",
                 "### Các bước tái hiện"] + [f"{n}. {s}" for n, s in enumerate(b["steps"], 1)] + ["", "### Kết quả mong đợi", b["expected"], "",
-                "### Kết quả thực tế", b["actual"], "", "### Ảnh", "_(đính kèm ảnh)_  " + b["shot"], ""]
+                "### Kết quả thực tế", b["actual"], "", "### Ảnh / bằng chứng", ev_md(EVIDENCE[b["id"]]), ""]
         (out / "issues" / f"{b['id']}.md").write_text(f"[{b['id']}] {b['title']}\n\n" + "\n".join(body), encoding="utf-8")
     (out / "Bug_Report.md").write_text("\n".join(md), encoding="utf-8")
     print(f"{len(BUGS)} bug, {len(failed)} mục Failed đều được phân bổ đúng một lần.", dict(cs))

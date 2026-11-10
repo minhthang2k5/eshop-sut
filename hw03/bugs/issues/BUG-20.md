@@ -15,5 +15,9 @@ Bảng nằm gọn; vùng nội dung chiếm ít nhất 70% chiều rộng; tiê
 ### Kết quả thực tế
 Ở 375 px menu chiếm 256 px, vùng nội dung chỉ 119 px (32%), tiêu đề bẻ 4 dòng, bảng phải cuộn ngang, nút 'Đánh dấu Đã giao' cao 72 px; Home: tiêu đề rộng 80 px, bẻ 4 dòng. Ở 768 px bảng Người dùng rộng 813 px > 512 px.
 
-### Ảnh
-_(đính kèm ảnh)_  Đã có: evidence/ev_admin_375_users.jpg
+### Ảnh / bằng chứng
+![BUG-20_admin_375_users.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-20_admin_375_users.jpg?raw=true)
+
+![BUG-20_orders_375.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-20_orders_375.jpg?raw=true)
+
+![BUG-20_home_375.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-20_home_375.jpg?raw=true)

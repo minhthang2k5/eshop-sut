@@ -1,0 +1,12 @@
+Môi trường: Chromium (Claude desktop), Windows 11. Admin http://localhost:5174, Web http://localhost:5173, API http://localhost:3000. Ngày 10/11/2026.
+Đo bằng JavaScript trên trang thật. Ảnh chụp không biểu diễn được loại bằng chứng này.
+
+Tương phản chữ/nền (yêu cầu >= 4.5:1), đo bằng script (công thức WCAG) trên nút thật:
+  Nút Xóa (đỏ):                 3.76:1
+  Nút Xác nhận:                 4.47:1
+  Nút Hủy (xám):                2.54:1
+  Nút Giao hàng:                3.68:1
+  Nút Hoàn thành:               2.28:1
+  Nút Đánh dấu Đã giao:         2.28:1
+Đạt: mục menu đang chọn 5.77:1; Đăng xuất 5.31:1; nhãn trạng thái 6.38 / 8.06 / 7.15 / 6.80 / 6.49.
+Xem ảnh BUG-01_orders_full.jpg để thấy các nút nhạt màu.

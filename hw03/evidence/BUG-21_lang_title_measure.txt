@@ -1,0 +1,6 @@
+Môi trường: Chromium (Claude desktop), Windows 11. Admin http://localhost:5174, Web http://localhost:5173, API http://localhost:3000. Ngày 10/11/2026.
+Đo bằng JavaScript trên trang thật. Ảnh chụp không biểu diễn được loại bằng chứng này.
+
+Admin:  <html lang="en">, document.title = 'frontend-admin'
+Web:    <html lang="en">, document.title = 'frontend-web'
+Nội dung hai ứng dụng bằng tiếng Việt; tiêu đề tab là tên kỹ thuật của dự án.

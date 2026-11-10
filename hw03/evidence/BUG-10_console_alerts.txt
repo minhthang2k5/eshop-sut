@@ -1,0 +1,11 @@
+Môi trường: Chromium (Claude desktop), Windows 11. Admin http://localhost:5174, Web http://localhost:5173, API http://localhost:3000. Ngày 10/11/2026.
+Đo bằng JavaScript trên trang thật. Ảnh chụp không biểu diễn được loại bằng chứng này.
+
+Bằng chứng: nhật ký console của trình duyệt khi chặn request (giả lập mất mạng) rồi thao tác.
+Trình duyệt trong app chặn hộp thoại alert nên ghi lại nội dung; trên Chrome thường hộp thoại này hiện thành cửa sổ.
+
+[warn] Page dialog suppressed (alert): "Lỗi xóa: Network Error"        <- tab Người dùng, bấm Xóa
+[warn] Page dialog suppressed (alert): "Lỗi thêm DM: Network Error"    <- tab Danh mục, bấm Thêm mới
+[warn] Page dialog suppressed (alert): "Lỗi: Network Error"            <- tab Đơn hàng, bấm Xác nhận
+
+Kết luận: thông báo lỗi là alert kỹ thuật bằng tiếng Anh, không nêu nguyên nhân hay cách xử lý.

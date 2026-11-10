@@ -15,5 +15,7 @@ Hệ thống chặn và báo rõ; admin không thể tự xóa mình.
 ### Kết quả thực tế
 Dòng admin bị xóa ngay, không xác nhận, không cảnh báo; sau đó admin không đăng nhập lại được.
 
-### Ảnh
-_(đính kèm ảnh)_  Cần chụp: trước và sau khi bấm Xóa ở dòng admin.
+### Ảnh / bằng chứng
+![BUG-03_before_delete_admin.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-03_before_delete_admin.jpg?raw=true)
+
+![BUG-03_after_delete_admin.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-03_after_delete_admin.jpg?raw=true)

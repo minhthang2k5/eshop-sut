@@ -1,0 +1,10 @@
+Môi trường: Chromium (Claude desktop), Windows 11. Admin http://localhost:5174, Web http://localhost:5173, API http://localhost:3000. Ngày 10/11/2026.
+Đo bằng JavaScript trên trang thật. Ảnh chụp không biểu diễn được loại bằng chứng này.
+
+Đo khi chuyển lần lượt các tab Danh mục -> Đơn hàng -> Người dùng:
+  location.href           = http://localhost:5174/        (không đổi ở mọi tab)
+  history.length trước/sau = 7 / 7                        (không tạo mục lịch sử nào)
+  tab đang hiển thị        = Quản lý Người dùng
+
+Thử F5 (đo trước đó trong cùng phiên): mở tab Danh mục -> F5 -> trang quay về 'Dashboard'.
+Nút Back của trình duyệt: sau khi đăng xuất rồi bấm Back, trình duyệt rời ứng dụng về trang trước đó (Web Home), không về tab trước.

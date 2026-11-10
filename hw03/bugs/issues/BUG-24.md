@@ -14,5 +14,5 @@ Có phân trang hoặc tiêu đề cột luôn nhìn thấy khi cuộn.
 ### Kết quả thực tế
 Không phân trang; tiêu đề cột cuộn ra ngoài màn hình (top −8063 px); trang cao 8970 px.
 
-### Ảnh
-_(đính kèm ảnh)_  Cần chụp: cuối bảng dài không còn thấy tiêu đề.
+### Ảnh / bằng chứng
+![BUG-24_long_table.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-24_long_table.jpg?raw=true)

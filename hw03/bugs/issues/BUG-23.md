@@ -14,5 +14,7 @@ Người dùng: có cột Tên, số điện thoại hiển thị, có ô tìm k
 ### Kết quả thực tế
 Cột Số ĐT luôn trống; không có cột Tên, không có ô tìm kiếm; Đơn hàng không có ngày đặt, hai khách cùng tên 'Test User' không phân biệt được, không xem được chi tiết đơn. (Các ý về Đơn hàng là đề xuất cải tiến, đặc tả không nêu.)
 
-### Ảnh
-_(đính kèm ảnh)_  Đã có: evidence/ev_users_table.jpg
+### Ảnh / bằng chứng
+![BUG-22_users_table.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-22_users_table.jpg?raw=true)
+
+![BUG-01_orders_full.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-01_orders_full.jpg?raw=true)

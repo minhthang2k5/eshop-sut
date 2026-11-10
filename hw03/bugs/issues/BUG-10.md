@@ -15,5 +15,5 @@ Thông báo lỗi dễ hiểu bằng tiếng Việt, nêu nguyên nhân và các
 ### Kết quả thực tế
 Hộp alert: 'Lỗi xóa: Network Error', 'Lỗi thêm DM: Network Error', 'Lỗi: Network Error'.
 
-### Ảnh
-_(đính kèm ảnh)_  Cần chụp: hộp alert lỗi.
+### Ảnh / bằng chứng
+[BUG-10_console_alerts.txt](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-10_console_alerts.txt)

@@ -15,5 +15,5 @@ Có chỉ báo đang tải; khi lỗi có thông báo và cách thử lại.
 ### Kết quả thực tế
 Chỉ thấy hàng tiêu đề bảng, không có chỉ báo tải, không có thông báo lỗi (lỗi tải bị bỏ qua im lặng).
 
-### Ảnh
-_(đính kèm ảnh)_  Cần chụp: bảng chỉ có hàng tiêu đề khi mạng chậm hoặc bị chặn.
+### Ảnh / bằng chứng
+![BUG-11_no_loading.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-11_no_loading.jpg?raw=true)
