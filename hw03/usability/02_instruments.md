@@ -31,13 +31,13 @@ Hướng dẫn: *"Với mỗi câu, hãy khoanh một số từ 1 (Hoàn toàn k
 - Câu chẵn (2, 4, 6, 8, 10): đóng góp = **5 − điểm**.
 - **Điểm SUS = tổng 10 đóng góp × 2,5** (thang 0 đến 100).
 - Mốc tham khảo: dưới 51 kém; 51 đến 68 dưới trung bình; 68 trung bình; 68 đến 80 tốt; trên 80 rất tốt.
-- File tính tự động: `SUS_Scoring.xlsx` (sheet SUS).
+- File tính tự động: `Usability_Sessions.xlsx` (nhập 10 điểm gốc ở sheet của từng participant, điểm SUS tự tính; thống kê ở sheet Tổng hợp).
 
 ## 3. SEQ – sau mỗi nhiệm vụ (Single Ease Question)
 
 > "Nhìn chung, việc vừa rồi **dễ hay khó** với bạn?" Thang 1 (Rất khó) đến 7 (Rất dễ).
 
-Hỏi ngay sau khi participant kết thúc từng nhiệm vụ T1 đến T4; ghi vào `SUS_Scoring.xlsx` (sheet Nhiệm vụ).
+Hỏi ngay sau khi participant kết thúc từng nhiệm vụ T1 đến T4; ghi vào `Usability_Sessions.xlsx` (sheet của participant, mục NHIỆM VỤ).
 
 ## 4. Câu hỏi probe (phỏng vấn cuối phiên)
 

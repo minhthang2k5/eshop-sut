@@ -6,23 +6,23 @@
 
 - [ ] **Không** phải sinh viên đang học HW03.
 - [ ] Phù hợp hồ sơ: người từng bán hàng online hoặc dùng phần mềm quản lý cơ bản. Ưu tiên không làm IT/kiểm thử.
-- [ ] Có kênh liên hệ thật và người đó **đồng ý** để TA liên hệ xác minh.
+- [ ] Có kênh liên hệ thật và người đó **đồng ý** để TA liên hệ xác minh (xác nhận bằng lời lúc mời, không cần cột riêng trong bảng).
 - [ ] Chưa từng thấy ứng dụng EShop trước phiên.
 
 ## Bảng participant
 
 Che **4 số giữa** của số điện thoại (ví dụ `09xx-xxxx-123` hoặc `0912 **** 678`). Dùng Zalo, email hoặc SĐT.
 
-| Mã | Họ tên | Tuổi | Nghề nghiệp | Quan hệ với bạn | Liên hệ (che 4 số giữa) | Kinh nghiệm bán hàng/quản trị online | Hình thức phiên | Ngày giờ phiên | Đồng ý quay | Đồng ý TA liên hệ | Tên file video |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| P00 (pilot) | | | | | | | | | | | |
-| P01 | | | | | | | | | | | |
-| P02 | | | | | | | | | | | |
-| P03 | | | | | | | | | | | |
-| P04 | | | | | | | | | | | |
-| P05 | | | | | | | | | | | |
-| P06 | | | | | | | | | | | |
-| P07 | | | | | | | | | | | |
+| Mã | Họ tên | Tuổi | Nghề nghiệp | Quan hệ với bạn | Liên hệ (che 4 số giữa) | Kinh nghiệm bán hàng/quản trị online | Hình thức phiên |
+|---|---|---|---|---|---|---|---|
+| P00 (pilot) | | | | | | | |
+| P01 | | | | | | | |
+| P02 | | | | | | | |
+| P03 | | | | | | | |
+| P04 | | | | | | | |
+| P05 | | | | | | | |
+| P06 | | | | | | | |
+| P07 | | | | | | | |
 
 ## Mẫu lời mời tham gia (có thể dùng nguyên văn hoặc sửa)
 

@@ -1,4 +1,5 @@
 # Kịch bản điều phối và mẫu ghi chú phiên (Task 2, Phase 2)
+> **Gợi ý:** thay vì in mẫu này, bạn có thể ghi thẳng vào sheet của participant trong `Usability_Sessions.xlsx` (đã gồm thông tin, nhiệm vụ, SUS, probe, quan sát, giả thuyết, nhận xét). Mẫu Markdown này giữ lại làm bản giải thích.
 
 > Dùng cho **mỗi phiên**. In hoặc sao chép một bản cho mỗi participant (đặt tên `session_Pxx_notes.md`). Bản nháp do Claude Code hỗ trợ soạn ngày 2026-11-11.
 
@@ -89,7 +90,7 @@ Chỉ can thiệp khi participant **bí hoàn toàn quá 2 phút** hoặc xin b�
 | T4: mất thời gian tìm người dùng | ☐ Có ☐ Không | |
 | Cả luồng: F5 làm lạc hướng | ☐ Có ☐ Không | |
 
-### F4. SUS (ghi 10 điểm gốc, nhập vào `SUS_Scoring.xlsx`)
+### F4. SUS (ghi 10 điểm gốc, nhập vào `Usability_Sessions.xlsx` (sheet P0x))
 
 | Câu | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -114,5 +115,5 @@ Chỉ can thiệp khi participant **bí hoàn toàn quá 2 phút** hoặc xin b�
 
 - [ ] Video đã lưu và nghe lại được tiếng.
 - [ ] Ghi chú đầy đủ, không để trống ô quan trọng.
-- [ ] 10 điểm SUS đã nhập vào `SUS_Scoring.xlsx`.
+- [ ] 10 điểm SUS đã nhập vào `Usability_Sessions.xlsx` (sheet P0x).
 - [ ] Đã commit git cho phiên này (mỗi phiên một commit).
