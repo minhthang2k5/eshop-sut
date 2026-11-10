@@ -1,0 +1,6 @@
+interface:
+  display_name: "AI Audit Log"
+  short_description: "Save prompts and answers for an AI Audit Report"
+  default_prompt: "Use $ai-audit-log to save every prompt and final response in this workspace's AI Audit log."
+policy:
+  allow_implicit_invocation: true
