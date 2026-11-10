@@ -37,6 +37,18 @@ def load(path):
     return list(csv.DictReader(open(path, encoding="utf-8-sig")))
 
 
+def load_results():
+    """Đọc kết quả thực thi (nếu có) từ execution_results.py cạnh script này."""
+    import importlib.util
+    p = Path(__file__).with_name("execution_results.py")
+    if not p.exists():
+        return {}
+    spec = importlib.util.spec_from_file_location("execution_results", p)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.R
+
+
 def main():
     rows = load(MAIN) + load(ORD)
     ids = [r["ID"] for r in rows]
@@ -47,10 +59,14 @@ def main():
     ws = wb.active
     ws.title = "Checklist"
     ws.append(HEAD)
+    results = load_results()
+    assert set(results) <= set(ids), set(results) - set(ids)
     for r in rows:
+        res = results.get(r["ID"], ("", "", ""))
+        shot = res[2] or ("Chưa chụp" if res[0] == "Failed" else "")
         ws.append([r["ID"], r["Màn hình"], r["IA"], r["Control / Thành phần"], r["Mục kiểm tra"], r["Kết quả mong đợi"],
                    r["Ưu tiên"], r["Nguồn mục"], r["ID nháp (truy vết)"], r["Nguyên tắc / checklist nguồn"],
-                   r["Vì sao AI bỏ sót"], "", "", "", DUP.get(r["ID"], "")])
+                   r["Vì sao AI bỏ sót"], res[0], res[1], shot, DUP.get(r["ID"], "")])
     n = len(rows)
     last = n + 1
 
