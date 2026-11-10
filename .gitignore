@@ -1,0 +1,18 @@
+# Thư viện cài bằng npm (backend chưa có .gitignore riêng)
+node_modules/
+
+# package-lock.json rỗng ở thư mục gốc (sinh ra khi chạy npm --prefix); các lock trong từng thư mục con vẫn được theo dõi
+/package-lock.json
+
+# Log và file tạm
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+
+# File tạm của Office khi đang mở Word/Excel
+~$*
