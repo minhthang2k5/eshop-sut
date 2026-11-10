@@ -1,6 +1,6 @@
 # GitHub Issues đã đăng
 
-Repo: https://github.com/minhthang2k5/eshop-sut (nhánh HW3_THMTHANG). Đăng ngày 10/11/2026. 25 issue: #21 đến #45.
+Repo: https://github.com/minhthang2k5/eshop-sut (nhánh HW3_THMTHANG). Đăng ngày 10/11/2026. 26 issue: #21 đến #46 (BUG-26 phát hiện từ usability test).
 
 | Bug | Mức độ | Tiêu đề | Issue |
 |---|---|---|---|
@@ -29,3 +29,4 @@ Repo: https://github.com/minhthang2k5/eshop-sut (nhánh HW3_THMTHANG). Đăng ng
 | BUG-23 | Minor | Bảng thiếu thông tin và chức năng cần thiết | [#43](https://github.com/minhthang2k5/eshop-sut/issues/43) |
 | BUG-24 | Minor | Bảng dài không có phân trang và tiêu đề cột bị cuộn mất | [#44](https://github.com/minhthang2k5/eshop-sut/issues/44) |
 | BUG-25 | Minor | Dữ liệu Admin chỉ tải một lần, không cập nhật khi đổi tab | [#45](https://github.com/minhthang2k5/eshop-sut/issues/45) |
+| BUG-26 | Minor | Cỡ chữ nút hành động quá nhỏ (12 px), khó đọc với người lớn tuổi | [#46](https://github.com/minhthang2k5/eshop-sut/issues/46) |

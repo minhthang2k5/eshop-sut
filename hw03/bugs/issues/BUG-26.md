@@ -20,4 +20,3 @@ Các nút hành động trong bảng Đơn hàng dùng cỡ chữ **12 px** (nú
 _(đính kèm ảnh DevTools hiện font-size 12px của nút, hoặc ảnh bảng Đơn hàng)_
 - Liên quan: BUG-18 (vùng bấm nhỏ) và BUG-19 (tương phản).
 
-> BẢN NHÁP: chưa đăng lên GitHub; cần người kiểm thử xác nhận và đính ảnh trước khi đăng.

@@ -60,7 +60,7 @@ Mức ưu tiên = mức nghiêm trọng (1 đến 4) × xác suất (số ngư�
 Toàn bộ 10 phát hiện trùng với bug đã đăng (xem `bugs/GitHub_Issues.md`), nên **kết quả usability củng cố mức độ nghiêm trọng** của chúng bằng dữ liệu người dùng thật:
 - BUG-04 (không xác nhận) và BUG-09 (không phản hồi thành công) là hai vấn đề người dùng cảm nhận rõ nhất.
 - BUG-08 (doanh thu gấp đôi) nguy hiểm vì **đa số người dùng không nhận ra**, đây là lỗi niềm tin.
-- **Một điểm chưa có trong 25 bug:** cỡ chữ nhỏ (nút hành động 12 px). Bug BUG-18 chỉ nêu vùng bấm, BUG-19 chỉ nêu tương phản. Đề xuất bổ sung một bug riêng (xem `bugs/issues/BUG-26_DRAFT.md`), **chưa đăng lên GitHub**.
+- **Một điểm chưa có trong 25 bug:** cỡ chữ nhỏ (nút hành động 12 px). Bug BUG-18 chỉ nêu vùng bấm, BUG-19 chỉ nêu tương phản. Đề xuất bổ sung một bug riêng (`bugs/issues/BUG-26.md`, đã đăng thành issue #46).
 
 ## 6. Khuyến nghị theo thứ tự ưu tiên
 
