@@ -102,5 +102,5 @@ Mục tiêu và phương pháp; bảng 7 participant; kết quả định lượ
 Dữ liệu seed mặc định không có đơn hàng, nên cần tạo cùng một bộ dữ liệu cho mọi participant:
 
 1. Khởi động lại backend (`node backend/server.js`), việc này seed lại toàn bộ database.
-2. Chạy `python hw03/scripts/usability_seed.py` (tạo 6 đơn gồm đơn 150.000 ₫ Chờ xác nhận cho T3, và tài khoản `vana@example.com` cho T4).
+2. Chạy `python hw03/scripts/usability_seed.py` (tạo 6 đơn gồm đơn 150.000 ₫ Chờ xác nhận cho T3, và 13 tài khoản khách trong đó `vana@example.com` nằm giữa danh sách cho T4).
 3. Đăng nhập Admin trước, để màn hình ở trang đầu (Dashboard).

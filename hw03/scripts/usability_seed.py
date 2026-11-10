@@ -6,7 +6,7 @@ Cách dùng (backend phải đang chạy ở http://localhost:3000 và VỪA đ�
     python hw03/scripts/usability_seed.py
 
 Kết quả:
-  - Tài khoản khách 'Nguyen Van A' (vana@example.com) cho nhiệm vụ T4.
+  - 13 tài khoản khách, trong đó 'Nguyen Van A' (vana@example.com) nằm giữa danh sách cho nhiệm vụ T4.
   - 6 đơn hàng: #1 Đã giao, #2 Đã hủy, #3 Đang giao, #4 Đã xác nhận, #5 Chờ xác nhận, #6 Chờ xác nhận 150.000 đ (nhiệm vụ T3).
   - Dashboard sẽ hiện 6 đơn; chưa có danh mục 'Màn hình' (nhiệm vụ T2).
 Script từ chối chạy nếu đã có đơn hàng, để không tạo trùng dữ liệu giữa các phiên.
@@ -42,7 +42,13 @@ def main():
     if orders:
         sys.exit(f"Đã có {len(orders)} đơn hàng. Khởi động lại backend (seed lại DB) rồi chạy lại script.")
 
-    call("/register", "POST", {"name": "Nguyen Van A", "email": "vana@example.com", "password": "Test1234!"})
+    # 12 khách khác để nhiệm vụ T4 phải thực sự tìm (bảng không có cột Tên và ô tìm kiếm); vana đứng giữa danh sách
+    others = ["tran.b", "le.hoa", "pham.nam", "nguyen.linh", "vo.thanh", "dang.mai", "bui.khoa",
+              "do.phuong", "ngo.tuan", "ly.trang", "huynh.duc", "truong.yen"]
+    for i, handle in enumerate(others):
+        if i == 6:
+            call("/register", "POST", {"name": "Nguyen Van A", "email": "vana@example.com", "password": "Test1234!"})
+        call("/register", "POST", {"name": handle.replace(".", " ").title(), "email": f"{handle}@example.com", "password": "Test1234!"})
     s, u = call("/login", "POST", {"email": "test@eshop.com", "password": "Test1234!"})
     ut = u["token"]
 
