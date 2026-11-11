@@ -17,6 +17,6 @@ Chữ trên nút đủ lớn để đọc thoải mái (tối thiểu khoảng 1
 Các nút hành động trong bảng Đơn hàng dùng cỡ chữ **12 px** (nút cao 24 px). Hai participant lớn tuổi nói: "Chữ nhỏ quá, mắt cô nhìn không rõ" (P06) và nhận xét chữ nhỏ (P01); P06 bấm trượt nút khi dò từng dòng.
 
 ### Ảnh / bằng chứng
-_(đính kèm ảnh DevTools hiện font-size 12px của nút, hoặc ảnh bảng Đơn hàng)_
+![BUG-26_devtools_fontsize.png](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-26_devtools_fontsize.png?raw=true)
 - Liên quan: BUG-18 (vùng bấm nhỏ) và BUG-19 (tương phản).
 

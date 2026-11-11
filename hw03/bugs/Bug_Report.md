@@ -19,18 +19,18 @@ Tổng **25 bug** gom từ **77 mục Failed** của GUI Checklist. Critical: 2,
 | BUG-11 | Major | Admin: Người dùng, Đơn hàng | Không có chỉ báo đang tải và không thông báo khi tải dữ liệu lỗi | GUI-041, GUI-042, ORD-031, ORD-032 | evidence/BUG-11_no_loading.jpg |
 | BUG-12 | Major | Admin: Người dùng, Danh mục, Đơn hàng | Bấm hai lần liên tiếp gửi trùng yêu cầu | GUI-046, GUI-066, ORD-030 | evidence/BUG-12_double_submit.jpg |
 | BUG-13 | Minor | Admin: Đơn hàng; Web: Home | Thiếu thông báo cho trạng thái rỗng / không có kết quả | GUI-071, GUI-080 | evidence/BUG-13_orders_empty.jpg; evidence/BUG-13_home_no_result.jpg |
-| BUG-14 | Major | Admin: toàn bộ | Admin không có URL theo tab: F5 về Dashboard, nút Back thoát ứng dụng | GUI-009, GUI-038, GUI-039 | evidence/BUG-14_navigation_measure.txt |
+| BUG-14 | Major | Admin: toàn bộ | Admin không có URL theo tab: F5 về Dashboard, nút Back thoát ứng dụng | GUI-009, GUI-038, GUI-039 | evidence/BUG-14_devtools_url_history.png; evidence/BUG-14_navigation_measure.txt |
 | BUG-15 | Major | Admin: toàn bộ | Menu không dùng được bằng bàn phím; focus bị mất sau khi đổi trạng thái đơn | GUI-008, GUI-032, GUI-036, ORD-025 | evidence/BUG-15_tab_focus.jpg |
 | BUG-16 | Minor | Admin: Người dùng | Checkbox chọn dòng và 'chọn tất cả' không có tác dụng | GUI-024, GUI-030, GUI-048, GUI-049 | evidence/BUG-16_select_all.jpg |
-| BUG-17 | Minor | Admin và Web | Thiếu tên truy cập, nhãn và alt cho các thành phần | GUI-023, GUI-029, GUI-052, GUI-077, GUI-078, ORD-018 | evidence/BUG-17_accessibility_measure.txt |
-| BUG-18 | Minor | Admin và Web | Vùng bấm quá nhỏ hoặc quá sát nhau | GUI-028, GUI-079, ORD-020 | evidence/BUG-18_target_size_measure.txt |
-| BUG-19 | Minor | Admin: Người dùng, Đơn hàng | Tương phản màu không đạt 4.5:1 ở nút hành động | GUI-014, ORD-004 | evidence/BUG-19_contrast_measure.txt; evidence/BUG-01_orders_full.jpg |
+| BUG-17 | Minor | Admin và Web | Thiếu tên truy cập, nhãn và alt cho các thành phần | GUI-023, GUI-029, GUI-052, GUI-077, GUI-078, ORD-018 | evidence/BUG-17_devtools_accessibility.png; evidence/BUG-17_accessibility_measure.txt |
+| BUG-18 | Minor | Admin và Web | Vùng bấm quá nhỏ hoặc quá sát nhau | GUI-028, GUI-079, ORD-020 | evidence/BUG-18_devtools_boxmodel.png; evidence/BUG-18_target_size_measure.txt |
+| BUG-19 | Minor | Admin: Người dùng, Đơn hàng | Tương phản màu không đạt 4.5:1 ở nút hành động | GUI-014, ORD-004 | evidence/BUG-19_devtools_contrast.png; evidence/BUG-19_contrast_measure.txt; evidence/BUG-01_orders_full.jpg |
 | BUG-20 | Major | Admin và Web | Bố cục vỡ ở màn hình hẹp (tablet, điện thoại, zoom 200%) | GUI-002, GUI-005, GUI-006, GUI-076, ORD-013, ORD-014 | evidence/BUG-20_admin_375_users.jpg; evidence/BUG-20_orders_375.jpg; evidence/BUG-20_home_375.jpg |
-| BUG-21 | Minor | Admin và Web | Thuộc tính lang='en' và tiêu đề tab là tên kỹ thuật | GUI-001, GUI-021 | evidence/BUG-21_lang_title_measure.txt |
+| BUG-21 | Minor | Admin và Web | Thuộc tính lang='en' và tiêu đề tab là tên kỹ thuật | GUI-001, GUI-021 | evidence/BUG-21_devtools_elements_lang.png; evidence/BUG-21_devtools_console.png; evidence/BUG-21_lang_title_measure.txt |
 | BUG-22 | Cosmetic | Admin và Web | Không nhất quán ngôn ngữ, định dạng và kiểu giao diện | GUI-012, GUI-018, GUI-019, GUI-050, GUI-074, ORD-001, ORD-035 | evidence/BUG-22_users_table.jpg; evidence/BUG-08_dashboard.jpg |
 | BUG-23 | Minor | Admin: Người dùng, Đơn hàng | Bảng thiếu thông tin và chức năng cần thiết | GUI-017, GUI-022, ORD-008, ORD-015, ORD-024 | evidence/BUG-22_users_table.jpg; evidence/BUG-01_orders_full.jpg |
 | BUG-24 | Minor | Admin: Danh mục, Đơn hàng | Bảng dài không có phân trang và tiêu đề cột bị cuộn mất | GUI-051, ORD-012 | evidence/BUG-24_long_table.jpg |
-| BUG-25 | Minor | Admin: Đơn hàng, Dashboard | Dữ liệu Admin chỉ tải một lần, không cập nhật khi đổi tab | ORD-033 | evidence/BUG-25_stale_data_measure.txt |
+| BUG-25 | Minor | Admin: Đơn hàng, Dashboard | Dữ liệu Admin chỉ tải một lần, không cập nhật khi đổi tab | ORD-033 | evidence/BUG-25_devtools_stale_rows.png; evidence/BUG-25_stale_data_measure.txt |
 
 Mức độ: Critical = ảnh hưởng bảo mật hoặc chặn luồng chính; Major = sai chức năng hoặc làm người dùng mất kiểm soát; Minor = khó dùng nhưng có cách khác; Cosmetic = thẩm mỹ.
 
@@ -275,7 +275,7 @@ Mức độ: Critical = ảnh hưởng bảo mật hoặc chặn luồng chính;
 
 **Kết quả thực tế:** URL luôn là '/'; F5 luôn về Dashboard; Back rời khỏi ứng dụng.
 
-**Ảnh:** evidence/BUG-14_navigation_measure.txt
+**Ảnh:** evidence/BUG-14_devtools_url_history.png; evidence/BUG-14_navigation_measure.txt
 
 ## BUG-15: Menu không dùng được bằng bàn phím; focus bị mất sau khi đổi trạng thái đơn
 
@@ -328,7 +328,7 @@ Mức độ: Critical = ảnh hưởng bảo mật hoặc chặn luồng chính;
 
 **Kết quả thực tế:** Nút chỉ có tên 'Xóa'/'Hủy'; checkbox không có nhãn; ô nhập chỉ có placeholder; cả 5 ảnh có alt rỗng.
 
-**Ảnh:** evidence/BUG-17_accessibility_measure.txt
+**Ảnh:** evidence/BUG-17_devtools_accessibility.png; evidence/BUG-17_accessibility_measure.txt
 
 ## BUG-18: Vùng bấm quá nhỏ hoặc quá sát nhau
 
@@ -344,7 +344,7 @@ Mức độ: Critical = ảnh hưởng bảo mật hoặc chặn luồng chính;
 
 **Kết quả thực tế:** Checkbox 13×13 px; nút Home cao 36 px; hai nút trong ô Hành động cách nhau 4 px.
 
-**Ảnh:** evidence/BUG-18_target_size_measure.txt
+**Ảnh:** evidence/BUG-18_devtools_boxmodel.png; evidence/BUG-18_target_size_measure.txt
 
 ## BUG-19: Tương phản màu không đạt 4.5:1 ở nút hành động
 
@@ -360,7 +360,7 @@ Mức độ: Critical = ảnh hưởng bảo mật hoặc chặn luồng chính;
 
 **Kết quả thực tế:** Nút Xóa 3.76:1; Xác nhận 4.47:1; Hủy 2.54:1; Giao hàng 3.68:1; Hoàn thành và Đánh dấu Đã giao 2.28:1.
 
-**Ảnh:** evidence/BUG-19_contrast_measure.txt; evidence/BUG-01_orders_full.jpg
+**Ảnh:** evidence/BUG-19_devtools_contrast.png; evidence/BUG-19_contrast_measure.txt; evidence/BUG-01_orders_full.jpg
 
 ## BUG-20: Bố cục vỡ ở màn hình hẹp (tablet, điện thoại, zoom 200%)
 
@@ -394,7 +394,7 @@ Mức độ: Critical = ảnh hưởng bảo mật hoặc chặn luồng chính;
 
 **Kết quả thực tế:** lang='en'; tiêu đề tab là 'frontend-admin' và 'frontend-web'.
 
-**Ảnh:** evidence/BUG-21_lang_title_measure.txt
+**Ảnh:** evidence/BUG-21_devtools_elements_lang.png; evidence/BUG-21_devtools_console.png; evidence/BUG-21_lang_title_measure.txt
 
 ## BUG-22: Không nhất quán ngôn ngữ, định dạng và kiểu giao diện
 
@@ -460,4 +460,4 @@ Mức độ: Critical = ảnh hưởng bảo mật hoặc chặn luồng chính;
 
 **Kết quả thực tế:** Số dòng không đổi (vẫn 34); phải F5 mới thấy đơn mới. Dashboard cũng giữ số liệu cũ (từng hiện 35 đơn sau khi dữ liệu đã được seed lại).
 
-**Ảnh:** evidence/BUG-25_stale_data_measure.txt
+**Ảnh:** evidence/BUG-25_devtools_stale_rows.png; evidence/BUG-25_stale_data_measure.txt

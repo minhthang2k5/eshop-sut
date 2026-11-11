@@ -15,4 +15,6 @@ Vùng bấm tối thiểu 24×24 px (44 px trên cảm ứng); hai nút cách nh
 Checkbox 13×13 px; nút Home cao 36 px; hai nút trong ô Hành động cách nhau 4 px.
 
 ### Ảnh / bằng chứng
+![BUG-18_devtools_boxmodel.png](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-18_devtools_boxmodel.png?raw=true)
+
 [BUG-18_target_size_measure.txt](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-18_target_size_measure.txt)

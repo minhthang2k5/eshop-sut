@@ -15,6 +15,8 @@ Mọi cặp màu đạt tối thiểu 4.5:1.
 Nút Xóa 3.76:1; Xác nhận 4.47:1; Hủy 2.54:1; Giao hàng 3.68:1; Hoàn thành và Đánh dấu Đã giao 2.28:1.
 
 ### Ảnh / bằng chứng
+![BUG-19_devtools_contrast.png](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-19_devtools_contrast.png?raw=true)
+
 [BUG-19_contrast_measure.txt](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-19_contrast_measure.txt)
 
 ![BUG-01_orders_full.jpg](https://github.com/minhthang2k5/eshop-sut/blob/HW3_THMTHANG/hw03/evidence/BUG-01_orders_full.jpg?raw=true)
